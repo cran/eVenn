@@ -18,6 +18,6 @@ Dataset for an example of a venn diagram with 4 lists.
 \examples{
 #exemple with 4 lists
 data(res4)
-evenn(annot=F, path_res="", path_lists="test", res=res4)
+evenn(annot=FALSE, path_res="", path_lists="test", res=res4, ud=TRUE)
 }
 \keyword{datasets}
