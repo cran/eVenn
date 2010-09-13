@@ -47,21 +47,26 @@ evenn <-function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE)
   
   format_label<-function(n, m, nom, x, y, t, type=0)
   {
-     dv = 0.25*(t/0.5) #decalage vertical
-     dh = 0.13*(t/0.5) #decalage horizontal
-     m = as.matrix(m) #details effectifs/groupes
-     if(type!=4)  text(x=x, y=(y+0.05), labels=paste(n, sep=""), cex=t*(1.2), col="black")  #ref de localisation: total
-     for(I in 1:nrow(m))
+     if(dim(m)!=0)
      {
-        for(J in 1:nchar(rownames(m)[I]))
-        {
-          if(substr(nom,J,J) == "A")  couleur = "blue"
-          if(substr(nom,J,J) == "B")  couleur = "red"
-          if(substr(nom,J,J) == "C")  couleur = "green"
-          if(substr(nom,J,J) == "D")  couleur = "orange"
-          text(x=(x-0.7+(J-1*(nchar(nom)/2))*dh), y=(y-(I*dv)), labels=paste(substr(rownames(m)[I],J,J), sep=""), cex=t, col=couleur)  #
+       dv = 0.25*(t/0.5) #decalage vertical
+       dh = 0.13*(t/0.5) #decalage horizontal
+       m = as.matrix(m) #details effectifs/groupes
+       if(type!=4)  text(x=x, y=(y+0.05), labels=paste(n, sep=""), cex=t*(1.2), col="black")  #ref de localisation: total
+       for(I in 1:nrow(m))
+       {
+          for(J in 1:nchar(rownames(m)[I]))
+          {
+            if(substr(nom,J,J) == "A")  couleur = "blue"
+            if(substr(nom,J,J) == "B")  couleur = "red"
+            if(substr(nom,J,J) == "C")  couleur = "green"
+            if(substr(nom,J,J) == "D")  couleur = "orange"
+            text(x=(x-0.7+(J-1*(nchar(nom)/2))*dh), y=(y-(I*dv)), labels=paste(substr(rownames(m)[I],J,J), sep=""), cex=t, col=couleur)
+          }
+          text(x=(x-0.6+(J-1*(nchar(nom)/2)+2+(nchar(paste(": ", m[I, 1], sep=""))-3)/2)*dh), y=(y-(I*dv)), labels=paste(": ", m[I, 1], sep=""), cex=t, col="black")
         }
-        text(x=(x-0.7+(J-1*(nchar(nom)/2)+2+(nchar(paste(": ", m[I, 1], sep=""))-3)/2)*dh), y=(y-(I*dv)), labels=paste(": ", m[I, 1], sep=""), cex=t, col="black")
+     }else{
+        text(x=x, y=(y+0.05), labels=paste(0, sep=""), cex=t*(1.2), col="black")
      }
   }
   
@@ -699,4 +704,3 @@ evenn <-function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE)
      }
   }
 }
-

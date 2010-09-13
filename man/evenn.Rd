@@ -34,7 +34,7 @@ The venn diagram is saved in a pdf file "venn_diagram.pdf".
 The venn diagram with up/down informations is saved in a pdf file "venn_diagram_ud.pdf".
 }
 \references{
-http://blog.mrbioinfo.com/
+\url{http://blog.mrbioinfo.com/}
 }
 \author{
 Author & Maintainer: Nicolas Cagnard <nicolas.cagnard@gmail.com>
