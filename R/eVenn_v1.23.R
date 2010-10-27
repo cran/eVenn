@@ -14,7 +14,7 @@ evenn <-function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE)
 {  
   write("\t#############################################################################\n")
   write("\t#                                                                           #\n")
-  write("\t#                                eVenn (v1.2)                               #\n")
+  write("\t#                                eVenn (v1.23)                              #\n")
   write("\t#                                                                           #\n")
   write("\t#############################################################################\n")
   
@@ -178,7 +178,7 @@ evenn <-function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE)
   graph_3ud<-function(path, listeA, listeB, listeC, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, nAu, nAd, nBu, nBd, nCu, nCd, nABud, nACud, nBCud, nABCud)
   {
     dx=5; dy=5; dd=6; t=0.7
-    pdf(file = paste(path, "/venn_diagram_ud.pdf", sep=""))
+    pdf(file = paste(path, "/venn_diagram_ud.pdf", sep=""))    
     plot(x=1:(4*dx), y=1:(4*dy),type="n", axes=FALSE, xlab="",ylab="")
      
     symbols((2*dx), (2.5*dy), circle=(1*dd), add=TRUE, inches=TRUE, fg="blue")
@@ -263,99 +263,99 @@ evenn <-function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE)
   #graph 4 ud
   graph_4ud<-function(path, listeA, listeB, listeC, listeD, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, nAu, nAd, nBu, nBd, nCu, nCd, nDu, nDd, nABud, nACud, nBCud, nBDud, nCDud, nADud, nABCud, nBCDud, nABDud, nACDud, nABCDud)
   {
-    dx=4; dy=4; dd=6; t=1
-    pdf(file = paste(path, "/venn_diagram_ud.pdf", sep=""), width=10, height=10)
+    dx=4; dy=4; dd=8; t=1
+    pdf(file = paste(path, "/venn_diagram.pdf", sep=""), width=10, height=10)
     plot.window(c(0, 20), c(0, 20))
     plot(x=1:(5*dx), y=1:(5*dy),type="n", axes=FALSE, xlab="",ylab="")
-    symbols((2*dx), (2.5*dy), circle=(1*dd), add=TRUE, inches=TRUE, fg="blue")  #A
+    symbols((2*dx), (2.35*dy), circle=(1*dd), add=TRUE, inches=TRUE, fg="blue")  #A
     symbols((1.7*dx), (2.1*dy), circle=(1*dd), add=TRUE, inches=TRUE, fg="red") #B
     symbols((2.3*dx), (2.1*dy), circle=(1*dd), add=TRUE, inches=TRUE, fg="green") #C
-    symbols((2*dx), (1.7*dy), circle=(1*dd), add=TRUE, inches=TRUE, fg="orange")  #D
-    
+    symbols((2*dx), (1.85*dy), circle=(1*dd), add=TRUE, inches=TRUE, fg="orange")  #D
+
     #AC
     symbols((4.2*dx), (3.9*dy), circle=(0.3*dd), add=TRUE, inches=TRUE, fg="red")
     symbols((4.4*dx), (3.9*dy), circle=(0.3*dd), add=TRUE, inches=TRUE, fg="green")
     #BD
     symbols((4.5*dx), (1.7*dy), circle=(0.3*dd), add=TRUE, inches=TRUE, fg="blue")
     symbols((4.5*dx), (1.5*dy), circle=(0.3*dd), add=TRUE, inches=TRUE, fg="orange")
-    
+
     #ABCD
     symbols((0.75*dx), (4.5*dy), circle=(0.3*dd), add=TRUE, inches=TRUE, fg="red")
     symbols((0.85*dx), (4.5*dy), circle=(0.3*dd), add=TRUE, inches=TRUE, fg="green")
     symbols((0.8*dx), (4.55*dy), circle=(0.3*dd), add=TRUE, inches=TRUE, fg="blue")
     symbols((0.8*dx), (4.45*dy), circle=(0.3*dd), add=TRUE, inches=TRUE, fg="orange")
-    
+
     #A
-    text(x=(2*dx), y=(2.95*dy), labels=paste("A"), cex=t, col="blue")
-    text(x=(2*dx), y=(2.85*dy), labels=paste(nA), cex=t, col="blue")
+    text(x=(2*dx), y=(2.85*dy), labels=paste("A"), cex=t, col="blue")
+    text(x=(2*dx), y=(2.75*dy), labels=paste(nA), cex=t, col="blue")
     text(x=(1.7*dx), y=(4.2*dy), labels=paste("A"), cex=t*1.2, col="blue")
     text(x=(1.7*dx), y=(4.1*dy), labels=paste("u:", nAu), cex=t, col="blue")
     text(x=(1.7*dx), y=(4*dy), labels=paste("d:", nAd), cex=t, col="blue")
     #B
     text(x=(1.3*dx), y=(2.1*dy), labels=paste("B\n", nB, sep=""), cex=t, col="red")
-    text(x=(0.4*dx), y=(2.2*dy), labels=paste("B"), cex=t*1.2, col="red")
+    text(x=(0.4*dx), y=(2.25*dy), labels=paste("B"), cex=t*1.2, col="red")
     text(x=(0.4*dx), y=(2.1*dy), labels=paste("u:", nBu), cex=t, col="red")
     text(x=(0.4*dx), y=(2*dy), labels=paste("d:", nBd), cex=t, col="red")
     #C
     text(x=(2.7*dx), y=(2.1*dy), labels=paste("C\n", nC, sep=""), cex=t*(1), col="green")
-    text(x=(3.6*dx), y=(2.2*dy), labels=paste("C"), cex=t*1.2, col="green")
-    text(x=(3.6*dx), y=(21*dy), labels=paste("u:", nCu), cex=t, col="green")
+    text(x=(3.6*dx), y=(2.25*dy), labels=paste("C"), cex=t*1.2, col="green")
+    text(x=(3.6*dx), y=(2.1*dy), labels=paste("u:", nCu), cex=t, col="green")
     text(x=(3.6*dx), y=(2*dy), labels=paste("d:", nCd), cex=t, col="green")
     #D
-    text(x=(2*dx), y=(1.4*dy), labels=paste("D"), cex=t, col="orange")
-    text(x=(2*dx), y=(1.3*dy), labels=paste(nD), cex=t, col="orange")
-    text(x=(1.7*dx), y=(0.3*dy), labels=paste("D"), cex=t*1.2, col="orange")
-    text(x=(1.7*dx), y=(0.2*dy), labels=paste("u:", nDu), cex=t, col="orange")
-    text(x=(1.7*dx), y=(0.1*dy), labels=paste("d:", nDd), cex=t, col="orange")
-    
+    text(x=(2*dx), y=(1.5*dy), labels=paste("D"), cex=t, col="orange")
+    text(x=(2*dx), y=(1.4*dy), labels=paste(nD), cex=t, col="orange")
+    text(x=(1.7*dx), y=(0.35*dy), labels=paste("D"), cex=t*1.2, col="orange")
+    text(x=(1.7*dx), y=(0.25*dy), labels=paste("u:", nDu), cex=t, col="orange")
+    text(x=(1.7*dx), y=(0.15*dy), labels=paste("d:", nDd), cex=t, col="orange")
+
     #AB
     text(x=(1.6*dx), y=(2.5*dy), labels=paste("AB"), cex=t, col="black")
     text(x=(1.6*dx), y=(2.4*dy), labels=paste(nAB), cex=t, col="black")
     text(x=(0.96*dx), y=(3.3*dy), labels=paste("A"), cex=t*1.2, col="blue")
     text(x=(1.04*dx), y=(3.3*dy), labels=paste("B"), cex=t*1.2, col="red")
     format_label(n=nAB, m=nABud, nom="AB", x=(1*dx), y=(3.3*dy), t, type=4)
-    
+
     #AC
     text(x=(2.4*dx), y=(2.5*dy), labels=paste("AC"), cex=t, col="black")
     text(x=(2.4*dx), y=(2.4*dy), labels=paste(nAC), cex=t, col="black")
     text(x=(2.86*dx), y=(3.3*dy), labels=paste("A"), cex=t*1.2, col="blue")
     text(x=(2.94*dx), y=(3.3*dy), labels=paste("C"), cex=t*1.2, col="green")
     format_label(n=nAC, m=nACud, nom="AC", x=(2.9*dx), y=(3.3*dy), t, type=4)
-    
+
     #BD
     text(x=(1.6*dx), y=(1.8*dy), labels=paste("BD"), cex=t, col="black")
     text(x=(1.6*dx), y=(1.7*dy), labels=paste(nBD), cex=t, col="black")
     text(x=(0.96*dx), y=(0.8*dy), labels=paste("B"), cex=t*1.2, col="red")
     text(x=(1.04*dx), y=(0.8*dy), labels=paste("D"), cex=t*1.2, col="orange")
     format_label(n=nBD, m=nBDud, nom="BD", x=(1*dx), y=(0.8*dy), t, type=4)
-    
+
     #CD
     text(x=(2.4*dx), y=(1.8*dy), labels=paste("CD"), cex=t, col="black")
     text(x=(2.4*dx), y=(1.7*dy), labels=paste(nCD), cex=t, col="black")
     text(x=(2.86*dx), y=(0.8*dy), labels=paste("C"), cex=t*1.2, col="green")
     text(x=(2.94*dx), y=(0.8*dy), labels=paste("D"), cex=t*1.2, col="orange")
     format_label(n=nCD, m=nCDud, nom="CD", x=(2.9*dx), y=(0.8*dy), t, type=4)
-    
+
     #AD
     text(x=(4.46*dx), y=(1.9*dy), labels=paste("A"), cex=t*1.2, col="blue")
     text(x=(4.54*dx), y=(1.9*dy), labels=paste("D"), cex=t*1.2, col="orange")
     text(x=(4.5*dx), y=(1.8*dy), labels=paste(nAD), cex=t, col="black")
-    format_label(n=nAD, m=nADud, nom="AD", x=(4.5*dx), y=(1.7*dy), t, type=4) 
-     
+    format_label(n=nAD, m=nADud, nom="AD", x=(4.5*dx), y=(1.7*dy), t, type=4)
+
     #BC
     text(x=(4.26*dx), y=(4.3*dy), labels=paste("B"), cex=t*1.2, col="red")
     text(x=(4.34*dx), y=(4.3*dy), labels=paste("C"), cex=t*1.2, col="green")
     text(x=(4.3*dx), y=(4.2*dy), labels=paste(nBC), cex=t, col="black")
     format_label(n=nBC, m=nBCud, nom="BC", x=(4.3*dx), y=(4.1*dy), t, type=4)
-    
+
     #ABC
-    text(x=(2*dx), y=(2.5*dy), labels=paste("ABC"), cex=t, col="black")
-    text(x=(2*dx), y=(2.4*dy), labels=paste(nABC), cex=t, col="black")
+    text(x=(2*dx), y=(2.55*dy), labels=paste("ABC"), cex=t, col="black")
+    text(x=(2*dx), y=(2.45*dy), labels=paste(nABC), cex=t, col="black")
     text(x=(2.22*dx), y=(3.8*dy), labels=paste("A"), cex=t*1.2, col="blue")
     text(x=(2.3*dx), y=(3.8*dy), labels=paste("B"), cex=t*1.2, col="red")
     text(x=(2.38*dx), y=(3.8*dy), labels=paste("C"), cex=t*1.2, col="green")
     format_label(n=nABC, m=nABCud, nom="ABC", x=(2.3*dx), y=(3.8*dy), t, type=4)
-    
+
     #BCD
     text(x=(2*dx), y=(1.75*dy), labels=paste("BCD"), cex=t, col="black")
     text(x=(2*dx), y=(1.65*dy), labels=paste(nBCD), cex=t, col="black")
@@ -363,23 +363,23 @@ evenn <-function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE)
     text(x=(2.3*dx), y=(1*dy), labels=paste("C"), cex=t*1.2, col="green")
     text(x=(2.38*dx), y=(1*dy), labels=paste("D"), cex=t*1.2, col="orange")
     format_label(n=nBCD, m=nBCDud, nom="BCD", x=(2.3*dx), y=(1*dy), t, type=4)
-    
+
     #ACD
-    text(x=(2.4*dx), y=(2.1*dy), labels=paste("ACD"), cex=t, col="black")
-    text(x=(2.4*dx), y=(2*dy), labels=paste(nACD), cex=t, col="black")
+    text(x=(2.4*dx), y=(2.15*dy), labels=paste("ACD"), cex=t, col="black")
+    text(x=(2.4*dx), y=(2.05*dy), labels=paste(nACD), cex=t, col="black")
     text(x=(3.02*dx), y=(2.2*dy), labels=paste("A"), cex=t*1.2, col="blue")
     text(x=(3.1*dx), y=(2.2*dy), labels=paste("C"), cex=t*1.2, col="green")
     text(x=(3.18*dx), y=(2.2*dy), labels=paste("D"), cex=t*1.2, col="orange")
     format_label(n=nACD, m=nACDud, nom="ACD", x=(3.1*dx), y=(2.2*dy), t, type=4)
-    
+
     #ABD
-    text(x=(1.6*dx), y=(2.1*dy), labels=paste("ABD"), cex=t, col="black")
-    text(x=(1.6*dx), y=(2*dy), labels=paste(nABD), cex=t, col="black")
-    text(x=(0.72*dx), y=(2.2*dy), labels=paste("A"), cex=t*1.2, col="blue")
-    text(x=(0.8*dx), y=(2.2*dy), labels=paste("B"), cex=t*1.2, col="red")
-    text(x=(0.88*dx), y=(2.2*dy), labels=paste("D"), cex=t*1.2, col="orange")
-    format_label(n=nABD, m=nABDud, nom="ABD", x=(0.8*dx), y=(2.2*dy), t, type=4)
-  
+    text(x=(1.6*dx), y=(2.15*dy), labels=paste("ABD"), cex=t, col="black")
+    text(x=(1.6*dx), y=(2.05*dy), labels=paste(nABD), cex=t, col="black")
+    text(x=(0.77*dx), y=(2.2*dy), labels=paste("A"), cex=t*1.2, col="blue")
+    text(x=(0.85*dx), y=(2.2*dy), labels=paste("B"), cex=t*1.2, col="red")
+    text(x=(0.94*dx), y=(2.2*dy), labels=paste("D"), cex=t*1.2, col="orange")
+    format_label(n=nABD, m=nABDud, nom="ABD", x=(0.9*dx), y=(2.2*dy), t, type=4)
+
     #ABCD
     text(x=(0.68*dx), y=(4.9*dy), labels=paste("A"), cex=t*1.2, col="blue")
     text(x=(0.76*dx), y=(4.9*dy), labels=paste("B"), cex=t*1.2, col="red")
@@ -388,15 +388,15 @@ evenn <-function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE)
     text(x=(2*dx), y=(2.1*dy), labels=paste("ABCD"), cex=t*1.2, col="black")
     text(x=(2*dx), y=(2*dy), labels=paste(nABCD), cex=t, col="black")
     format_label(n=nABCD, m=nABCDud, nom="ABCD", x=(0.8*dx), y=(4.9*dy), t, type=4)
-  
+
     text(x=(3.7*dx), y=(3.2*dy), labels=paste("Unics: ", tot_ugenes, sep=""), cex=t, col="black")
-    
+
     #titres
     text(x=(2.5*dx), y=(5.1*dy), labels=paste("A: ", listeA, sep=""), cex=(1.3*t), col="blue")
     text(x=(2.5*dx), y=(4.95*dy), labels=paste("B: ", listeB, sep=""), cex=(1.3*t), col="red")
     text(x=(2.5*dx), y=(4.80*dy), labels=paste("C: ", listeC, sep=""), cex=(1.3*t), col="green")
     text(x=(2.5*dx), y=(4.65*dy), labels=paste("D: ", listeD, sep=""), cex=(1.3*t), col="orange")
-    
+
     dev.off()
   }
   
@@ -662,16 +662,16 @@ evenn <-function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE)
      
      if(ud)
      {
-        nAud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,1]==1),6]
+        nAud = as.numeric(data_r[(data_r[,"Total_lists"]==1)&(data_r[,1]==1),6])
         nAu = length(nAud[nAud>=1])
         nAd = length(nAud[nAud<1])      
-        nBud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,2]==1),7]
+        nBud = as.numeric(data_r[(data_r[,"Total_lists"]==1)&(data_r[,2]==1),7])
         nBu = length(nBud[nBud>=1])
         nBd = length(nBud[nBud<1])       
-        nCud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,3]==1),8]
+        nCud = as.numeric(data_r[(data_r[,"Total_lists"]==1)&(data_r[,3]==1),8])
         nCu = length(nCud[nCud>=1])
         nCd = length(nCud[nCud<1])       
-        nDud = nrow(data_r[(data_r[,"Total_lists"]==1)&(data_r[,4]==1),9])
+        nDud = as.numeric(data_r[(data_r[,"Total_lists"]==1)&(data_r[,4]==1),9])
         nDu = length(nDud[nDud>=1])
         nDd = length(nDud[nDud<1])
         
@@ -688,7 +688,7 @@ evenn <-function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE)
         nADud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,1]==1)&(data_r[,4]==1),c(6,9)]
         nADud = compte(nADud)   
         
-        nABCud = data_r[data_r[,"Total_lists"]==3,5:7]
+        nABCud = data_r[(data_r[,"Total_lists"]==3)&(data_r[,1]==1)&(data_r[,2]==1)&(data_r[,3]==1),6:8]
         nABCud = compte(nABCud)
         nBCDud = data_r[(data_r[,"Total_lists"]==3)&(data_r[,2]==1)&(data_r[,3]==1)&(data_r[,4]==1),7:9]
         nBCDud = compte(nBCDud)
