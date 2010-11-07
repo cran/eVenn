@@ -12,15 +12,16 @@ Compute a matrix combination of lists (from 2 to infinite) and plot the results 
 \tabular{ll}{
 Package: \tab eVenn\cr
 Type: \tab Package\cr
-Version: \tab 1.23\cr
-Date: \tab 2010-10-27\cr
+Version: \tab 1.24\cr
+Date: \tab 2010-11-07\cr
 License: \tab GPL\cr
 LazyLoad: \tab yes\cr
 }
 The lists to be compared must be alone in a folder (path_lists). The lists can be just identifiers lists or be lists of genes with annotation columns and data columns. The option "annot" (T/F) allow to produces a result "counts" file with a venn diagram matrix (0/1) and the corresponding annotations and data.
 The first column of the data files must be the unic identifiers, it is used by eVenn to detect common or specific genes.
 
-v1.22: Bugs in the ud graph corrected and png for the 4 lists ud graph.
+v1.24: Add the man() function for quick help or quick start and allow to custom the short names of the lists instead of "A", "B", "C", "D".
+v1.23: Bugs in the ud graph corrected.
 v1.22: Pb with the lists of 0 genes with the ud=TRUE corrected.
 v1.21: Minor bugs reported have been corrected.
 v1.2: eVenn can separate up and down regulated genes.
@@ -39,13 +40,13 @@ Author & Maintainer: Nicolas Cagnard <nicolas.cagnard@gmail.com>
 \examples{
 #exemple with 2 lists
 data(res2)
-evenn(annot=FALSE, path_res="", path_lists="test", res=res2, ud=TRUE)
+evenn(path_lists="test", res=res2, ud=TRUE)
 
 #exemple with 3 lists
 data(res3)
-evenn(annot=FALSE, path_res="", path_lists="test", res=res3, ud=TRUE)
+evenn(path_lists="test", res=res3, ud=TRUE)
 
 #exemple with 4 lists
 data(res4)
-evenn(annot=FALSE, path_res="", path_lists="test", res=res4, ud=TRUE)
+evenn(path_lists="test", res=res4, ud=TRUE)
 }

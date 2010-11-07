@@ -18,6 +18,6 @@ Dataset for an example of a venn diagram with 3 lists.
 \examples{
 #exemple with 3 lists
 data(res3)
-evenn(annot=FALSE, path_res="", path_lists="test", res=res3, ud=TRUE)
+evenn(path_lists="test", res=res3, ud=TRUE)
 }
 \keyword{datasets}

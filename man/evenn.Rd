@@ -7,7 +7,7 @@ eVenn: A powerful to compare huge lists almost instantaneously and draw Venn dia
 Compute a matrix combination of lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4). It is possible to produce a complete annotated file, merging the annotations of the compared lists.
 }
 \usage{
-evenn(annot = FALSE, path_res = "", path_lists = "", res = "", ud = FALSE)
+evenn(annot = FALSE, path_res = "", path_lists = "", res = "", ud = FALSE, noms="")
 }
 \arguments{
   \item{annot}{
@@ -24,6 +24,9 @@ Binary matrix showing which identifier belong to which lists. Columns are compar
 }
   \item{ud}{
 If the details of up and down regulated genes should be shown. Then the source files must comport a "ratios" column.
+}
+  \item{noms}{
+Cutom short names for each list, used in the 4 lists venn with ud details.
 }
 }
 \value{
@@ -42,13 +45,13 @@ Author & Maintainer: Nicolas Cagnard <nicolas.cagnard@gmail.com>
 \examples{
 #exemple with 2 lists
 data(res2)
-evenn(annot=FALSE, path_res="", path_lists="test", res=res2, ud=TRUE)
+evenn(path_lists="test", res=res2, ud=TRUE)
 
 #exemple with 3 lists
 data(res3)
-evenn(annot=FALSE, path_res="", path_lists="test", res=res3, ud=TRUE)
+evenn(path_lists="test", res=res3, ud=TRUE)
 
 #exemple with 4 lists
 data(res4)
-evenn(annot=FALSE, path_res="", path_lists="test", res=res4, ud=TRUE)
+evenn(path_lists="test", res=res4, ud=TRUE)
 }
