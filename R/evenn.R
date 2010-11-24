@@ -3,7 +3,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="")
 {  
   write("\t#############################################################################", file="")
   write("\t#                                                                           #", file="")
-  write("\t#                                eVenn (v1.24)                              #", file="")
+  write("\t#                                eVenn (v1.24.1)                            #", file="")
   write("\t#                                                                           #", file="")
   write("\t#############################################################################\n", file="")
   write("\t[Run man() for quick help]\n", file="")
@@ -74,6 +74,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="")
     data_t=""
     if(exists("data_t"))  rm("data_t")
     if(ext == "txt") data_t = read.table(file=liste, header=TRUE, sep="\t")
+    if(ext == "tsv") data_t = read.table(file=liste, header=TRUE, sep="\t")
     if(ext == "csv") data_t = try(read.table(file=liste, header=TRUE, sep=","), silent=TRUE)
     if((ext == "csv")&(class(data_t)=="try-error")) data_t = try(read.table(file=liste, header=TRUE, sep=";"), silent=TRUE)
     if((ext!="csv")&(ext!="txt")) 
@@ -81,7 +82,11 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="")
       write("The file format is not supported (must be txt/tab or csv/,;)", file="")
       break;
     }
-    if(ncol(data_t)>1) #plusieurs colonnes
+    if(ncol(data_t)<3) #juste les ID
+    {
+        rownames(data_t) = data_t[,1] #ID = 1ere colonne
+    }         
+    if(ncol(data_t)>=3) #ID et une seule colonne
     {
         rownames(data_t) = data_t[,1] #ID = 1ere colonne
         data_t = data_t[,2:ncol(data_t)]
@@ -439,7 +444,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="")
   {
     listes = list.files(path = path_lists, full.names = TRUE)    
     data_t = test_list(liste=listes[1])
-    if(ncol(data_t)>1)  data_t = rownames(data_t)
+    if(ncol(data_t)>=1)  data_t = rownames(data_t)
     res = matrix(1, ncol=1, nrow=length(data_t))
     rownames(res) = data_t
     noms_listes = substr(basename(listes[1]), 0, (nchar(basename(listes[1]))-4))
@@ -464,9 +469,12 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="")
       rownames(temp_old) = rownames(res) 
       
       #completion de la matrice res
-      res = rbind(res, matrix(0, ncol=ncol(res), nrow=sum(temp_new)))
-      rownames(res)[(nrow(res)-sum(temp_new)+1):nrow(res)] = rownames(temp_new)[temp_new==1]
-      res = res[order(rownames(res)),]
+      if(sum(temp_new)!=0)
+      {
+        res = rbind(res, matrix(0, ncol=ncol(res), nrow=sum(temp_new)))
+        rownames(res)[(nrow(res)-sum(temp_new)+1):nrow(res)] = rownames(temp_new)[temp_new==1]
+        res = res[order(rownames(res)),]
+      }
       
       ajout = rbind(matrix(0, ncol=1, nrow=sum(temp_old)), matrix(1, ncol=1, nrow=length(data_t)))
       rownames(ajout) = c(rownames(temp_old)[temp_old==1], data_t)
@@ -712,4 +720,3 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="")
      }
   }
 }
-
