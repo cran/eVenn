@@ -1,18 +1,62 @@
 evenn <-
-function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="")
+function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", overlaps=FALSE, Tk=FALSE)
 {  
   write("\t#############################################################################", file="")
   write("\t#                                                                           #", file="")
-  write("\t#                                eVenn (v1.24.1)                            #", file="")
+  write("\t#                                eVenn (v1.30)                              #", file="")
   write("\t#                                                                           #", file="")
   write("\t#############################################################################\n", file="")
   write("\t[Run man() for quick help]\n", file="")
   
+  options(warn=-1)
+  if(Sys.info()["sysname"]!="Windows")  require(tcltk)
   
   ########################################################################################################
   ########################################################################################################
   #
   # Fonctions
+  
+  overlapp<-function(res, path)
+  {
+    write("Computing overlaps ", file="")
+    library(combinat)
+    
+    overlapp_table = matrix(1, ncol=(ncol(res)-1), nrow=(ncol(res)-1))
+    rownames(overlapp_table) = colnames(res)[1:(ncol(res)-1)]
+    colnames(overlapp_table) = colnames(res)[1:(ncol(res)-1)]
+    comps = combn(x=colnames(overlapp_table), 2)
+    
+    if((ncol(res)-1)>2)
+    {
+      for(K in 1:ncol(comps))
+      {
+         tmp = res[,c(comps[,K])] #extrait les deux colonnes en question
+         tmp = cbind(tmp, (tmp[,1] + tmp[,2]))
+         comm = nrow(tmp[tmp[,3]==2,])
+         if(!is.null(comm))
+         {
+            overlapp_table[comps[1,K],comps[2,K]] = comm / sum(tmp[,1])
+            overlapp_table[comps[2,K],comps[1,K]] = comm / sum(tmp[,2])
+         }else{
+            overlapp_table[comps[1,K],comps[2,K]] = 0
+            overlapp_table[comps[2,K],comps[1,K]] = 0
+         }
+         write(paste(K, " / ", ncol(comps), sep=""), file="")
+      }
+
+      #ajoute des nbres avant les noms
+      rownames(overlapp_table) = paste(seq(1, ncol(overlapp_table), by=1), colnames(overlapp_table))
+      colnames(overlapp_table) = seq(1, ncol(overlapp_table), by=1)
+      png(filename = paste(path, "/HeatOverlapp.png", sep=""), width=(1000+10*nrow(overlapp_table)), height=(500+5*nrow(overlapp_table)), units = "px", pointsize = 10, bg = "white", restoreConsole = TRUE)
+      heatmap(overlapp_table)
+      dev.off()
+    }else{
+       comm = nrow(res[res[,3]==2,])
+       overlapp_table[comps[1],comps[2]] = comm / sum(res[,1])
+       overlapp_table[comps[2],comps[1]] = comm / sum(res[,2])
+    }
+    write.csv2(overlapp_table, row.names = TRUE, file = paste(path, "/overlapp_table.csv", sep=""))
+  }
       
   compte<-function(x) #compte les types de profils up/down
   {
@@ -413,8 +457,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="")
   
   ########################################################################################################
   ########################################################################################################  
-  options(warn=-1)
- 
+
   if(path_res == "")
   {
     if(!file.exists(paste(getwd(), "/Venn.diagrams/", sep=""))) dir.create(paste(getwd(), "/Venn.diagrams/", sep=""))
@@ -426,12 +469,17 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="")
   write(paste("The results will be placed here: \n\t", path, sep=""), file="")
   
   os<-Sys.info()["sysname"]
-  if((path_lists == "")&(os!="Windows")&(!is.matrix(res)))
+  if((path_lists == "")&(os!="Windows")&(!is.matrix(res))& !Tk)
   {
      write(paste("You have to enter a path_lists" , sep=""), file="")
      break;
-  } 
-  if(!is.matrix(res))  if((path_lists == "")&(os=="Windows"))
+  }
+  if((path_lists == "")&(os!="Windows")&(!is.matrix(res))& Tk)
+  {
+     write(paste("You have to enter a path_lists" , sep=""), file="")
+     path_lists = tk_choose.dir()
+  }  
+  if(!is.matrix(res)&(path_lists == "")&(os=="Windows"))
   {
      write(paste("Choose the directory where are placed the lists" , sep=""), file="")
      path_lists = choose.dir()
@@ -442,7 +490,12 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="")
 
   if(!is.matrix(res))
   {
-    listes = list.files(path = path_lists, full.names = TRUE)    
+    listes = list.files(path = path_lists, full.names = TRUE)
+    if(is.null(length(listes)))
+    {
+      write("The directory is empty.", file="")
+      break    
+    }
     data_t = test_list(liste=listes[1])
     if(ncol(data_t)>=1)  data_t = rownames(data_t)
     res = matrix(1, ncol=1, nrow=length(data_t))
@@ -524,7 +577,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="")
              data_all = cbind(data_all, rbind(as.matrix(data_t[,"ratios"]), matrix(NA, ncol=1, nrow=nrow(data_all)-nrow(data_t))))
              colnames(data_all)[ncol(data_all)] = "ratios"
           }else{
-            print(paste("La liste ", basename(listes[M]), " ne comporte pas de colonne \"ratios\"", sep=""))
+            print(paste("\"ratios\" column not found in the ", basename(listes[M]), " file.", sep=""))
           }
         }
       }
@@ -719,4 +772,5 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="")
         graph_4ud(path, listeA, listeB, listeC, listeD, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, nAu, nAd, nBu, nBd, nCu, nCd, nDu, nDd, nABud, nACud, nBCud, nBDud, nCDud, nADud, nABCud, nBCDud, nABDud, nACDud, nABCDud, noms)
      }
   }
+  if(overlaps)  overlapp(res, path)
 }

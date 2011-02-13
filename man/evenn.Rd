@@ -4,10 +4,10 @@
 eVenn: A powerful to compare huge lists almost instantaneously and draw Venn diagrams.
 }
 \description{
-Compute a matrix combination of lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4). It is possible to produce a complete annotated file, merging the annotations of the compared lists.
+Compute a matrix comparison of lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4). It is possible to produce a complete annotated file, merging the annotations of the compared lists. It is also possible to compute an overlaps table to compute the overlaps proportions of all the couples of lists.
 }
 \usage{
-evenn(annot = FALSE, path_res = "", path_lists = "", res = "", ud = FALSE, noms="")
+evenn(annot = FALSE, path_res = "", path_lists = "", res = "", ud = FALSE, noms="", overlaps=FALSE, Tk=FALSE)
 }
 \arguments{
   \item{annot}{
@@ -27,6 +27,12 @@ If the details of up and down regulated genes should be shown. Then the source f
 }
   \item{noms}{
 Cutom short names for each list, used in the 4 lists venn with ud details.
+}
+  \item{overlaps}{
+Compute the overlaping proportions for each couple of lists in two ways (A in B and B in A). A heatmap is created if at least three lists are processed.
+}
+  \item{Tk}{
+Use the tcltk library to graphically choose the source folder (Source lists), only with Linux.
 }
 }
 \value{
