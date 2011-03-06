@@ -1,13 +1,18 @@
 evenn <-
-function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", overlaps=FALSE, Tk=FALSE)
+function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", overlaps=FALSE, f=0, Tk=FALSE)
 {  
-  write("\t#############################################################################", file="")
-  write("\t#                                                                           #", file="")
-  write("\t#                                eVenn (v1.30)                              #", file="")
-  write("\t#                                                                           #", file="")
-  write("\t#############################################################################\n", file="")
-  write("\t[Run man() for quick help]\n", file="")
+  write("        ,.-.,                                                                          ", file="")
+  write("      .`     `.                                                                        ", file="")
+  write("     /.-., ,.-.`            *       *                                 ****      ***    ", file="")
+  write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *     *  ", file="")
+  write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *    *     *  ", file="")
+  write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *     *     *  ", file="")
+  write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *       *     *  ", file="")
+  write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** *   ***    ", file="")
+  write("     `'-'` `'-'`                                                                       ", file="")
+  write("\n\t[Run man.evenn() for quick help]\n", file="")
   
+  flush.console()
   options(warn=-1)
   if(Sys.info()["sysname"]!="Windows")  require(tcltk)
   
@@ -16,15 +21,17 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
   #
   # Fonctions
   
-  overlapp<-function(res, path)
+  overlapp<-function(res, path, f)
   {
     write("Computing overlaps ", file="")
+    flush.console()
     library(combinat)
     
     overlapp_table = matrix(1, ncol=(ncol(res)-1), nrow=(ncol(res)-1))
     rownames(overlapp_table) = colnames(res)[1:(ncol(res)-1)]
     colnames(overlapp_table) = colnames(res)[1:(ncol(res)-1)]
     comps = combn(x=colnames(overlapp_table), 2)
+    overlapp_table_n = overlapp_table
     
     if((ncol(res)-1)>2)
     {
@@ -35,19 +42,26 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
          comm = nrow(tmp[tmp[,3]==2,])
          if(!is.null(comm))
          {
+            overlapp_table_n[comps[1,K],comps[2,K]] = comm
+            overlapp_table_n[comps[2,K],comps[1,K]] = comm
             overlapp_table[comps[1,K],comps[2,K]] = comm / sum(tmp[,1])
             overlapp_table[comps[2,K],comps[1,K]] = comm / sum(tmp[,2])
          }else{
+            overlapp_table_n[comps[1,K],comps[2,K]] = 0
+            overlapp_table_n[comps[2,K],comps[1,K]] = 0
             overlapp_table[comps[1,K],comps[2,K]] = 0
             overlapp_table[comps[2,K],comps[1,K]] = 0
          }
          write(paste(K, " / ", ncol(comps), sep=""), file="")
+         flush.console()
       }
 
       #ajoute des nbres avant les noms
       rownames(overlapp_table) = paste(seq(1, ncol(overlapp_table), by=1), colnames(overlapp_table))
       colnames(overlapp_table) = seq(1, ncol(overlapp_table), by=1)
-      png(filename = paste(path, "/HeatOverlapp.png", sep=""), width=(1000+10*nrow(overlapp_table)), height=(500+5*nrow(overlapp_table)), units = "px", pointsize = 10, bg = "white", restoreConsole = TRUE)
+      rownames(overlapp_table_n) = rownames(overlapp_table)
+      colnames(overlapp_table_n) = colnames(overlapp_table)
+      png(filename = paste(path, "/HeatOverlaps.png", sep=""), width=(1000+10*nrow(overlapp_table)), height=(500+5*nrow(overlapp_table)), units = "px", pointsize = 10, bg = "white", restoreConsole = TRUE)
       heatmap(overlapp_table)
       dev.off()
     }else{
@@ -55,7 +69,21 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
        overlapp_table[comps[1],comps[2]] = comm / sum(res[,1])
        overlapp_table[comps[2],comps[1]] = comm / sum(res[,2])
     }
-    write.csv2(overlapp_table, row.names = TRUE, file = paste(path, "/overlapp_table.csv", sep=""))
+    write.csv2(overlapp_table, row.names = TRUE, file = paste(path, "/overlaps_table.csv", sep=""))
+    write.csv2(overlapp_table_n, row.names = TRUE, file = paste(path, "/overlaps_table_n.csv", sep=""))
+    
+    # filtrage
+    if(f!=0)
+    {
+      overlapp_f = rep(0, ncol(overlapp_table))
+      names(overlapp_f) = rownames(overlapp_table)
+      for(L in 2:ncol(overlapp_table))
+      {
+         overlapp_f[names(overlapp_table[1:(L-1),L])[overlapp_table[1:(L-1),L]>=f]] = 1
+      }
+      overlapp_table_f = overlapp_table[overlapp_f==0,overlapp_f==0]
+      write.csv2(overlapp_table, row.names = TRUE, file = paste(path, "/overlaps_table_f(", f, ").csv", sep=""))
+    }
   }
       
   compte<-function(x) #compte les types de profils up/down
@@ -112,7 +140,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
   }
   
   #test des formats des listes
-  test_list<-function(liste)
+  test_list<-function(liste, ud, type)
   {
     ext = substr(basename(liste), (nchar(basename(liste))-2), nchar(basename(liste)))
     data_t=""
@@ -124,6 +152,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
     if((ext!="csv")&(ext!="txt")) 
     {
       write("The file format is not supported (must be txt/tab or csv/,;)", file="")
+      flush.console()
       break;
     }
     if(ncol(data_t)<3) #juste les ID
@@ -136,6 +165,18 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
         data_t = data_t[,2:ncol(data_t)]
     }
     data_t = as.matrix(data_t)
+    
+    if(ud & (type == "Res"))  
+    {
+      #test la presence de la colonne ratios
+      if(length(colnames(data_t)[colnames(data_t)=="ratios"])==0)  write(paste("\n\t !!!  The list ", substr(basename(liste), 0, (nchar(basename(liste))-4)), " do not have \"ratios\" column.\n\t !!! Its modulations will not be analyzed.\n", sep=""), file="")
+      #teste le type de data
+      if(length(colnames(data_t)[colnames(data_t)=="ratios"])!=0)
+      {
+         if(is.na(as.numeric(data_t[2,colnames(data_t)=="ratios"]))) write(paste("\n\t !!!  The \"ratios\" column of the ", substr(basename(liste), 0, (nchar(basename(liste))-4)), " list is not numeric.\n\t !!! Its modulations will not be analyzed.\n", sep=""), file="")
+      }
+      flush.console()
+    }
     return(data_t)
   }
   
@@ -146,15 +187,15 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
     pdf(file = paste(path, "/venn_diagram.pdf", sep=""))
     plot.window(c(0, 20), c(0, 15))
     plot(x=1:20, y=1:20,type="n", axes=FALSE, xlab="",ylab="")
-    symbols(8, 7.5, circle=(1*dd), add=TRUE, inches=TRUE, fg="blue")
-    symbols(12, 7.5, circle=(1*dd), add=TRUE, inches=TRUE, fg="red")
+    symbols(8, 7.5, circles=(1*dd), add=TRUE, inches=TRUE, fg="blue")
+    symbols(12, 7.5, circles=(1*dd), add=TRUE, inches=TRUE, fg="red")
     
     text(x=6.5, y=7.5, labels=nA, cex=t, col="black")
     text(x=13.5, y=7.5, labels=nB, cex=t, col="black")
     
     text(x=10, y=7.5, labels=nAB, cex=t, col="black")
     
-    text(x=3.5, y=11, labels=paste("Unics: ", tot_ugenes, sep=""), cex=(1.1*t), col="black")
+    text(x=3.5, y=11, labels=paste("Total unique genes: ", tot_ugenes, sep=""), cex=(1.1*t), col="black")
     
     #titres
     text(x=10, y=1, labels=listeA, cex=(1.1*t), col="blue")
@@ -169,8 +210,8 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
     pdf(file = paste(path, "/venn_diagram_ud.pdf", sep=""))
     plot.window(c(0, 20), c(0, 15))
     plot(x=1:20, y=1:20,type="n", axes=FALSE, xlab="",ylab="")
-    symbols(8, 7.5, circle=(1*dd), add=TRUE, inches=TRUE, fg="blue")
-    symbols(12, 7.5, circle=(1*dd), add=TRUE, inches=TRUE, fg="red")
+    symbols(8, 7.5, circles=(1*dd), add=TRUE, inches=TRUE, fg="blue")
+    symbols(12, 7.5, circles=(1*dd), add=TRUE, inches=TRUE, fg="red")
     
     text(x=6.5, y=8.5, labels=paste(nA, sep=""), cex=t*(1.2), col="blue")
     text(x=6.5, y=7.75, labels=paste("U:", nAu, sep=""), cex=t*(1.2), col="blue")
@@ -181,7 +222,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
                                 
     format_label(n=nAB, m=nABud, nom=paste(noms[1], noms[2], sep=","), x=10, y=8.5, t, type=2, noms)
     
-    text(x=3.5, y=11, labels=paste("Unics: ", tot_ugenes, sep=""), cex=(1.1*t), col="black")
+    text(x=3.5, y=11, labels=paste("Total unique genes: ", tot_ugenes, sep=""), cex=(1.1*t), col="black")
     
     #titres
     text(x=10, y=1, labels=listeA, cex=(1.1*t), col="blue")
@@ -197,9 +238,9 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
     plot.window(c(0, 20), c(0, 15))
     plot(x=1:20, y=1:20,type="n", axes=FALSE, xlab="",ylab="")
      
-    symbols(10, 13, circle=(1*dd), add=TRUE, inches=TRUE, fg="blue")
-    symbols(7.5, 8.5, circle=(1*dd), add=TRUE, inches=TRUE, fg="red")
-    symbols(12.5, 8.5, circle=(1*dd), add=TRUE, inches=TRUE, fg="green")
+    symbols(10, 13, circles=(1*dd), add=TRUE, inches=TRUE, fg="blue")
+    symbols(7.5, 8.5, circles=(1*dd), add=TRUE, inches=TRUE, fg="red")
+    symbols(12.5, 8.5, circles=(1*dd), add=TRUE, inches=TRUE, fg="green")
     
     text(x=10, y=14, labels=nA, cex=t, col="black")
     text(x=6.5, y=8, labels=nB, cex=t, col="black")
@@ -211,7 +252,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
     
     text(x=10, y=10, labels=nABC, cex=t, col="black")
     
-    text(x=2.5, y=14, labels=paste("Unics: ", tot_ugenes, sep=""), cex=(1.1*t), col="black")
+    text(x=2.5, y=14, labels=paste("Total unique genes: ", tot_ugenes, sep=""), cex=(1.1*t), col="black")
     
     #titres
     text(x=10, y=18, labels=listeA, cex=(1.1*t), col="blue")
@@ -227,9 +268,9 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
     pdf(file = paste(path, "/venn_diagram_ud.pdf", sep=""))    
     plot(x=1:20, y=1:20,type="n", axes=FALSE, xlab="",ylab="")
      
-    symbols(10, 12.5, circle=(1*dd), add=TRUE, inches=TRUE, fg="blue")
-    symbols(8, 8.5, circle=(1*dd), add=TRUE, inches=TRUE, fg="red")
-    symbols(12, 8.5, circle=(1*dd), add=TRUE, inches=TRUE, fg="green")
+    symbols(10, 12.5, circles=(1*dd), add=TRUE, inches=TRUE, fg="blue")
+    symbols(8, 8.5, circles=(1*dd), add=TRUE, inches=TRUE, fg="red")
+    symbols(12, 8.5, circles=(1*dd), add=TRUE, inches=TRUE, fg="green")
     
     text(x=10, y=14.5, labels=paste(nA), cex=t*(1.2), col="blue")
     text(x=10, y=14, labels=paste("U:", nAu), cex=t*(1.2), col="blue")
@@ -249,7 +290,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
   
     format_label(n=nABC, m=nABCud, nom=paste(noms[1], noms[2], noms[3], sep=","), x=10, y=11, t, type=3, noms)
     
-    text(x=2.5, y=14, labels=paste("Unics: ", tot_ugenes, sep=""), cex=(1.1*t), col="black")
+    text(x=2.5, y=14, labels=paste("Total unique genes: ", tot_ugenes, sep=""), cex=(1.1*t), col="black")
     
     #titres
     text(x=10, y=18, labels=listeA, cex=(1.1*t), col="blue")
@@ -293,9 +334,9 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
     text(x=8, y=7.5, labels=nABD, cex=t, col="black")
     text(x=12, y=7.5, labels=nACD, cex=t, col="black")
     
-    text(x=10, y=7.5, labels=nABCD, cex=(1.3*t), col="black")
+    text(x=10, y=7.5, labels=nABCD, cex=(1.3), col="black")
     
-    text(x=18.5, y=16, labels=paste("Unics: ", tot_ugenes, sep=""), cex=(1.3*t), col="black")
+    text(x=18.5, y=16, labels=paste("Total unique genes: ", tot_ugenes, sep=""), cex=(1.3), col="black")
     
     #titres
     text(x=12.5, y=24.5, labels=listeA, cex=(1.3*t), col="orange")
@@ -313,23 +354,23 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
     pdf(file = paste(path, "/venn_diagram_ud.pdf", sep=""), width=10, height=10)
     plot.window(c(0, 20), c(0, 20))
     plot(x=1:20, y=1:20,type="n", axes=FALSE, xlab="",ylab="")
-    symbols(8, 9.4, circle=(1*dd), add=TRUE, inches=TRUE, fg="blue")  #A
-    symbols(6.8, 8.4, circle=(1*dd), add=TRUE, inches=TRUE, fg="red") #B
-    symbols(9.2, 8.4, circle=(1*dd), add=TRUE, inches=TRUE, fg="green") #C
-    symbols(8, 7.4, circle=(1*dd), add=TRUE, inches=TRUE, fg="orange")  #D
+    symbols(8, 9.4, circles=(1*dd), add=TRUE, inches=TRUE, fg="blue")  #A
+    symbols(6.8, 8.4, circles=(1*dd), add=TRUE, inches=TRUE, fg="red") #B
+    symbols(9.2, 8.4, circles=(1*dd), add=TRUE, inches=TRUE, fg="green") #C
+    symbols(8, 7.4, circles=(1*dd), add=TRUE, inches=TRUE, fg="orange")  #D
 
     #AC
-    symbols(16.8, 15.6, circle=(0.3*dd), add=TRUE, inches=TRUE, fg="red")
-    symbols(17.6, 15.6, circle=(0.3*dd), add=TRUE, inches=TRUE, fg="green")
+    symbols(16.8, 15.6, circles=(0.3*dd), add=TRUE, inches=TRUE, fg="red")
+    symbols(17.6, 15.6, circles=(0.3*dd), add=TRUE, inches=TRUE, fg="green")
     #BD
-    symbols(18, 6.8, circle=(0.3*dd), add=TRUE, inches=TRUE, fg="blue")
-    symbols(18, 6, circle=(0.3*dd), add=TRUE, inches=TRUE, fg="orange")
+    symbols(18, 6.8, circles=(0.3*dd), add=TRUE, inches=TRUE, fg="blue")
+    symbols(18, 6, circles=(0.3*dd), add=TRUE, inches=TRUE, fg="orange")
 
     #ABCD
-    symbols(3, 18, circle=(0.3*dd), add=TRUE, inches=TRUE, fg="red")
-    symbols(3.4, 18, circle=(0.3*dd), add=TRUE, inches=TRUE, fg="green")
-    symbols(3.2, 18.2, circle=(0.3*dd), add=TRUE, inches=TRUE, fg="blue")
-    symbols(3.2, 17.8, circle=(0.3*dd), add=TRUE, inches=TRUE, fg="orange")
+    symbols(3, 18, circles=(0.3*dd), add=TRUE, inches=TRUE, fg="red")
+    symbols(3.4, 18, circles=(0.3*dd), add=TRUE, inches=TRUE, fg="green")
+    symbols(3.2, 18.2, circles=(0.3*dd), add=TRUE, inches=TRUE, fg="blue")
+    symbols(3.2, 17.8, circles=(0.3*dd), add=TRUE, inches=TRUE, fg="orange")
 
     #A
     text(x=8, y=11.4, labels=paste(noms[1], "\n", nA, sep=""), cex=t, col="blue")
@@ -444,7 +485,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
     text(x=pos, y=19.6, labels=paste(noms[4]), cex=t*1.2, col="orange")
     format_label(n=nABCD, m=nABCDud, nom=paste(noms[1], ",", noms[2], ",", noms[3], ",", noms[4], sep=""), x=2.8, y=19.6, t, type=4, noms)
 
-    text(x=4, y=14.4, labels=paste("Unics: ", tot_ugenes, sep=""), cex=(1.3*t), col="black")
+    text(x=4, y=14.4, labels=paste("Total unique genes: ", tot_ugenes, sep=""), cex=(1.3*t), col="black")
 
     #titres
     text(x=10, y=20.4, labels=paste(noms[1], ":", listeA, sep=""), cex=(1.3*t), col="blue")
@@ -463,10 +504,12 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
     if(!file.exists(paste(getwd(), "/Venn.diagrams/", sep=""))) dir.create(paste(getwd(), "/Venn.diagrams/", sep=""))
     path_res = paste(getwd(), "/Venn.diagrams/", sep="")
     write(paste("The results path have not been entered, the default results path is: \n\t", path_res, sep=""), file="")
+    flush.console()
   }
   path = paste(path_res, "/Venn_", format(Sys.time(), "(%H-%M-%S)_%a_%d_%b_%Y"), sep="")
   dir.create(path)
   write(paste("The results will be placed here: \n\t", path, sep=""), file="")
+  flush.console()
   
   os<-Sys.info()["sysname"]
   if((path_lists == "")&(os!="Windows")&(!is.matrix(res))& !Tk)
@@ -477,11 +520,13 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
   if((path_lists == "")&(os!="Windows")&(!is.matrix(res))& Tk)
   {
      write(paste("You have to enter a path_lists" , sep=""), file="")
+     flush.console()
      path_lists = tk_choose.dir()
   }  
   if(!is.matrix(res)&(path_lists == "")&(os=="Windows"))
   {
      write(paste("Choose the directory where are placed the lists" , sep=""), file="")
+     flush.console()
      path_lists = choose.dir()
   } 
   
@@ -496,7 +541,8 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
       write("The directory is empty.", file="")
       break    
     }
-    data_t = test_list(liste=listes[1])
+    data_t = test_list(liste=listes[1], ud, type="Res")
+   
     if(ncol(data_t)>=1)  data_t = rownames(data_t)
     res = matrix(1, ncol=1, nrow=length(data_t))
     rownames(res) = data_t
@@ -504,7 +550,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
     
     for(i in 2:length(listes))
     {   
-      data_t = test_list(listes[i])
+      data_t = test_list(listes[i], ud, type="Res")
       if(ncol(data_t)>1)  data_t = rownames(data_t)
     
       #id a ajouter a res ~ new sans les communs
@@ -549,7 +595,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
       for(M in 1:length(listes)) #liste par liste
       {
         #lecture du fichier
-        data_t = test_list(listes[M])
+        data_t = test_list(listes[M], ud, type="Annot")
         #ajoute une colonne vide entre les annots de chaque liste
         data_all = cbind(data_all, matrix("", ncol=1, nrow=nrow(data_all)))
         if(ncol(data_t)>1)
@@ -560,6 +606,39 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
           data_all = cbind(data_all, rbind(data_t, matrix("", ncol=ncol(data_t), nrow=nrow(data_all)-nrow(data_t))))
         }
       }
+      
+###########################################################################################################      
+      #ajoute une colonne de profil d'expression resume UD
+      concat<-function(x)
+      {
+         rescat = NULL
+         for(O in 1:length(x))
+         {
+            rescat = paste(rescat, x[O], sep="")
+         }
+         return(rescat)
+      }
+      
+      if(ud)
+      {
+        # 1- recupere les colonnes ratios => dans l'ordre
+        profils = data_all[,colnames(data_all) == "ratios"]
+        
+        # 2- codage des modulations
+        UDprofils = matrix("", ncol=ncol(profils), nrow=nrow(profils))
+        for(P in 1:ncol(profils))
+        {
+           UDprofils[as.numeric(profils[,P])<1, P] = "D"
+           UDprofils[as.numeric(profils[,P])>1, P] = "U"
+        }
+        UDprofils[UDprofils==""] = "n"
+        UDp = as.matrix(apply(UDprofils, 1, function(x) concat(x)))
+      }
+      # insertion de la colonne de profil dans la matrice d'annotations
+      data_all = cbind(data_all[,1:length(listes)], UDp, data_all[,(length(listes)+1):ncol(data_all)])
+      colnames(data_all)[length(listes)+1] = "Profils"
+###########################################################################################################
+      
       write.table(data_all, file = paste(path, "/venn_annot.txt", sep=""), sep="\t")
     }else{
       if(!annot&ud)
@@ -568,7 +647,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
         for(M in 1:length(listes)) #liste par liste
         {
           #lecture du fichier
-          data_t = test_list(listes[M])
+          data_t = test_list(listes[M], type="Annot")
           if(length(colnames(data_t)[colnames(data_t)=="ratios"])==1)
           {
              data_all = data_all[order(rownames(data_all)),]
@@ -772,5 +851,5 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
         graph_4ud(path, listeA, listeB, listeC, listeD, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, nAu, nAd, nBu, nBd, nCu, nCd, nDu, nDd, nABud, nACud, nBCud, nBDud, nCDud, nADud, nABCud, nBCDud, nABDud, nACDud, nABCDud, noms)
      }
   }
-  if(overlaps)  overlapp(res, path)
+  if(overlaps)  overlapp(res, path, f)
 }
