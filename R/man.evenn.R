@@ -1,10 +1,19 @@
-man <-
+man.evenn <-
 function()
 {
-  write("#####################", file="")
+  write("        ,.-.,                                                                   ", file="")
+  write("      .`     `.                                                                 ", file="")
+  write("     /.-., ,.-.`           *       *                              ***     ***   ", file="")
+  write("   .`    .`.    `.     **   *     *   **    ***   ***    *     * *   *   *   *  ", file="")
+  write("  / `.  /   `.  / `  *    *  *   *  *    * *   * *   *    *   *     *    *   *  ", file="")
+  write(" |    ',_____,'    | *****   *   *  *****  *   * *   *     * *     *     *   *  ", file="")
+  write(" `.     `   /     /  *        * *   *      *   * *   *     * *    *      *   *  ", file="")
+  write("   ',    '_'    ,'    ****     *     ****  *   * *   *      *    ***** *  ***   ", file="")
+  write("     `'-'` `'-'`                                                                ", file="")
+  write("\n#####################", file="")
   write("# eVenn Quick Start #", file="")
   write("#####################", file="")
-  write("- Prototype:\n\tevenn(annot=TRUE, ud=TRUE, noms=c(\"A\", \"B\", \"C\", \"D\"))", file="")
+  write("- Prototype:\n\tman.evenn(annot=TRUE, ud=TRUE, noms=c(\"A\", \"B\", \"C\", \"D\"), overlaps=FALSE, f=0, Tk=FALSE)", file="")
   write("\n- Venn diagram with up/down details and annotations:\n\tevenn(annot=TRUE, ud=TRUE)", file="")
   write("\n- Simple Venn diagram:\n\tevenn()\n", file="")
   write("- Venn diagram with custom short names of lists:\n\tevenn(noms=c(\"A\", \"B\", \"C\", \"D\"))\n", file="")
@@ -23,6 +32,7 @@ function()
   write("\t\t\tThen the source files must comport a \"ratios\" column.", file="")
   write("- overlaps [TRUE/FALSE]:\tCompute the overlaping proportions for each couple of lists in two ways (A in B and B in A).", file="")
   write("\t\t\tA heatmap is created if at least three lists are processed.", file="")
+  write("- f [0:1]:\tProduces a filtered matrix with overlaps proportions greater than f. Default f=0 is set to no filter..", file="")
   write("- Tk [TRUE/FALSE]:\tUse the tcltk library to graphically choose the source folder (Source lists), only with Linux.", file="")
 }
 

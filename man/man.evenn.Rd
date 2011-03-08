@@ -1,13 +1,13 @@
-\name{man}
-\alias{man}
+\name{man.evenn}
+\alias{man.evenn}
 \title{
-Man for eVenn.
+Quick manual for eVenn.
 }
 \description{
 Print a quick help and quick start informations.
 }
 \usage{
-man()
+man.evenn()
 }
 \references{
 \url{http://blog.mrbioinfo.com/}

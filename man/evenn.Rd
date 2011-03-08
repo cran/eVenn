@@ -1,13 +1,13 @@
 \name{evenn}
 \alias{evenn}
 \title{
-eVenn: A powerful to compare huge lists almost instantaneously and draw Venn diagrams.
+eVenn: A powerful to quickly compare huge lists and draw Venn diagrams.
 }
 \description{
 Compute a matrix comparison of lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4). It is possible to produce a complete annotated file, merging the annotations of the compared lists. It is also possible to compute an overlaps table to compute the overlaps proportions of all the couples of lists.
 }
 \usage{
-evenn(annot = FALSE, path_res = "", path_lists = "", res = "", ud = FALSE, noms="", overlaps=FALSE, Tk=FALSE)
+evenn(annot = FALSE, path_res = "", path_lists = "", res = "", ud = FALSE, noms="", overlaps=FALSE, f=0, Tk=FALSE)
 }
 \arguments{
   \item{annot}{
@@ -30,6 +30,9 @@ Cutom short names for each list, used in the 4 lists venn with ud details.
 }
   \item{overlaps}{
 Compute the overlaping proportions for each couple of lists in two ways (A in B and B in A). A heatmap is created if at least three lists are processed.
+}
+  \item{f}{
+Set a minimum overlap to produce a filtered overlaps matrix. Default f=0 is set to no filter.
 }
   \item{Tk}{
 Use the tcltk library to graphically choose the source folder (Source lists), only with Linux.
