@@ -222,7 +222,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
                                 
     format_label(n=nAB, m=nABud, nom=paste(noms[1], noms[2], sep=","), x=10, y=8.5, t, type=2, noms)
     
-    text(x=3.5, y=11, labels=paste("Total unique genes: ", tot_ugenes, sep=""), cex=(1.1*t), col="black")
+    text(x=3.5, y=11, labels=paste("Unics: ", tot_ugenes, sep=""), cex=(1.1*t), col="black")
     
     #titres
     text(x=10, y=1, labels=listeA, cex=(1.1*t), col="blue")
@@ -252,7 +252,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
     
     text(x=10, y=10, labels=nABC, cex=t, col="black")
     
-    text(x=2.5, y=14, labels=paste("Total unique genes: ", tot_ugenes, sep=""), cex=(1.1*t), col="black")
+    text(x=2.5, y=14, labels=paste("Unics: ", tot_ugenes, sep=""), cex=(1.1*t), col="black")
     
     #titres
     text(x=10, y=18, labels=listeA, cex=(1.1*t), col="blue")
@@ -290,7 +290,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
   
     format_label(n=nABC, m=nABCud, nom=paste(noms[1], noms[2], noms[3], sep=","), x=10, y=11, t, type=3, noms)
     
-    text(x=2.5, y=14, labels=paste("Total unique genes: ", tot_ugenes, sep=""), cex=(1.1*t), col="black")
+    text(x=2.5, y=14, labels=paste("Unics: ", tot_ugenes, sep=""), cex=(1.1*t), col="black")
     
     #titres
     text(x=10, y=18, labels=listeA, cex=(1.1*t), col="blue")
@@ -336,7 +336,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
     
     text(x=10, y=7.5, labels=nABCD, cex=(1.3), col="black")
     
-    text(x=18.5, y=16, labels=paste("Total unique genes: ", tot_ugenes, sep=""), cex=(1.3), col="black")
+    text(x=18.5, y=16, labels=paste("Unics: ", tot_ugenes, sep=""), cex=(1.3), col="black")
     
     #titres
     text(x=12.5, y=24.5, labels=listeA, cex=(1.3*t), col="orange")
@@ -485,7 +485,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
     text(x=pos, y=19.6, labels=paste(noms[4]), cex=t*1.2, col="orange")
     format_label(n=nABCD, m=nABCDud, nom=paste(noms[1], ",", noms[2], ",", noms[3], ",", noms[4], sep=""), x=2.8, y=19.6, t, type=4, noms)
 
-    text(x=4, y=14.4, labels=paste("Total unique genes: ", tot_ugenes, sep=""), cex=(1.3*t), col="black")
+    text(x=4, y=14.4, labels=paste("Unics: ", tot_ugenes, sep=""), cex=(1.3*t), col="black")
 
     #titres
     text(x=10, y=20.4, labels=paste(noms[1], ":", listeA, sep=""), cex=(1.3*t), col="blue")
@@ -606,8 +606,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
           data_all = cbind(data_all, rbind(data_t, matrix("", ncol=ncol(data_t), nrow=nrow(data_all)-nrow(data_t))))
         }
       }
-      
-###########################################################################################################      
+         
       #ajoute une colonne de profil d'expression resume UD
       concat<-function(x)
       {
@@ -633,12 +632,9 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, noms="", ove
         }
         UDprofils[UDprofils==""] = "n"
         UDp = as.matrix(apply(UDprofils, 1, function(x) concat(x)))
+        data_all = cbind(data_all[,1:length(listes)], UDp, data_all[,(length(listes)+1):ncol(data_all)]) 
+        colnames(data_all)[length(listes)+1] = "Profils"
       }
-      # insertion de la colonne de profil dans la matrice d'annotations
-      data_all = cbind(data_all[,1:length(listes)], UDp, data_all[,(length(listes)+1):ncol(data_all)])
-      colnames(data_all)[length(listes)+1] = "Profils"
-###########################################################################################################
-      
       write.table(data_all, file = paste(path, "/venn_annot.txt", sep=""), sep="\t")
     }else{
       if(!annot&ud)
