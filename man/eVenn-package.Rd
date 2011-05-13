@@ -6,13 +6,13 @@
 eVenn: A powerful tool to quickly compare huge lists by Venn diagrams.
 }
 \description{
-Compute a matrix comparison of lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4). It is possible to produce a complete annotated file, merging the annotations of the compared lists. It is also possible to compute an overlaps table to compute the overlaps proportions of all the couples of lists.
+Compute a matrix comparison of lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4). It is possible to produce a complete annotated file, merging the annotations from the compared lists. It is also possible to compute a table of overlaps proportions for all the couples of lists.
 }
 \details{
 \tabular{ll}{
 Package: \tab eVenn\cr
 Type: \tab Package\cr
-Version: \tab 2.0.1\cr
+Version: \tab 2.0.2\cr
 Date: \tab 2011-03-10\cr
 License: \tab GPL\cr
 LazyLoad: \tab yes\cr
@@ -20,7 +20,8 @@ LazyLoad: \tab yes\cr
 The lists to be compared must be alone in a folder (path_lists). The lists can be just identifiers lists or be lists of genes with annotation columns and data columns. The option "annot" (T/F) allow to produces a result "counts" file with a venn diagram matrix (0/1) and the corresponding annotations and data.
 The first column of the data files must be the unic identifiers, it is used by eVenn to detect common or specific genes.
 
-v2.0.1: Correct a bug of the UD profil oprion.
+v2.1: Add the Venn proportional option and correct reported bugs.
+v2.0.1: Correct a bug of the UD profil option.
 v2: Add the filtering of overlaps table option, a column of coded profile summary (U/N/D) in the venn_annot file and several test of entry data format.
 v1.30: Add the overlaps table computing function and tcltk usage option.
 v1.25: Graphical improvement and tclck usage option.

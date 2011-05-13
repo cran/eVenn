@@ -7,7 +7,7 @@ eVenn: A powerful to quickly compare huge lists and draw Venn diagrams.
 Compute a matrix comparison of lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4). It is possible to produce a complete annotated file, merging the annotations of the compared lists. It is also possible to compute an overlaps table to compute the overlaps proportions of all the couples of lists.
 }
 \usage{
-evenn(annot = FALSE, path_res = "", path_lists = "", res = "", ud = FALSE, noms="", overlaps=FALSE, f=0, Tk=FALSE)
+evenn(annot = FALSE, path_res = "", path_lists = "", res = "", ud = FALSE, prop=FALSE, noms="", overlaps=FALSE, f=0, Tk=FALSE, aa=FALSE)
 }
 \arguments{
   \item{annot}{
@@ -25,6 +25,9 @@ Binary matrix showing which identifier belong to which lists. Columns are compar
   \item{ud}{
 If the details of up and down regulated genes should be shown. Then the source files must comport a "ratios" column.
 }
+  \item{prop}{
+If the surfaces of the disks should be proportional to the size of the lists.
+}
   \item{noms}{
 Cutom short names for each list, used in the 4 lists venn with ud details.
 }
@@ -36,6 +39,9 @@ Set a minimum overlap to produce a filtered overlaps matrix. Default f=0 is set 
 }
   \item{Tk}{
 Use the tcltk library to graphically choose the source folder (Source lists), only with Linux.
+}
+  \item{aa}{
+Draw a title in ascii art.
 }
 }
 \value{
