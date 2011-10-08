@@ -12,14 +12,15 @@ Compute a matrix comparison of lists (from 2 to infinite) and plot the results i
 \tabular{ll}{
 Package: \tab eVenn\cr
 Type: \tab Package\cr
-Version: \tab 2.1.1\cr
-Date: \tab 2011-08-12\cr
+Version: \tab 2.1.2\cr
+Date: \tab 2011-10-08\cr
 License: \tab GPL\cr
 LazyLoad: \tab yes\cr
 }
 The lists to be compared must be alone in a folder (path_lists). The lists can be just identifiers lists or be lists of genes with annotation columns and data columns. The option "annot" (T/F) allow to produces a result "counts" file with a venn diagram matrix (0/1) and the corresponding annotations and data.
 The first column of the data files must be the unic identifiers, it is used by eVenn to detect common or specific genes.
 
+v2.1.2: Reported bugs corrections.
 v2.1.1: Graphical improvement.
 v2.1: Add the Venn proportional option and correct reported bugs.
 v2.0.1: Correct a bug of the UD profil option.

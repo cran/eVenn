@@ -4,18 +4,18 @@ evenn <-
 function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, noms="", overlaps=FALSE, f=0, Tk=FALSE, aa=FALSE)
 {  
   if(aa){
-  write("        ,.-.,                                                                                   ", file="")
-  write("      .`     `.                                                                                 ", file="")
-  write("     /.-., ,.-.`            *       *                                 ****      **       **     ", file="")
-  write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *  *      *  *    ", file="")
-  write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *       *         *    ", file="")
-  write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *        *         *    ", file="")
-  write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *          *         *    ", file="")
-  write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** * ******* * ******* ", file="")
-  write("     `'-'` `'-'`                                                                                ", file="")
+  write("        ,.-.,                                                                                    ", file="")
+  write("      .`     `.                                                                                  ", file="")
+  write("     /.-., ,.-.`            *       *                                 ****      **       ****    ", file="")
+  write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *  *      *    *   ", file="")
+  write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *       *          *    ", file="")
+  write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *        *         *     ", file="")
+  write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *          *       *       ", file="")
+  write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** * ******* * *******  ", file="")
+  write("     `'-'` `'-'`                                                                                 ", file="")
   write("\n\t[Run man.evenn() for quick help]\n", file="")
   }else{
-    write("\n\teVenn v2.1.1 (2011-08-12)\n", file="")
+    write("\n\teVenn v2.1.2 (2011-10-08)\n", file="")
     write("\t[Run man.evenn() for quick help]\n", file="")
   }
   flush.console()                                         
@@ -184,118 +184,96 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
     return(data_t)
   }
   
-  graph_2<-function(path, listeA, listeB, nA, nB, nAB, tot_ugenes, noms)
+  cercle<-function(x, y, rayon, int=NA, out, lty, lwd)
   {
-    library(plotrix)
+    xylim <- par("usr")
+    plotdim <- par("pin")
+    ymult <- (xylim[4] - xylim[3])/(xylim[2] - xylim[1]) * plotdim[1]/plotdim[2]
+    angle.inc <- 2 * pi/2000
+    angles <- seq(0, 2 * pi - angle.inc, by = angle.inc)
+  
+    for (I in 1:length(x))
+    {
+      dens = NULL
+      if(int[I]=="") dens=0
+      xv <- cos(angles) * rayon[I] + x[I]
+      yv <- sin(angles) * rayon[I] * ymult + y[I]
+      polygon(xv, yv, border = out[I], col=int[I], lty, lwd, density=dens)
+    }
+  }
+  
+  graph_2<-function(path, listeA, listeB, nA, nB, nAB, tot_ugenes, noms, ud, nAu="", nAd="", nBu="", nBd="", nABud="")
+  {
     dd=1; t=1.4
     png(filename = paste(path, "/venn_diagram.png", sep=""), width = 800*dd, height = 500*dd, pointsize = 15, bg = "white")
     plot.window(c(0, 25*dd), c(0, 20*dd))
     plot(x=1:(25*dd), y=1:(25*dd), type="n", axes=FALSE, xlab="",ylab="")
 
-    draw.circle(10*dd, 13*dd, 5*dd, border="blue",lty=1,lwd=1) # A
-    draw.circle(16*dd, 13*dd, 5*dd, border="red",lty=1,lwd=1) # B
+    xcercles = c(10*dd, 16*dd)
+    ycercles = c(13*dd, 13*dd)
+    rcercles = c(5*dd, 5*dd)
+    cercle(xcercles, ycercles, rcercles, out=c("blue", "red"), int=c("", ""), lty=1, lwd=1)
 
-    text(x=(8*dd), y=(13*dd), labels=nA, cex=t, col="blue")
-    text(x=(18*dd), y=(13*dd), labels=nB, cex=t, col="red")
-
-    text(x=(13*dd), y=(13*dd), labels=nAB, cex=t, col="black")
-
-    text(x=(2.5*dd), y=(15*dd), labels=paste("Total unique\ngenes: ", tot_ugenes, sep=""), cex=t, col="black")
-
+    if(ud)
+    {
+      text(x=(8*dd), y=(15*dd), labels=nA, cex=t, col="blue")
+      text(x=(8*dd), y=(13*dd), labels=paste("U:", nAu, sep=""), cex=t, col="blue")
+      text(x=(8*dd), y=(11*dd), labels=paste("D:", nAd, sep=""), cex=t, col="blue")
+      text(x=(18*dd), y=(15*dd), labels=nB, cex=t, col="red")
+      text(x=(18*dd), y=(13*dd), labels=paste("U:", nBu, sep=""), cex=t, col="red")
+      text(x=(18*dd), y=(11*dd), labels=paste("D:", nBd, sep=""), cex=t, col="red")
+  
+      format_label(n=nAB, m=nABud, nom=paste(noms[1], noms[2], sep=","), x=(13*dd), y=(14*dd), t, type=2, noms, dv=t)
+    }else{
+      text(x=(8*dd), y=(13*dd), labels=nA, cex=t, col="blue")
+      text(x=(18*dd), y=(13*dd), labels=nB, cex=t, col="red")
+      text(x=(13*dd), y=(13*dd), labels=nAB, cex=t, col="black")  
+      text(x=(2.5*dd), y=(15*dd), labels=paste("Total unique\ngenes: ", tot_ugenes, sep=""), cex=t, col="black")
+    }
     #titres
     text(x=(13*dd), y=(1*dd), labels=listeA, cex=t, col="blue")
     text(x=(13*dd), y=(25*dd), labels=listeB, cex=t, col="red")
     dev.off()
   }
   
-  graph_2ud<-function(path, listeA, listeB, nA, nB, nAB, tot_ugenes, nAu, nAd, nBu, nBd, nABud, noms)
+  graph_3<-function(path, listeA, listeB, listeC, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, ud, nAu="", nAd="", nBu="", nBd="", nCu="", nCd="", nABud="", nACud="", nBCud="", nABCud="")
   {
-    library(plotrix)
-    dd=1; t=1.4
-    png(filename = paste(path, "/venn_diagram.png", sep=""), width = 800*dd, height = 500*dd, pointsize = 15, bg = "white")
-    plot.window(c(0, 25*dd), c(0, 20*dd))
-    plot(x=1:(25*dd), y=1:(25*dd), type="n", axes=FALSE, xlab="",ylab="")
-
-    draw.circle(10*dd, 13*dd, 5*dd, border="blue",lty=1,lwd=1) # A
-    draw.circle(16*dd, 13*dd, 5*dd, border="red",lty=1,lwd=1) # B
-
-    text(x=(8*dd), y=(15*dd), labels=nA, cex=t, col="blue")
-    text(x=(8*dd), y=(13*dd), labels=paste("U:", nAu, sep=""), cex=t, col="blue")
-    text(x=(8*dd), y=(11*dd), labels=paste("D:", nAd, sep=""), cex=t, col="blue")
-    text(x=(18*dd), y=(15*dd), labels=nB, cex=t, col="red")
-    text(x=(18*dd), y=(13*dd), labels=paste("U:", nBu, sep=""), cex=t, col="red")
-    text(x=(18*dd), y=(11*dd), labels=paste("D:", nBd, sep=""), cex=t, col="red")
-
-    format_label(n=nAB, m=nABud, nom=paste(noms[1], noms[2], sep=","), x=(13*dd), y=(14*dd), t, type=2, noms, dv=t)
-    text(x=(2.5*dd), y=(15*dd), labels=paste("Total unique\ngenes: ", tot_ugenes, sep=""), cex=t, col="black")
-
-    #titres
-    text(x=(13*dd), y=(1*dd), labels=listeA, cex=t, col="blue")
-    text(x=(13*dd), y=(25*dd), labels=listeB, cex=t, col="red")
-    dev.off()
-  }
-  
-  graph_3<-function(path, listeA, listeB, listeC, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms)
-  {
-    library(plotrix)
-    dd=1; t=1.4
-    png(filename = paste(path, "/venn_diagram.png", sep=""), width = 800*dd, height = 800*dd, pointsize = 15, bg = "white")
-    plot.window(c(0, 25*dd), c(0, 25*dd))
-    plot(x=1:(25*dd), y=1:(25*dd), type="n", axes=FALSE, xlab="",ylab="")
-
-    draw.circle(12*dd, 13*dd, 6*dd, border="blue",lty=1,lwd=1) # A
-    draw.circle(9*dd, 7*dd, 6*dd, border="red",lty=1,lwd=1) # B
-    draw.circle(15*dd, 7*dd, 6*dd, border="green",lty=1,lwd=1) # C
-
-    text(x=(12*dd), y=(16*dd), labels=nA, cex=t, col="black")
-    text(x=(7*dd), y=(6*dd), labels=nB, cex=t, col="black")
-    text(x=(17*dd), y=(6*dd), labels=nC, cex=t, col="black")
-
-    text(x=(8.5*dd), y=(11*dd), labels=nAB, cex=t, col="black")
-    text(x=(15.5*dd), y=(11*dd), labels=nAC, cex=t, col="black")
-    text(x=(12*dd), y=(4*dd), labels=nBC, cex=t, col="black")
-
-    text(x=(12*dd), y=(9*dd), labels=nABC, cex=t, col="black")
-
-    text(x=(22*dd), y=(15*dd), labels=paste("Total unique\ngenes: ", tot_ugenes, sep=""), cex=t, col="black")
-
-    #titres
-    text(x=(12*dd), y=(23*dd), labels=listeA, cex=t, col="blue")
-    text(x=(12*dd), y=(22*dd), labels=listeB, cex=t, col="red")
-    text(x=(12*dd), y=(21*dd), labels=listeC, cex=t, col="green")
-    dev.off()
-  }
-  
-  graph_3ud<-function(path, listeA, listeB, listeC, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, nAu, nAd, nBu, nBd, nCu, nCd, nABud, nACud, nBCud, nABCud, noms)
-  {
-    library(plotrix)
     dd=1; t=1.2
     png(filename = paste(path, "/venn_diagram.png", sep=""), width = 800*dd, height = 800*dd, pointsize = 15, bg = "white")
     plot.window(c(0, 25*dd), c(0, 25*dd))
     plot(x=1:(25*dd), y=1:(25*dd), type="n", axes=FALSE, xlab="",ylab="")
 
-    draw.circle(12*dd, 13*dd, 6*dd, border="blue",lty=1,lwd=1) # A
-    draw.circle(9*dd, 7*dd, 6*dd, border="red",lty=1,lwd=1) # B
-    draw.circle(15*dd, 7*dd, 6*dd, border="green",lty=1,lwd=1) # C
+    xcercles = c(12*dd, 9*dd, 15*dd)
+    ycercles = c(13*dd, 7*dd, 7*dd)
+    rcercles = c(6*dd, 6*dd, 6*dd)
+    cercle(xcercles, ycercles, rcercles, out=c("blue", "red", "green"), int=c("", "", ""), lty=1, lwd=1)
 
-    text(x=(12*dd), y=(17*dd), labels=nA, cex=t, col="black")
-    text(x=(12*dd), y=(16*dd), labels=paste("U:", nAu), cex=t, col="blue")
-    text(x=(12*dd), y=(15*dd), labels=paste("D:", nAd), cex=t, col="blue")
-    
-    text(x=(7*dd), y=(7*dd), labels=nB, cex=t, col="black")
-    text(x=(7*dd), y=(6*dd), labels=paste("U:", nBu), cex=t, col="red")
-    text(x=(7*dd), y=(5*dd), labels=paste("D:", nBd), cex=t, col="red")
-    
-    text(x=(17*dd), y=(7*dd), labels=nC, cex=t, col="black")
-    text(x=(17*dd), y=(6*dd), labels=paste("U:", nCu), cex=t, col="green")
-    text(x=(17*dd), y=(5*dd), labels=paste("D:", nCd), cex=t, col="green")
-
-    format_label(n=nAB, m=nABud, nom=paste(noms[1], noms[2], sep=","), x=(8*dd), y=(13*dd), t, type=3, noms, dv=(t/2))
-    format_label(n=nAC, m=nACud, nom=paste(noms[1], noms[3], sep=","), x=(15.5*dd), y=(13*dd), t, type=3, noms, dv=(t/2))
-    format_label(n=nBC, m=nBCud, nom=paste(noms[2], noms[3], sep=","), x=(12*dd), y=(6*dd), t, type=3, noms, dv=(t/2))
-
-    format_label(n=nABC, m=nABCud, nom=paste(noms[1], noms[2], noms[3], sep=","), x=(12*dd), y=(12*dd), t, type=3, noms, dv=(t/2))
-
+    if(ud)
+    {
+      text(x=(12*dd), y=(17*dd), labels=nA, cex=t, col="black")
+      text(x=(12*dd), y=(16*dd), labels=paste("U:", nAu), cex=t, col="blue")
+      text(x=(12*dd), y=(15*dd), labels=paste("D:", nAd), cex=t, col="blue")      
+      text(x=(7*dd), y=(7*dd), labels=nB, cex=t, col="black")
+      text(x=(7*dd), y=(6*dd), labels=paste("U:", nBu), cex=t, col="red")
+      text(x=(7*dd), y=(5*dd), labels=paste("D:", nBd), cex=t, col="red")      
+      text(x=(17*dd), y=(7*dd), labels=nC, cex=t, col="black")
+      text(x=(17*dd), y=(6*dd), labels=paste("U:", nCu), cex=t, col="green")
+      text(x=(17*dd), y=(5*dd), labels=paste("D:", nCd), cex=t, col="green")
+      
+      format_label(n=nAB, m=nABud, nom=paste(noms[1], noms[2], sep=","), x=(8*dd), y=(13*dd), t, type=3, noms, dv=(t/2))
+      format_label(n=nAC, m=nACud, nom=paste(noms[1], noms[3], sep=","), x=(15.5*dd), y=(13*dd), t, type=3, noms, dv=(t/2))
+      format_label(n=nBC, m=nBCud, nom=paste(noms[2], noms[3], sep=","), x=(12*dd), y=(6*dd), t, type=3, noms, dv=(t/2))  
+      format_label(n=nABC, m=nABCud, nom=paste(noms[1], noms[2], noms[3], sep=","), x=(12*dd), y=(12*dd), t, type=3, noms, dv=(t/2))
+    }else{
+      text(x=(12*dd), y=(16*dd), labels=nA, cex=t, col="black")
+      text(x=(7*dd), y=(6*dd), labels=nB, cex=t, col="black")
+      text(x=(17*dd), y=(6*dd), labels=nC, cex=t, col="black")  
+      text(x=(8.5*dd), y=(11*dd), labels=nAB, cex=t, col="black")
+      text(x=(15.5*dd), y=(11*dd), labels=nAC, cex=t, col="black")
+      text(x=(12*dd), y=(4*dd), labels=nBC, cex=t, col="black")  
+      text(x=(12*dd), y=(9*dd), labels=nABC, cex=t, col="black")  
+      text(x=(22*dd), y=(15*dd), labels=paste("Total unique\ngenes: ", tot_ugenes, sep=""), cex=t, col="black")
+    }
     text(x=(22*dd), y=(15*dd), labels=paste("Total unique\ngenes: ", tot_ugenes, sep=""), cex=t, col="black")
 
     #titres
@@ -304,94 +282,54 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
     text(x=(12*dd), y=(21*dd), labels=listeC, cex=t, col="green")
     dev.off()
   }
-
-  graph_4<-function(path, listeA, listeB, listeC, listeD, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms)
-  {
-    library(plotrix)
-    dd=1.3; t=1.5
-    png(filename = paste(path, "/venn_diagram.png", sep=""), width = 800*dd, height = 800*dd, pointsize = 15, bg = "white")
-    plot.window(c(0, 25*dd), c(0, 25*dd))
-    plot(x=1:(25*dd), y=1:(25*dd), type="n", axes=FALSE, xlab="",ylab="")
-    draw.circle(9*dd, 12*dd, 5*dd, border="blue",lty=1,lwd=1) # A
-    draw.circle(6*dd, 9*dd, 5*dd, border="red",lty=1,lwd=1) # C
-    draw.circle(12*dd, 9*dd, 5*dd, border="green",lty=1,lwd=1)  # B
-    draw.circle(9*dd, 6*dd, 5*dd, border="orange",lty=1,lwd=1) # D
-
-    draw.circle(22*dd, 9.5*dd, 3*dd, border="blue",lty=1,lwd=1)
-    draw.circle(22*dd, 8.5*dd, 3*dd, border="orange",lty=1,lwd=1)
-
-    draw.circle(8.5*dd, 22*dd, 3*dd, border="red",lty=1,lwd=1)
-    draw.circle(9.5*dd, 22*dd, 3*dd, border="green",lty=1,lwd=1)
-
-    text(x=(9*dd), y=(16*dd), labels=nA, cex=t, col="blue")
-    text(x=(3*dd), y=(9*dd), labels=nB, cex=t, col="red")
-    text(x=(15*dd), y=(9*dd), labels=nC, cex=t, col="green")
-    text(x=(9*dd), y=(3*dd), labels=nD, cex=t, col="orange")
-
-    text(x=(6*dd), y=(12*dd), labels=nAB, cex=t, col="black")
-    text(x=(12*dd), y=(12*dd), labels=nAC, cex=t, col="black")
-    text(x=(6*dd), y=(6*dd), labels=nBD, cex=t, col="black")
-    text(x=(12*dd), y=(6*dd), labels=nCD, cex=t, col="black")
-
-    text(x=(22*dd), y=(9*dd), labels=nAD, cex=t, col="black")
-    text(x=(9*dd), y=(22*dd), labels=nBC, cex=t, col="black")
-    text(x=(9*dd), y=(12*dd), labels=nABC, cex=t, col="black")
-
-    text(x=(9*dd), y=(6*dd), labels=nBCD, cex=t, col="black")
-    text(x=(6.2*dd), y=(9*dd), labels=nABD, cex=t, col="black")
-    text(x=(11.8*dd), y=(9*dd), labels=nACD, cex=t, col="black")
-
-    text(x=(9*dd), y=(9*dd), labels=nABCD, cex=t, col="black")
-
-    text(x=(18*dd), y=(18*dd), labels=paste("Total unique\ngenes: ", tot_ugenes, sep=""), cex=t, col="black")
-
-    #titres
-    text(x=(18*dd), y=(24*dd), labels=listeA, cex=t, col="blue")
-    text(x=(18*dd), y=(23*dd), labels=listeB, cex=t, col="red")
-    text(x=(18*dd), y=(22*dd), labels=listeC, cex=t, col="green")
-    text(x=(18*dd), y=(21*dd), labels=listeD, cex=t, col="orange")
-
-    dev.off()
-  }
   
-  graph_4ud<-function(path, listeA, listeB, listeC, listeD, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, nAu, nAd, nBu, nBd, nCu, nCd, nDu, nDd, nABud, nACud, nBCud, nBDud, nCDud, nADud, nABCud, nBCDud, nABDud, nACDud, nABCDud, noms)
+  graph_4<-function(path, listeA, listeB, listeC, listeD, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, ud, nAu="", nAd="", nBu="", nBd="", nCu="", nCd="", nDu="", nDd="", nABud="", nACud="", nBCud="", nBDud="", nCDud="", nADud="", nABCud="", nBCDud="", nABDud="", nACDud="", nABCDud="")
   {
-    library(plotrix)
     dd=1.3; t=1.1
     png(filename = paste(path, "/venn_diagram.png", sep=""), width = 800*dd, height = 800*dd, pointsize = 15, bg = "white")
     plot.window(c(0, 25*dd), c(0, 25*dd))
     plot(x=1:(25*dd), y=1:(25*dd), type="n", axes=FALSE, xlab="",ylab="")
-    draw.circle(9*dd, 12*dd, 5*dd, border="blue",lty=1,lwd=1) # A
-    draw.circle(6*dd, 9*dd, 5*dd, border="red",lty=1,lwd=1) # C
-    draw.circle(12*dd, 9*dd, 5*dd, border="green",lty=1,lwd=1)  # B
-    draw.circle(9*dd, 6*dd, 5*dd, border="orange",lty=1,lwd=1) # D
+    
+    xcercles = c(9*dd, 12*dd, 6*dd, 9*dd, 22*dd, 22*dd, 8.5*dd, 9.5*dd)
+    ycercles = c(12*dd, 9*dd, 9*dd, 6*dd, 9.5*dd, 8.5*dd, 22*dd, 22*dd)
+    rcercles = c(5*dd, 5*dd, 5*dd, 5*dd, 3*dd, 3*dd, 3*dd, 3*dd)
+    cercle(xcercles, ycercles, rcercles, out=c("blue", "red", "green", "orange", "blue", "orange", "red", "green"), int=c("", "", "", "", "", "", "", ""), lty=1, lwd=1)
 
-    draw.circle(22*dd, 9.5*dd, 3*dd, border="blue",lty=1,lwd=1)
-    draw.circle(22*dd, 8.5*dd, 3*dd, border="orange",lty=1,lwd=1)
-
-    draw.circle(8.5*dd, 22*dd, 3*dd, border="red",lty=1,lwd=1)
-    draw.circle(9.5*dd, 22*dd, 3*dd, border="green",lty=1,lwd=1)
-
-    text(x=(9*dd), y=(15.5*dd), labels=paste(noms[1], "\n", "U:", nAu, "\nD:", nAd, sep=""), cex=t, col="blue")
-    text(x=(3*dd), y=(9*dd), labels=paste(noms[2], "\nU:", nBu, "\nD:", nBd, sep=""), cex=t, col="red")
-    text(x=(15*dd), y=(9*dd), labels=paste(noms[3], "\nU:", nCu, "\nD:", nCd, sep=""), cex=t, col="green")
-    text(x=(9*dd), y=(3*dd), labels=paste(noms[4], "\nU:", nDu, "\nD:", nDd, sep=""), cex=t, col="orange")
-
-    format_label(n=nAB, m=nABud, nom=paste(noms[1], ",", noms[2], sep=""), x=(6*dd), y=(14*dd), t, type=4, noms, dv=t/2)
-    format_label(n=nAC, m=nACud, nom=paste(noms[1], ",", noms[3], sep=""), x=(12*dd), y=(14*dd), t, type=4, noms, dv=t/2)
-    format_label(n=nBD, m=nBDud, nom=paste(noms[2], ",", noms[4], nBD, sep=""), x=(6*dd), y=(7*dd), t, type=4, noms, dv=t/2)
-    format_label(n=nCD, m=nCDud, nom=paste(noms[3], ",", noms[4], sep=""), x=(12*dd), y=(7*dd), t, type=4, noms, dv=t/2)
-
-    format_label(n=nAD, m=nADud, nom=paste(noms[1], ",", noms[4], sep=""), x=(22*dd), y=(10*dd), t, type=4, noms, dv=t/2)
-    format_label(n=nBC, m=nBCud, nom=paste(noms[2], ",", noms[3], sep=""), x=(9*dd), y=(23*dd), t, type=4, noms, dv=t/2)
-    format_label(n=nABC, m=nABCud, nom=paste(noms[1], ",", noms[2], ",", noms[3], sep=""), x=(9*dd), y=(13*dd), t, type=4, noms, dv=t/2)
-
-    format_label(n=nBCD, m=nBCDud, nom=paste(noms[2], ",", noms[3], ",", noms[4], sep=""), x=(9*dd), y=(6.5*dd), t, type=4, noms, dv=t/2)
-    format_label(n=nABD, m=nABDud, nom=paste(noms[1], ",", noms[2], ",", noms[4], sep=""), x=(6.2*dd), y=(10*dd), t, type=4, noms, dv=t/2)
-    format_label(n=nACD, m=nACDud, nom=paste(noms[1], ",", noms[3], ",", noms[4], sep=""), x=(11.8*dd), y=(10*dd), t, type=4, noms, dv=t/2)
-
-    format_label(n=nABCD, m=nABCDud, nom=paste(noms[1], ",", noms[2], ",", noms[3], ",", noms[4], sep=""), x=(9*dd), y=(11*dd), t, type=4, noms, dv=t/2)
-
+    if(ud)
+    {
+      text(x=(9*dd), y=(15.5*dd), labels=paste(noms[1], "\n", "U:", nAu, "\nD:", nAd, sep=""), cex=t, col="blue")
+      text(x=(3*dd), y=(9*dd), labels=paste(noms[2], "\nU:", nBu, "\nD:", nBd, sep=""), cex=t, col="red")
+      text(x=(15*dd), y=(9*dd), labels=paste(noms[3], "\nU:", nCu, "\nD:", nCd, sep=""), cex=t, col="green")
+      text(x=(9*dd), y=(3*dd), labels=paste(noms[4], "\nU:", nDu, "\nD:", nDd, sep=""), cex=t, col="orange")
+  
+      format_label(n=nAB, m=nABud, nom=paste(noms[1], ",", noms[2], sep=""), x=(6*dd), y=(14*dd), t, type=4, noms, dv=t/2)
+      format_label(n=nAC, m=nACud, nom=paste(noms[1], ",", noms[3], sep=""), x=(12*dd), y=(14*dd), t, type=4, noms, dv=t/2)
+      format_label(n=nBD, m=nBDud, nom=paste(noms[2], ",", noms[4], sep=""), x=(6*dd), y=(7*dd), t, type=4, noms, dv=t/2)
+      format_label(n=nCD, m=nCDud, nom=paste(noms[3], ",", noms[4], sep=""), x=(12*dd), y=(7*dd), t, type=4, noms, dv=t/2)
+      format_label(n=nAD, m=nADud, nom=paste(noms[1], ",", noms[4], sep=""), x=(22*dd), y=(10*dd), t, type=4, noms, dv=t/2)
+      format_label(n=nBC, m=nBCud, nom=paste(noms[2], ",", noms[3], sep=""), x=(9*dd), y=(23*dd), t, type=4, noms, dv=t/2)
+      format_label(n=nABC, m=nABCud, nom=paste(noms[1], ",", noms[2], ",", noms[3], sep=""), x=(9*dd), y=(13*dd), t, type=4, noms, dv=t/2)
+      format_label(n=nBCD, m=nBCDud, nom=paste(noms[2], ",", noms[3], ",", noms[4], sep=""), x=(9*dd), y=(6.5*dd), t, type=4, noms, dv=t/2)
+      format_label(n=nABD, m=nABDud, nom=paste(noms[1], ",", noms[2], ",", noms[4], sep=""), x=(6.2*dd), y=(10*dd), t, type=4, noms, dv=t/2)
+      format_label(n=nACD, m=nACDud, nom=paste(noms[1], ",", noms[3], ",", noms[4], sep=""), x=(11.8*dd), y=(10*dd), t, type=4, noms, dv=t/2)
+      format_label(n=nABCD, m=nABCDud, nom=paste(noms[1], ",", noms[2], ",", noms[3], ",", noms[4], sep=""), x=(9*dd), y=(11*dd), t, type=4, noms, dv=t/2)
+    }else{
+      text(x=(9*dd), y=(16*dd), labels=nA, cex=t, col="blue")
+      text(x=(3*dd), y=(9*dd), labels=nB, cex=t, col="red")
+      text(x=(15*dd), y=(9*dd), labels=nC, cex=t, col="green")
+      text(x=(9*dd), y=(3*dd), labels=nD, cex=t, col="orange")  
+      text(x=(6*dd), y=(12*dd), labels=nAB, cex=t, col="black")
+      text(x=(12*dd), y=(12*dd), labels=nAC, cex=t, col="black")
+      text(x=(6*dd), y=(6*dd), labels=nBD, cex=t, col="black")
+      text(x=(12*dd), y=(6*dd), labels=nCD, cex=t, col="black")  
+      text(x=(22*dd), y=(9*dd), labels=nAD, cex=t, col="black")
+      text(x=(9*dd), y=(22*dd), labels=nBC, cex=t, col="black")
+      text(x=(9*dd), y=(12*dd), labels=nABC, cex=t, col="black")  
+      text(x=(9*dd), y=(6*dd), labels=nBCD, cex=t, col="black")
+      text(x=(6.2*dd), y=(9*dd), labels=nABD, cex=t, col="black")
+      text(x=(11.8*dd), y=(9*dd), labels=nACD, cex=t, col="black")
+      text(x=(9*dd), y=(9*dd), labels=nABCD, cex=t, col="black")
+    }
     text(x=(18*dd), y=(18*dd), labels=paste("Total unique\ngenes: ", tot_ugenes, sep=""), cex=t, col="black")
 
     #titres
@@ -447,9 +385,13 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
     ymin = 0
     ymax = 2*max(rAtot, rBtot)
     
-    pdf(file = paste(path, "/venn_diagram_prop.pdf", sep=""), width=10*(xmax/50), height=6*(ymax/10))
-    plot.new()
-    plot.window(c(xmin, xmax), c(ymin, ymax), asp=1)
+    yCircles = 1.5*yCircles
+    ySpeCircles = 1.5*ySpeCircles
+    
+    dd=1; t=1.5
+    png(filename = paste(path, "/venn_diagram_prop.png", sep=""), width = 800*dd, height = 600*dd, pointsize = 15, bg = "white")
+    plot.window(c(0, (max(xmax, ymax)*1.1)*dd), c(0, (max(xmax, ymax)*1.1)*dd))
+    plot(x=1:((max(xmax, ymax)*1.1)*dd), y=1:((max(xmax, ymax)*1.1)*dd), type="n", axes=FALSE, xlab="",ylab="")
     segments(x0=c(xAtot, xBtot), 
              y0=c(yAtot, yBtot), 
              x1=c(xAB, xAB), 
@@ -458,9 +400,10 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
     symbols(x=xCircles, y=yCircles, circles=rCircles, main = "PropCircles", fg=colorCircles, bg="white", add=TRUE, inches=FALSE)
     symbols(x=xSpeCircles, y=ySpeCircles, circles=rSpeCircles, main = "PropCircles", fg=colorSpeCircles, bg=colorSpeCircles, add=TRUE, inches=FALSE)
     
-    taille=12
-    ex=2
+    cercle(xCircles, yCircles, rCircles, out=colorCircles, int=rep("", length(rCircles)),lty=1,lwd=1)
+    
     #titres
+    taille = 12
     text(x=xAtot, y=(yAtot-rAtot-0.2*taille), labels=paste(n[1]-nA), ps=taille, col="blue", font=1)
     text(x=xAtot, y=(yAtot-rAtot-0.1*taille), labels=paste(nA), ps=taille, col="blue", font=2)
     
@@ -470,8 +413,9 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
     text(x=xAB, y=yAB, labels=paste(nAB), ps=12, col="black", font=1)
     
     #titres
-    text(x=xAB, y=(ymax+0.2*taille), labels=colnames(res)[1], ps=(taille*ex), col="blue", font=2)
-    text(x=xAB, y=(ymax+0.1*taille), labels=colnames(res)[2], ps=(taille*ex), col="red", font=2)
+    ex=2
+    text(x=xAB, y=(yCircles+0.2*taille), labels=colnames(res)[1], ps=(taille*ex), col="blue", font=2)
+    text(x=xAB, y=(yCircles+0.1*taille), labels=colnames(res)[2], ps=(taille*ex), col="red", font=2)
     
     dev.off()
   }
@@ -663,15 +607,9 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
       yD = yDtot - (rDtot-rD)*sin(pi/4)
     
       xCircles = c(xAtot, xBtot, xCtot, xDtot, xAB, xAC, xAD, xBC, xBD, xCD, xABC, xABD, xACD, xBCD, xABCD, xA, xB, xC, xD)
-      #xSpeCircles = c(xA, xB, xC)
-      #yCircles = c(yAtot, yBtot, yCtot, yDtot)
       yCircles = c(yAtot, yBtot, yCtot, yDtot, yAB, yAC, yAD, yBC, yBD, yCD, yABC, yABD, yACD, yBCD, yABCD, yA, yB, yC, yD)
-      #ySpeCircles = c(yA, yB, yC)
-      #rCircles = c(rAtot, rBtot, rCtot, rDtot)
       rCircles = c(rAtot, rBtot, rCtot, rDtot, rAB, rAC, rAD, rBC, rBD, rCD, rABC, rABD, rACD, rBCD, rABCD, rA, rB, rC, rD)
-      #rSpeCircles = c(rA, rB, rC)
       colorCircles = c("blue", "red", "green", "orange", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black", "blue", "red", "green", "orange")
-      #colorSpeCircles = c("blue", "red", "green")
       data_graph=cbind(xCircles, yCircles, rCircles, colorCircles)
       colnames(data_graph) = c("xCircles", "yCircles", "rCircles", "colorCircles")
       rownames(data_graph) = c("Atot", "Btot", "Ctot", "Dtot", "AB", "AC", "AD", "BC", "BD", "CD", "ABC", "ABD", "ACD", "BCD", "ABCD", "A", "B", "C", "D")
@@ -802,7 +740,6 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
     
     dev.off()
   }
-
   
   ########################################################################################################
   ########################################################################################################  
@@ -951,7 +888,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
         for(M in 1:length(listes)) #liste par liste
         {
           #lecture du fichier
-          data_t = test_list(listes[M], type="Annot")
+          data_t = test_list(listes[M], ud, type="Annot")
           if(length(colnames(data_t)[colnames(data_t)=="ratios"])==1)
           {
              data_all = data_all[order(rownames(data_all)),]
@@ -999,10 +936,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
      
      listeA = colnames(res)[1]
      listeB = colnames(res)[2]
-     
-     graph_2(path, listeA, listeB, nA, nB, nAB, tot_ugenes, noms)
-     if(prop) graph_prop_2(path, res, nA, nB, nAB, tot_ugenes, noms)
-     
+
      if(ud)
      {
         nAud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,1]==1),4]
@@ -1015,8 +949,11 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
         nABud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,1]==1)&(data_r[,2]==1),4:5]
         nABud = compte(nABud)
         
-        graph_2ud(path, listeA, listeB, nA, nB, nAB, tot_ugenes, nAu, nAd, nBu, nBd, nABud, noms)
+        graph_2(path, listeA, listeB, nA, nB, nAB, tot_ugenes, noms, ud, nAu, nAd, nBu, nBd, nABud)
+     }else{
+        graph_2(path, listeA, listeB, nA, nB, nAB, tot_ugenes, noms, ud)
      }
+     if(prop) graph_prop_2(path, res, nA, nB, nAB, tot_ugenes, noms)
   }
   
   if((ncol(res)>=4)&(colnames(res)[4]=="Total_lists"))
@@ -1041,10 +978,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
      listeA = colnames(res)[1]
      listeB = colnames(res)[2]
      listeC = colnames(res)[3]
-     
-     graph_3(path, listeA, listeB, listeC, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms)
-     if(prop) graph_prop_3(path, res, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms)
-     
+
      if(ud)
      {
         nAud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,1]==1),5]
@@ -1067,8 +1001,11 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
         nABCud = data_r[data_r[,"Total_lists"]==3,5:7]
         nABCud = compte(nABCud)
         
-        graph_3ud(path, listeA, listeB, listeC, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, nAu, nAd, nBu, nBd, nCu, nCd, nABud, nACud, nBCud, nABCud, noms)
+        graph_3(path, listeA, listeB, listeC, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, ud, nAu, nAd, nBu, nBd, nCu, nCd, nABud, nACud, nBCud, nABCud)
+     }else{
+        graph_3(path, listeA, listeB, listeC, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, ud)
      }
+     if(prop) graph_prop_3(path, res, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms)
   }
   
   if((ncol(res)>=5)&(colnames(res)[5]=="Total_lists"))
@@ -1112,10 +1049,6 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
      listeC = colnames(res)[3]
      listeD = colnames(res)[4]
      
-     graph_4(path, listeA, listeB, listeC, listeD, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms)
-     
-     if(prop) graph_prop_4(path, res, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms)
-     
      if(ud)
      {
         nAud = as.numeric(data_r[(data_r[,"Total_lists"]==1)&(data_r[,1]==1),6])
@@ -1155,9 +1088,12 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
         
         nABCDud = data_r[data_r[,"Total_lists"]==4,6:9]
         nABCDud = compte(nABCDud)
-        
-        graph_4ud(path, listeA, listeB, listeC, listeD, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, nAu, nAd, nBu, nBd, nCu, nCd, nDu, nDd, nABud, nACud, nBCud, nBDud, nCDud, nADud, nABCud, nBCDud, nABDud, nACDud, nABCDud, noms)
+
+        graph_4(path, listeA, listeB, listeC, listeD, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, ud, nAu, nAd, nBu, nBd, nCu, nCd, nDu, nDd, nABud, nACud, nBCud, nBDud, nCDud, nADud, nABCud, nBCDud, nABDud, nACDud, nABCDud)
+     }else{
+        graph_4(path, listeA, listeB, listeC, listeD, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, ud)
      }
+     if(prop) graph_prop_4(path, res, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms)
   }
   if(overlaps)  overlapp(res, path, f)
 }
