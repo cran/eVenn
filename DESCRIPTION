@@ -1,9 +1,9 @@
 Package: eVenn
 Type: Package
 Title: eVenn: A powerful tool to compare lists and draw Venn diagrams.
-Version: 2.1.1
+Version: 2.1.2
 Depends: tcltk, combinat, plotrix
-Date: 2011-08-12
+Date: 2011-10-08
 Author: Nicolas Cagnard
 Maintainer: Nicolas Cagnard <nicolas.cagnard@gmail.com>
 Description: Compute a matrix comparison of lists (from 2 to infinite)
@@ -15,6 +15,6 @@ Description: Compute a matrix comparison of lists (from 2 to infinite)
         Venn diagrams.
 License: GPL
 LazyLoad: yes
-Packaged: 2011-08-12 07:51:42 UTC; Nico
+Packaged: 2011-10-08 11:36:13 UTC; Nico
 Repository: CRAN
-Date/Publication: 2011-08-12 14:30:47
+Date/Publication: 2011-10-08 16:17:40
