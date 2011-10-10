@@ -6,37 +6,51 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
   if(aa){
   write("        ,.-.,                                                                                    ", file="")
   write("      .`     `.                                                                                  ", file="")
-  write("     /.-., ,.-.`            *       *                                 ****      **       ****    ", file="")
-  write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *  *      *    *   ", file="")
-  write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *       *          *    ", file="")
-  write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *        *         *     ", file="")
-  write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *          *       *       ", file="")
-  write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** * ******* * *******  ", file="")
+  write("     /.-., ,.-.`            *       *                                 ****      **       *****   ", file="")
+  write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *  *      *     *  ", file="")
+  write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *       *           *   ", file="")
+  write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *        *           *   ", file="")
+  write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *          *      *     *  ", file="")
+  write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** * ******* *  *****   ", file="")
   write("     `'-'` `'-'`                                                                                 ", file="")
   write("\n\t[Run man.evenn() for quick help]\n", file="")
   }else{
-    write("\n\teVenn v2.1.2 (2011-10-08)\n", file="")
+    write("\n\teVenn v2.1.3 (2011-10-10)\n", file="")
     write("\t[Run man.evenn() for quick help]\n", file="")
   }
   flush.console()                                         
   options(warn=-1)
-  if(Sys.info()["sysname"]!="Windows")  require(tcltk)
+  if((Sys.info()["sysname"]!="Windows")&(path_lists==""))  require(tcltk)
   
   ########################################################################################################
   ########################################################################################################
   #
   # Fonctions
   
+  cmbn<-function(x, n)
+  {
+    res = matrix(0, ncol=0, nrow=n)
+    for(I in 1:(length(x)-1))
+    {
+      for(J in (I+1):length(x))
+      {
+         res = cbind(res, matrix(0, ncol=1, nrow=n))
+         res[1,ncol(res)] = x[I]
+         res[2,ncol(res)] = x[J]
+      }
+    }
+    return(res)
+  }
+  
   overlapp<-function(res, path, f)
   {
     write("Computing overlaps ", file="")
     flush.console()
-    library(combinat)
     
     overlapp_table = matrix(1, ncol=(ncol(res)-1), nrow=(ncol(res)-1))
     rownames(overlapp_table) = colnames(res)[1:(ncol(res)-1)]
     colnames(overlapp_table) = colnames(res)[1:(ncol(res)-1)]
-    comps = combn(x=colnames(overlapp_table), 2)
+    comps = cmbn(x=colnames(overlapp_table), 2)
     overlapp_table_n = overlapp_table
     
     if((ncol(res)-1)>2)
