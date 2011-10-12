@@ -12,8 +12,8 @@ Compute a matrix comparison of lists (from 2 to infinite) and plot the results i
 \tabular{ll}{
 Package: \tab eVenn\cr
 Type: \tab Package\cr
-Version: \tab 2.1.3\cr
-Date: \tab 2011-10-10\cr
+Version: \tab 2.1.4\cr
+Date: \tab 2011-10-121\cr
 License: \tab GPL\cr
 LazyLoad: \tab yes\cr
 }
