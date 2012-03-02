@@ -7,7 +7,7 @@ eVenn: A powerful to quickly compare huge lists and draw Venn diagrams.
 Compute a matrix comparison of lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4). It is possible to produce a complete annotated file, merging the annotations of the compared lists. It is also possible to compute an overlaps table to compute the overlaps proportions of all the couples of lists.
 }
 \usage{
-evenn(annot = FALSE, path_res = "", path_lists = "", res = "", ud = FALSE, prop=FALSE, noms="", overlaps=FALSE, f=0, aa=FALSE, couleurs="")
+evenn(annot = FALSE, path_res = "", path_lists = "", res = "", ud = FALSE, prop=FALSE, noms="", overlaps=FALSE, f=0, display=FALSE, couleurs="")
 }
 \arguments{
   \item{annot}{
@@ -37,7 +37,7 @@ Compute the overlaping proportions for each couple of lists in two ways (A in B 
   \item{f}{
 Set a minimum overlap to produce a filtered overlaps matrix. Default f=0 is set to no filter.
 }
-  \item{aa}{
+  \item{display}{
 Draw a title in ascii art.
 }
   \item{couleurs}{
