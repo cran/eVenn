@@ -1,24 +1,21 @@
-#annot=TRUE; path_res=""; path_lists=""; res=""; ud=TRUE; prop=FALSE; noms=""; overlaps=FALSE; f=0; aa=FALSE; couleurs=""
+#annot=TRUE; path_res=""; path_lists=""; res=""; ud=TRUE; prop=FALSE; noms=""; overlaps=FALSE; f=0; display=FALSE; couleurs=""
 
 evenn <-
-function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, noms="", overlaps=FALSE, f=0, aa=FALSE, couleurs="")
+function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, noms="", overlaps=FALSE, f=0, display=FALSE, couleurs="")
 {  
-  if(aa){
-  write("        ,.-.,                                                                                    ", file="")
-  write("      .`     `.                                                                                  ", file="")
-  write("     /.-., ,.-.`            *       *                                 ****      **           *   ", file="")
-  write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *  *         * *   ", file="")
-  write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *       *        *  *   ", file="")
-  write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *        *       *   *   ", file="")
-  write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *          *      *******  ", file="")
-  write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** * ******* *      *   ", file="")
-  write("     `'-'` `'-'`                                                                                 ", file="")
+  if(display){
+  write("        ,.-.,                                                                                   ", file="")
+  write("      .`     `.                                                                                 ", file="")
+  write("     /.-., ,.-.`            *       *                                 ****      **      ******  ", file="")
+  write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *  *      *       ", file="")
+  write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *       *      *****   ", file="")
+  write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *        *           *  ", file="")
+  write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *          *           *  ", file="")
+  write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** * ******* * *****   ", file="")
+  write("     `'-'` `'-'`                                                                                ", file="")
   write("\n\t[Run man.evenn() for quick help]\n", file="")
-  }else{
-    write("\n\teVenn v2.1.4 (2011-10-12)\n", file="")
-    write("\t[Run man.evenn() for quick help]\n", file="")
-  }
-  flush.console()                                         
+  flush.console()  
+  }                                       
   options(warn=-1)
   if((Sys.info()["sysname"]!="Windows")&(path_lists==""))  require(tcltk)
   
@@ -169,7 +166,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
     if((ext == "csv")&(class(data_t)=="try-error")) data_t = try(read.table(file=liste, header=TRUE, sep=";"), silent=TRUE)
     if((ext!="csv")&(ext!="txt")) 
     {
-      write("The file format is not supported (must be txt/tab or csv/,;)", file="")
+      if(display) write("The file format is not supported (must be txt/tab or csv/,;)", file="")
       flush.console()
       break;
     }
@@ -186,12 +183,12 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
     
     if(ud & (type == "Res"))  
     {
-      #test la presence de la colonne ratios
-      if(length(colnames(data_t)[colnames(data_t)=="ratios"])==0)  write(paste("\n\t !!!  The list ", substr(basename(liste), 0, (nchar(basename(liste))-4)), " do not have \"ratios\" column.\n\t !!! Its modulations will not be analyzed.\n", sep=""), file="")
-      #teste le type de data
-      if(length(colnames(data_t)[colnames(data_t)=="ratios"])!=0)
+      if(sum(grepl("ratio", colnames(data_t)))!=0)  # teste la presence de la col ratio et le type de data
       {
-         if(is.na(as.numeric(data_t[2,colnames(data_t)=="ratios"]))) write(paste("\n\t !!!  The \"ratios\" column of the ", substr(basename(liste), 0, (nchar(basename(liste))-4)), " list is not numeric.\n\t !!! Its modulations will not be analyzed.\n", sep=""), file="")
+         if(!is.null(dim(data_t[,grepl("ratio", colnames(data_t))]))) write(paste("\n\t !!!  The \"ratios\" column is not unic !.\n", sep=""), file="")
+         if(is.na(as.numeric(data_t[,grepl("ratio", colnames(data_t))]))) write(paste("\n\t !!!  The \"ratios\" column of the ", substr(basename(liste), 0, (nchar(basename(liste))-4)), " list is not numeric.\n\t !!! Its modulations will not be analyzed.\n", sep=""), file="")
+      }else{
+        write(paste("\n\t !!!  The list ", substr(basename(liste), 0, (nchar(basename(liste))-4)), " do not have \"ratios\" column.\n\t !!! Its modulations will not be analyzed.\n", sep=""), file="")
       }
       flush.console()
     }
@@ -767,8 +764,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
   }
   path = paste(path_res, "/Venn_", format(Sys.time(), "(%H-%M-%S)_%a_%d_%b_%Y"), sep="")
   dir.create(path)
-  write(paste("The results will be placed here: \n\t", path, sep=""), file="")
-  flush.console()
+  if(display) write(paste("The results will be placed here: \n\t", path, sep=""), file="")
   
   os<-Sys.info()["sysname"]
   if((path_lists == "")&(os!="Windows")&(!is.matrix(res)))
@@ -887,7 +883,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
       if(ud)
       {
         # 1- recupere les colonnes ratios => dans l'ordre
-        profils = data_all[,colnames(data_all) == "ratios"]
+        profils = data_all[,grepl("ratio", colnames(data_all))]
         
         # 2- codage des modulations
         UDprofils = matrix("", ncol=ncol(profils), nrow=nrow(profils))
@@ -910,13 +906,13 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
         {
           #lecture du fichier
           data_t = test_list(listes[M], ud, type="Annot")
-          if(length(colnames(data_t)[colnames(data_t)=="ratios"])==1)
+          if(sum(data_t[,grepl("ratio", colnames(data_t))])==1)
           {
              data_all = data_all[order(rownames(data_all)),]
              data_all = data_all[order(data_all[,M], decreasing = TRUE),]
              data_t = data_t[order(rownames(data_t)),]
-             data_all = cbind(data_all, rbind(as.matrix(data_t[,"ratios"]), matrix(NA, ncol=1, nrow=nrow(data_all)-nrow(data_t))))
-             colnames(data_all)[ncol(data_all)] = "ratios"
+             data_all = cbind(data_all, rbind(as.matrix(data_t[,grepl("ratio", colnames(data_t))]), matrix(NA, ncol=1, nrow=nrow(data_all)-nrow(data_t))))
+             #colnames(data_all)[ncol(data_all)] = "ratios"
           }else{
             print(paste("\"ratios\" column not found in the ", basename(listes[M]), " file.", sep=""))
           }
@@ -950,7 +946,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
     nliste = c[colnames(res)=="Total_lists"]-1
     data_all = data_all[order(rownames(data_all)),]
     res = res[order(rownames(res)),]
-    data_r = cbind(res[,1:(nliste+1)], data_all[,colnames(data_all)=="ratios"])
+    data_r = cbind(res[,1:(nliste+1)], data_all[,grepl("ratio", colnames(data_all))])
     data_rt = matrix(0, ncol=0, nrow=nrow(data_r))
     data_rt = cbind(data_rt, apply(data_r, 2, function(x) as.matrix(as.numeric(x))))
     colnames(data_rt) = colnames(data_r)
