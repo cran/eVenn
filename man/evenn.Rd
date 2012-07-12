@@ -7,11 +7,14 @@ eVenn: A powerful to quickly compare huge lists and draw Venn diagrams.
 Compute a matrix comparison of lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4). It is possible to produce a complete annotated file, merging the annotations of the compared lists. It is also possible to compute an overlaps table to compute the overlaps proportions of all the couples of lists.
 }
 \usage{
-evenn(annot = FALSE, path_res = "", path_lists = "", res = "", ud = FALSE, prop=FALSE, noms="", overlaps=FALSE, f=0, display=FALSE, couleurs="")
+evenn(annot = FALSE, matLists="", path_res = "", path_lists = "", res = "", ud = FALSE, prop=FALSE, noms="", overlaps=FALSE, f=0, display=FALSE, couleurs="", FilesOut=TRUE, CompName="")
 }
 \arguments{
   \item{annot}{
 If the lists to be compared are files with identifiers (used for comparisons) and data (annotations or whatever). The identifiers data (Gene name and extended name) must be the 2nd and 3rd columns.
+}
+  \item{matLists}{
+To use eVenn on matrix instead of text files. The "noms" variable must be used to give names to the compared matrix / lists
 }
   \item{path_res}{
 Path used to save the results. The working directory is used by default.
@@ -42,6 +45,12 @@ Draw a title in ascii art.
 }
   \item{couleurs}{
 Vector of custom colours to be used in the graphics. Default colours: c("blue", "red", "green", "orange")
+}
+  \item{FilesOut}{
+For use of eVenn without producing files but only return a results binary matrix. (results = evenn())
+}
+  \item{CompName}{
+Name of the folder results.
 }
 }
 \value{
