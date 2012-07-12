@@ -1,12 +1,12 @@
-ebd558bff36f7e8857de6be9af6b9776 *DESCRIPTION
+879e71ba0de10f13a7239c6c58352710 *DESCRIPTION
 f665ba15b5f3eac49dcf2dacb95cc807 *NAMESPACE
-66f52091f44fbada90e01f3ee7f3bdfb *R/evenn.R
-9371ec5eb8aec54003914e0dc1ab3821 *R/man.evenn.R
+c88cc60dc2cd8fae28d7b89b5344613f *R/evenn.r
+0a01598699ba45528572dbfd052b259a *R/man.evenn.R
 6f151e8a226832472f9ec92ba325ae1b *data/res2.rda
 2ec9761e2e1a69282af2ab2785a2c0fe *data/res3.rda
 e01a79f86aad5fa86bce87af0d71e876 *data/res4.rda
-fee921e515e17827ce74381fc723a819 *man/eVenn-package.Rd
-0fbf1fd103ae049cd40cbe0b008f1488 *man/evenn.Rd
+f6177aac0d7380e306e5744e0f361ec4 *man/eVenn-package.Rd
+bc37e5c23c49f80774eeb221ae005dee *man/evenn.Rd
 2a8d325390827b3c60543c62722e1b59 *man/man.evenn.Rd
 8b397fa8c61bc37feb4939388c96de27 *man/res2.Rd
 fc7997738edc303c80277b0f7b798aa7 *man/res3.Rd

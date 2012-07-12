@@ -1,18 +1,19 @@
-#annot=TRUE; path_res=""; path_lists=""; res=""; ud=TRUE; prop=FALSE; noms=""; overlaps=FALSE; f=0; display=FALSE; couleurs=""
+
+#annot=TRUE; matList=""; path_res=""; path_lists=""; res=""; ud=TRUE; prop=FALSE; noms=""; overlaps=FALSE; f=0; display=FALSE; couleurs=""; FilesOut=TRUE
 
 evenn <-
-function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, noms="", overlaps=FALSE, f=0, display=FALSE, couleurs="")
+function(annot=FALSE, matLists="", path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, noms="", overlaps=FALSE, f=0, display=FALSE, couleurs="", FilesOut=TRUE, CompName="")
 {  
-  if(display){
-  write("        ,.-.,                                                                                   ", file="")
-  write("      .`     `.                                                                                 ", file="")
-  write("     /.-., ,.-.`            *       *                                 ****      **      ******  ", file="")
-  write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *  *      *       ", file="")
-  write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *       *      *****   ", file="")
-  write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *        *           *  ", file="")
-  write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *          *           *  ", file="")
-  write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** * ******* * *****   ", file="")
-  write("     `'-'` `'-'`                                                                                ", file="")
+  if(display&FilesOut){
+  write("        ,.-.,                                                                                    ", file="")
+  write("      .`     `.                                                                                  ", file="")
+  write("     /.-., ,.-.`            *       *                                 ****      **       *****   ", file="")
+  write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *  *      *        ", file="")
+  write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *       *      ******   ", file="")
+  write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *        *      *     *  ", file="")
+  write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *          *      *     *  ", file="")
+  write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** * ******* *  *****   ", file="")
+  write("     `'-'` `'-'`                                                                                 ", file="")
   write("\n\t[Run man.evenn() for quick help]\n", file="")
   flush.console()  
   }                                       
@@ -155,20 +156,28 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
   }
   
   #test des formats des listes
-  test_list<-function(liste, ud, type)
+  test_list<-function(liste, ud, type, matLists, noms)
   {
-    ext = substr(basename(liste), (nchar(basename(liste))-2), nchar(basename(liste)))
-    data_t=""
-    if(exists("data_t"))  rm("data_t")
-    if(ext == "txt") data_t = read.table(file=liste, header=TRUE, sep="\t")
-    if(ext == "tsv") data_t = read.table(file=liste, header=TRUE, sep="\t")
-    if(ext == "csv") data_t = try(read.table(file=liste, header=TRUE, sep=","), silent=TRUE)
-    if((ext == "csv")&(class(data_t)=="try-error")) data_t = try(read.table(file=liste, header=TRUE, sep=";"), silent=TRUE)
-    if((ext!="csv")&(ext!="txt")) 
+    if(!is.list(matLists))
     {
-      if(display) write("The file format is not supported (must be txt/tab or csv/,;)", file="")
-      flush.console()
-      break;
+      ext = substr(basename(liste), (nchar(basename(liste))-2), nchar(basename(liste)))
+      nomListe = substr(basename(liste), 0, (nchar(basename(liste))-4))
+      data_t=""
+      if(exists("data_t"))  rm("data_t")
+      if(ext == "txt") data_t = read.table(file=liste, header=TRUE, sep="\t")
+      if(ext == "tsv") data_t = read.table(file=liste, header=TRUE, sep="\t")
+      if(ext == "csv") data_t = try(read.table(file=liste, header=TRUE, sep=","), silent=TRUE)
+      if((ext == "csv")&(class(data_t)=="try-error")) data_t = try(read.table(file=liste, header=TRUE, sep=";"), silent=TRUE)
+      if((ext!="csv")&(ext!="txt")) 
+      {
+        if(display) write("The file format is not supported (must be txt/tab or csv/,;)", file="")
+        flush.console()
+        break;
+      }
+    }else{
+      data_t = matLists[[seq(1, length(noms), by=1)[noms==liste]]]
+      colnames(data_t) = names(matLists[[seq(1, length(noms), by=1)[noms==liste]]])
+      nomListe = liste
     }
     if(ncol(data_t)<3) #juste les ID
     {
@@ -186,9 +195,9 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
       if(sum(grepl("ratio", colnames(data_t)))!=0)  # teste la presence de la col ratio et le type de data
       {
          if(!is.null(dim(data_t[,grepl("ratio", colnames(data_t))]))) write(paste("\n\t !!!  The \"ratios\" column is not unic !.\n", sep=""), file="")
-         if(is.na(as.numeric(data_t[,grepl("ratio", colnames(data_t))]))) write(paste("\n\t !!!  The \"ratios\" column of the ", substr(basename(liste), 0, (nchar(basename(liste))-4)), " list is not numeric.\n\t !!! Its modulations will not be analyzed.\n", sep=""), file="")
+         if(sum(is.na(as.numeric(data_t[,grepl("ratio", colnames(data_t))])))!=0) write(paste("\n\t !!!  The \"ratios\" column of the ", nomListe, " list is not numeric.\n\t !!! Its modulations will not be analyzed.\n", sep=""), file="")
       }else{
-        write(paste("\n\t !!!  The list ", substr(basename(liste), 0, (nchar(basename(liste))-4)), " do not have \"ratios\" column.\n\t !!! Its modulations will not be analyzed.\n", sep=""), file="")
+        write(paste("\n\t !!!  The list ", nomListe, " do not have \"ratios\" column.\n\t !!! Its modulations will not be analyzed.\n", sep=""), file="")
       }
       flush.console()
     }
@@ -239,7 +248,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
       text(x=(8*dd), y=(13*dd), labels=nA, cex=t, col=couleurs[1])
       text(x=(18*dd), y=(13*dd), labels=nB, cex=t, col=couleurs[2])
       text(x=(13*dd), y=(13*dd), labels=nAB, cex=t, col="black")  
-      text(x=(2.5*dd), y=(15*dd), labels=paste("Total unique\ngenes: ", tot_ugenes, sep=""), cex=t, col="black")
+      text(x=(2.5*dd), y=(15*dd), labels=paste("Total unic: ", tot_ugenes, sep=""), cex=t, col="black")
     }
     #titres
     text(x=(13*dd), y=(1*dd), labels=listeA, cex=t, col=couleurs[1])
@@ -283,9 +292,9 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
       text(x=(15.5*dd), y=(11*dd), labels=nAC, cex=t, col="black")
       text(x=(12*dd), y=(4*dd), labels=nBC, cex=t, col="black")  
       text(x=(12*dd), y=(9*dd), labels=nABC, cex=t, col="black")  
-      text(x=(22*dd), y=(15*dd), labels=paste("Total unique\ngenes: ", tot_ugenes, sep=""), cex=t, col="black")
+      text(x=(22*dd), y=(15*dd), labels=paste("Total number of", "unique identifiers: ", tot_ugenes, collapse="\n"), cex=t, col="black")
     }
-    text(x=(22*dd), y=(15*dd), labels=paste("Total unique\ngenes: ", tot_ugenes, sep=""), cex=t, col="black")
+    text(x=(22*dd), y=(15*dd), labels=paste("Total number of", "unique identifiers: ", tot_ugenes, collapse="\n"), cex=t, col="black")
 
     #titres
     text(x=(12*dd), y=(23*dd), labels=listeA, cex=t, col=couleurs[1])
@@ -308,10 +317,10 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
 
     if(ud)
     {
-      text(x=(9*dd), y=(15.5*dd), labels=paste(noms[1], "\n", "U:", nAu, "\nD:", nAd, sep=""), cex=t, col=couleurs[1])
-      text(x=(3*dd), y=(9*dd), labels=paste(noms[2], "\nU:", nBu, "\nD:", nBd, sep=""), cex=t, col=couleurs[2])
-      text(x=(15*dd), y=(9*dd), labels=paste(noms[3], "\nU:", nCu, "\nD:", nCd, sep=""), cex=t, col=couleurs[3])
-      text(x=(9*dd), y=(3*dd), labels=paste(noms[4], "\nU:", nDu, "\nD:", nDd, sep=""), cex=t, col=couleurs[4])
+      text(x=(9*dd), y=(15.5*dd), labels=paste(nA, "\n", "U:", nAu, "\nD:", nAd, sep=""), cex=t, col=couleurs[1])
+      text(x=(3*dd), y=(9*dd), labels=paste(nB, "\nU:", nBu, "\nD:", nBd, sep=""), cex=t, col=couleurs[2])
+      text(x=(15*dd), y=(9*dd), labels=paste(nC, "\nU:", nCu, "\nD:", nCd, sep=""), cex=t, col=couleurs[3])
+      text(x=(9*dd), y=(3*dd), labels=paste(nD, "\nU:", nDu, "\nD:", nDd, sep=""), cex=t, col=couleurs[4])
   
       format_label(n=nAB, m=nABud, nom=paste(noms[1], ",", noms[2], sep=""), x=(6*dd), y=(14*dd), t, type=4, noms, dv=t/2, couleurs)
       format_label(n=nAC, m=nACud, nom=paste(noms[1], ",", noms[3], sep=""), x=(12*dd), y=(14*dd), t, type=4, noms, dv=t/2, couleurs)
@@ -341,7 +350,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
       text(x=(11.8*dd), y=(9*dd), labels=nACD, cex=t, col="black")
       text(x=(9*dd), y=(9*dd), labels=nABCD, cex=t, col="black")
     }
-    text(x=(18*dd), y=(18*dd), labels=paste("Total unique\ngenes: ", tot_ugenes, sep=""), cex=t, col="black")
+    text(x=(18*dd), y=(18*dd), labels=paste("Total number of", "unique identifiers: ", tot_ugenes, collapse="\n"), cex=t, col="black")
 
     #titres
     text(x=(18*dd), y=(24*dd), labels=listeA, cex=t, col=couleurs[1])
@@ -534,7 +543,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
     text(x=xBC, y=yBC, labels=paste(nBC), ps=taille, col="black", font=1)
     text(x=xABC, y=yABC, labels=paste(nABC), ps=taille, col="black", font=1)
   
-    text(x=0.1, y=(yAB+yAtot)/2, labels=paste("Total unique \ngenes: ", tot_ugenes, sep=""), ps=(taille*ex), col="black", font=2)
+    text(x=0.1, y=(yAB+yAtot)/2, labels=paste("Total number of", "unique identifiers: ", tot_ugenes, collapse="\n"), ps=(taille*ex), col="black", font=2)
   
     #titres
     text(x=xAtot, y=ymax, labels=colnames(res)[1], ps=(taille*ex), col=couleurs[1], font=2)
@@ -742,7 +751,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
     text(x=xAll["Dtot",], y=(yAll["Dtot",]-rAll["Dtot",]-0.1*taille), labels=paste(n[4]-nD), ps=taille, col=couleurs[4], font=1)
     text(x=xAll["Dtot",], y=(yAll["Dtot",]-rAll["Dtot",]-0.25*taille), labels=paste(nD), ps=taille, col=couleurs[4], font=2)
     
-    text(x=(xmin+xAll["Atot",])/2, y=(yAll["Atot",]+yAll["AC",])/2, labels=paste("Total unique\ngenes: ", tot_ugenes, sep=""), ps=taille, col="black", font=2)
+    text(x=(xmin+xAll["Atot",])/2, y=(yAll["Atot",]+yAll["AC",])/2, labels=paste("Total number of", "unique identifiers: ", tot_ugenes, collapse="\n"), ps=taille, col="black", font=2)
     
     text(x=c(xAll["AB",], xAll["AC",], xAll["AD",], xAll["BC",], xAll["BD",], x=xAll["CD",],xAll["ABC",], xAll["ABD",],xAll["ACD",], xAll["BCD",],xAll["ABCD",]), 
       y=c(yAll["AB",], yAll["AC",],yAll["AD",], yAll["BC",], yAll["BD",], yAll["CD",], yAll["ABC",], yAll["ABD",], yAll["ACD",], yAll["BCD",], yAll["ABCD",]), 
@@ -752,47 +761,58 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
     dev.off()
   }
   
-  ########################################################################################################
-  ########################################################################################################  
-
-  if(path_res == "")
-  {
-    if(!file.exists(paste(getwd(), "/Venn.diagrams/", sep=""))) dir.create(paste(getwd(), "/Venn.diagrams/", sep=""))
-    path_res = paste(getwd(), "/Venn.diagrams/", sep="")
-    write(paste("The results path have not been entered, the default results path is: \n\t", path_res, sep=""), file="")
-    flush.console()
-  }
-  path = paste(path_res, "/Venn_", format(Sys.time(), "(%H-%M-%S)_%a_%d_%b_%Y"), sep="")
-  dir.create(path)
-  if(display) write(paste("The results will be placed here: \n\t", path, sep=""), file="")
+##################################################################################################################################################
+##################################################################################################################################################  
+##################################################################################################################################################
+##################################################################################################################################################
   
-  os<-Sys.info()["sysname"]
-  if((path_lists == "")&(os!="Windows")&(!is.matrix(res)))
+  if(FilesOut)
   {
-     write(paste("Choose the directory where are placed the lists" , sep=""), file="")
-     flush.console()
-     path_lists = tk_choose.dir()
-  }  
-  if(!is.matrix(res)&(path_lists == "")&(os=="Windows"))
-  {
-     write(paste("Choose the directory where are placed the lists" , sep=""), file="")
-     flush.console()
-     path_lists = choose.dir()
+    if(path_res == "")
+    {
+      if(!file.exists(paste(getwd(), "/Venn.diagrams/", sep=""))) dir.create(paste(getwd(), "/Venn.diagrams/", sep=""))
+      path_res = paste(getwd(), "/Venn.diagrams/", sep="")
+      write(paste("The results path have not been entered, the default results path is: \n\t", path_res, sep=""), file="")
+      flush.console()
+    }
+    if(CompName!="")  path = paste(path_res, "/Venn_", CompName, sep="")
+    if(CompName=="")  path = paste(path_res, "/Venn_", format(Sys.time(), "(%H-%M-%S)_%a_%d_%b_%Y"), sep="")
+    dir.create(path)
+    if(display) write(paste("The results will be placed here: \n\t", path, sep=""), file="")
   } 
+  
+  if(!is.list(matLists))
+  {  
+    os<-Sys.info()["sysname"]
+    if((path_lists == "")&(os!="Windows")&(!is.matrix(res)))
+    {
+       write(paste("Choose the directory where are placed the lists" , sep=""), file="")
+       flush.console()
+       path_lists = tk_choose.dir()
+    }  
+    if(!is.matrix(res)&(path_lists == "")&(os=="Windows"))
+    {
+       write(paste("Choose the directory where are placed the lists" , sep=""), file="")
+       flush.console()
+       path_lists = choose.dir()
+    } 
+  }else{
+     listes = matLists
+  }  
   
   if(!is.matrix(res))
   {
-    listes = list.files(path = path_lists, full.names = TRUE)
-    if(noms=="")  noms=c("A", "B", "C", "D")[1:length(listes)]
-    if((noms!="")&(length(noms)!=length(listes)))
+    if(!is.list(matLists))  listes = list.files(path = path_lists, full.names = TRUE)
+    if(length(noms)==1)  noms=c("A", "B", "C", "D")[1:length(listes)]
+    if((length(noms)>1)&(length(noms)!=length(listes)))
     {
        write(paste("Only ", length(noms), " names for ", length(listes), 
         " lists.\nThe default names ", c("A", "B", "C", "D")[1:length(listes)], " will be used.", sep=""), file="")
     }
-    noms = toupper(noms)
+    #noms = toupper(noms)
     
-    if(couleurs=="")  couleurs=c("blue", "red", "green", "orange")[1:length(listes)]  
-    if((couleurs!="")&(length(couleurs)!=length(listes)))
+    if(length(couleurs)==1)  couleurs=c("blue", "red", "green", "orange")[1:length(listes)]  
+    if((length(couleurs)>1)&(length(couleurs)!=length(listes)))
     {
        write(paste("Only ", length(couleurs), " colours for ", length(listes), 
         " lists.\nThe default colours ", c("blue", "red", "green", "orange")[1:length(listes)]  , " will be used.", sep=""), file="")
@@ -803,16 +823,19 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
       write("The directory is empty.", file="")
       break    
     }
-    data_t = test_list(liste=listes[1], ud, type="Res")
-   
+    if(!is.list(matLists)) data_t = test_list(liste=listes[1], ud, type="Res", matLists, noms)
+    if(is.list(matLists)) data_t = matLists[[1]]
+    
     if(ncol(data_t)>=1)  data_t = rownames(data_t)
     res = matrix(1, ncol=1, nrow=length(data_t))
     rownames(res) = data_t
-    noms_listes = paste(substr(basename(listes[1]), 0, (nchar(basename(listes[1]))-4)), "_(", length(data_t), ")", sep="")
+    if(!is.list(matLists)) noms_listes = paste(substr(basename(listes[1]), 0, (nchar(basename(listes[1]))-4)), "_(", length(data_t), ")", sep="")
+    if(is.list(matLists)) noms_listes = noms
     
     for(i in 2:length(listes))
     {   
-      data_t = test_list(listes[i], ud, type="Res")
+      if(!is.list(matLists)) data_t = test_list(liste=listes[i], ud, type="Res", matLists, noms)
+      if(is.list(matLists)) data_t = matLists[[i]]
       if(ncol(data_t)>1)  data_t = rownames(data_t)
     
       #id a ajouter a res ~ new sans les communs
@@ -841,7 +864,8 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
       rownames(ajout) = c(rownames(temp_old)[temp_old==1], data_t)
       ajout = ajout[order(rownames(ajout)),]
       
-      noms_listes = c(noms_listes, paste(substr(basename(listes[i]), 0, (nchar(basename(listes[i]))-4)), "_(", length(data_t), ")", sep=""))
+      if(!is.list(matLists)) noms_listes = c(noms_listes, paste(substr(basename(listes[i]), 0, (nchar(basename(listes[i]))-4)), "_(", length(data_t), ")", sep=""))
+      if(is.list(matLists)) noms_listes = noms
       res = cbind(res, as.matrix(ajout))  
     }
     colnames(res) = noms_listes
@@ -857,7 +881,8 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
       for(M in 1:length(listes)) #liste par liste
       {
         #lecture du fichier
-        data_t = test_list(listes[M], ud, type="Annot")
+        if(!is.list(matLists)) data_t = test_list(liste=listes[M], ud, type="Annot", matLists, noms)
+        if(is.list(matLists)) data_t = matLists[[M]]
         #ajoute une colonne vide entre les annots de chaque liste
         data_all = cbind(data_all, matrix("", ncol=1, nrow=nrow(data_all)))
         if(ncol(data_t)>1)
@@ -897,16 +922,18 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
         data_all = cbind(data_all[,1:length(listes)], UDp, data_all[,(length(listes)+1):ncol(data_all)]) 
         colnames(data_all)[length(listes)+1] = "Profils"
       }
-      write.table(data_all, file = paste(path, "/venn_annot.txt", sep=""), sep="\t")
+      if(FilesOut)  write.table(data_all, file = paste(path, "/venn_annot.txt", sep=""), sep="\t")
     }else{
+      if(FilesOut)  ud=FALSE  # si Files Out et Annot=FALSE, pas de ud (qui est essentielement une optio graphique)
       if(!annot&ud)
       {
         data_all = res
         for(M in 1:length(listes)) #liste par liste
         {
           #lecture du fichier
-          data_t = test_list(listes[M], ud, type="Annot")
-          if(sum(data_t[,grepl("ratio", colnames(data_t))])==1)
+          if(!is.list(matLists)) data_t = test_list(liste=listes[M], ud, type="Annot", matLists, noms)
+          if(is.list(matLists)) data_t = test_list(liste=noms[M], ud, type="Annot", matLists, noms)
+          if(sum(grepl("ratio", colnames(data_t)))==1)
           {
              data_all = data_all[order(rownames(data_all)),]
              data_all = data_all[order(data_all[,M], decreasing = TRUE),]
@@ -914,7 +941,8 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
              data_all = cbind(data_all, rbind(as.matrix(data_t[,grepl("ratio", colnames(data_t))]), matrix(NA, ncol=1, nrow=nrow(data_all)-nrow(data_t))))
              #colnames(data_all)[ncol(data_all)] = "ratios"
           }else{
-            print(paste("\"ratios\" column not found in the ", basename(listes[M]), " file.", sep=""))
+            if(!is.list(matLists)) print(paste("\"ratios\" column not found in the ", basename(listes[M]), " file.", sep=""))
+            if(is.list(matLists)) print(paste("\"ratios\" column not found in the ", noms[M], " file.", sep=""))
           }
         }
       }
@@ -936,7 +964,7 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
         " lists.\nThe default colours ", c("blue", "red", "green", "orange")[1:nlistes]  , " will be used.", sep=""), file="")
     }
   }
-  write.csv2(res, row.names = TRUE, file = paste(path, "/venn_matrix.csv", sep=""))
+  if(FilesOut)  write.csv2(res, row.names = TRUE, file = paste(path, "/venn_matrix.csv", sep=""))
   tot_ugenes = nrow(res)  #nbre de genes ou id uniques
    
   if(ud)  
@@ -955,176 +983,182 @@ function(annot=FALSE, path_res="", path_lists="", res="", ud=FALSE, prop=FALSE, 
   }
   
   #graphs
-  if(colnames(res)[3]=="Total_lists")
+  if(FilesOut)
   {
-     nA = nrow(res[(res[,"Total_lists"]==1)&(res[,1]==1),])
-     if(is.null(nA)) nA=1
-     nB = nrow(res[(res[,"Total_lists"]==1)&(res[,2]==1),])
-     if(is.null(nB)) nB=1
-     
-     nAB = nrow(res[(res[,"Total_lists"]==2)&(res[,1]==1)&(res[,2]==1),])
-     if(is.null(nAB)) nAB=1
-     
-     listeA = colnames(res)[1]
-     listeB = colnames(res)[2]
-
-     if(ud)
-     {
-        nAud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,1]==1),4]
-        nAu = length(nAud[nAud>=1])
-        nAd = length(nAud[nAud<1])
-        nBud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,2]==1),5]
-        nBu = length(nBud[nBud>=1])
-        nBd = length(nBud[nBud<1])
-        
-        nABud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,1]==1)&(data_r[,2]==1),4:5]
-        nABud = compte(nABud)
-        
-        graph_2(path, listeA, listeB, nA, nB, nAB, tot_ugenes, noms, ud, nAu, nAd, nBu, nBd, nABud, couleurs)
-     }else{
-        graph_2(path, listeA, listeB, nA, nB, nAB, tot_ugenes, noms, ud, couleurs=couleurs)
-     }
-     if(prop) graph_prop_2(path, res, nA, nB, nAB, tot_ugenes, noms, couleurs=couleurs)
-  }
+    if(colnames(res)[3]=="Total_lists")
+    {
+       nA = nrow(res[(res[,"Total_lists"]==1)&(res[,1]==1),])
+       if(is.null(nA)) nA=1
+       nB = nrow(res[(res[,"Total_lists"]==1)&(res[,2]==1),])
+       if(is.null(nB)) nB=1
+       
+       nAB = nrow(res[(res[,"Total_lists"]==2)&(res[,1]==1)&(res[,2]==1),])
+       if(is.null(nAB)) nAB=1
+       
+       listeA = colnames(res)[1]
+       listeB = colnames(res)[2]
   
-  if((ncol(res)>=4)&(colnames(res)[4]=="Total_lists"))
-  {
-     nA = nrow(res[(res[,"Total_lists"]==1)&(res[,1]==1),])
-     if(is.null(nA)) nA=1
-     nB = nrow(res[(res[,"Total_lists"]==1)&(res[,2]==1),])
-     if(is.null(nB)) nB=1
-     nC = nrow(res[(res[,"Total_lists"]==1)&(res[,3]==1),])
-     if(is.null(nC)) nnCA=1
-     
-     nAB = nrow(res[(res[,"Total_lists"]==2)&(res[,1]==1)&(res[,2]==1),])
-     if(is.null(nAB)) nAB=1
-     nAC = nrow(res[(res[,"Total_lists"]==2)&(res[,1]==1)&(res[,3]==1),])
-     if(is.null(nAC)) nAC=1
-     nBC = nrow(res[(res[,"Total_lists"]==2)&(res[,2]==1)&(res[,3]==1),])
-     if(is.null(nBC)) nBC=1
-     
-     nABC = nrow(res[res[,"Total_lists"]==3,])
-     if(is.null(nABC)) nABC=1
-     
-     listeA = colnames(res)[1]
-     listeB = colnames(res)[2]
-     listeC = colnames(res)[3]
-
-     if(ud)
-     {
-        nAud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,1]==1),5]
-        nAu = length(nAud[nAud>=1])
-        nAd = length(nAud[nAud<1])
-        nBud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,2]==1),6]
-        nBu = length(nBud[nBud>=1])
-        nBd = length(nBud[nBud<1])
-        nCud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,3]==1),7]
-        nCu = length(nCud[nCud>=1])
-        nCd = length(nCud[nCud<1])
-        
-        nABud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,1]==1)&(data_r[,2]==1),5:6]
-        nABud = compte(nABud)
-        nACud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,1]==1)&(data_r[,3]==1),c(5,7)]
-        nACud = compte(nACud)
-        nBCud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,2]==1)&(data_r[,3]==1),6:7]
-        nBCud = compte(nBCud)
-        
-        nABCud = data_r[data_r[,"Total_lists"]==3,5:7]
-        nABCud = compte(nABCud)
-        
-        graph_3(path, listeA, listeB, listeC, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, ud, nAu, nAd, nBu, nBd, nCu, nCd, nABud, nACud, nBCud, nABCud, couleurs)
-     }else{
-        graph_3(path, listeA, listeB, listeC, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, ud, couleurs=couleurs)
-     }
-     if(prop) graph_prop_3(path, res, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs=couleurs)
-  }
+       if(ud)
+       {
+          nAud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,1]==1),4]
+          nAu = length(nAud[nAud>=1])
+          nAd = length(nAud[nAud<1])
+          nBud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,2]==1),5]
+          nBu = length(nBud[nBud>=1])
+          nBd = length(nBud[nBud<1])
+          
+          nABud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,1]==1)&(data_r[,2]==1),4:5]
+          nABud = compte(nABud)
+          
+          graph_2(path, listeA, listeB, nA, nB, nAB, tot_ugenes, noms, ud, nAu, nAd, nBu, nBd, nABud, couleurs)
+       }else{
+          graph_2(path, listeA, listeB, nA, nB, nAB, tot_ugenes, noms, ud, couleurs=couleurs)
+       }
+       if(prop) graph_prop_2(path, res, nA, nB, nAB, tot_ugenes, noms, couleurs=couleurs)
+    }
+    
+    if((ncol(res)>=4)&(colnames(res)[4]=="Total_lists"))
+    {
+       nA = nrow(res[(res[,"Total_lists"]==1)&(res[,1]==1),])
+       if(is.null(nA)) nA=1
+       nB = nrow(res[(res[,"Total_lists"]==1)&(res[,2]==1),])
+       if(is.null(nB)) nB=1
+       nC = nrow(res[(res[,"Total_lists"]==1)&(res[,3]==1),])
+       if(is.null(nC)) nnCA=1
+       
+       nAB = nrow(res[(res[,"Total_lists"]==2)&(res[,1]==1)&(res[,2]==1),])
+       if(is.null(nAB)) nAB=1
+       nAC = nrow(res[(res[,"Total_lists"]==2)&(res[,1]==1)&(res[,3]==1),])
+       if(is.null(nAC)) nAC=1
+       nBC = nrow(res[(res[,"Total_lists"]==2)&(res[,2]==1)&(res[,3]==1),])
+       if(is.null(nBC)) nBC=1
+       
+       nABC = nrow(res[res[,"Total_lists"]==3,])
+       if(is.null(nABC)) nABC=1
+       
+       listeA = colnames(res)[1]
+       listeB = colnames(res)[2]
+       listeC = colnames(res)[3]
   
-  if((ncol(res)>=5)&(colnames(res)[5]=="Total_lists"))
-  {
-     nA = nrow(res[(res[,"Total_lists"]==1)&(res[,1]==1),])
-     if(is.null(nA)) nA=1
-     nB = nrow(res[(res[,"Total_lists"]==1)&(res[,2]==1),])
-     if(is.null(nB)) nB=1
-     nC = nrow(res[(res[,"Total_lists"]==1)&(res[,3]==1),])
-     if(is.null(nC)) nC=1
-     nD = nrow(res[(res[,"Total_lists"]==1)&(res[,4]==1),])
-     if(is.null(nD)) nD=1    
-     
-     nAB = nrow(res[(res[,"Total_lists"]==2)&(res[,1]==1)&(res[,2]==1),])
-     if(is.null(nAB)) nAB=1
-     nAC = nrow(res[(res[,"Total_lists"]==2)&(res[,1]==1)&(res[,3]==1),])
-     if(is.null(nAC)) nAC=1
-     nBD = nrow(res[(res[,"Total_lists"]==2)&(res[,2]==1)&(res[,4]==1),])
-     if(is.null(nBD)) nBD=1
-     nCD = nrow(res[(res[,"Total_lists"]==2)&(res[,3]==1)&(res[,4]==1),])
-     if(is.null(nCD)) nCD=1
-     nAD = nrow(res[(res[,"Total_lists"]==2)&(res[,1]==1)&(res[,4]==1),])
-     if(is.null(nAD)) nAD=1
-     nBC = nrow(res[(res[,"Total_lists"]==2)&(res[,2]==1)&(res[,3]==1),])
-     if(is.null(nBC)) nBC=1
-         
-     nABC = nrow(res[(res[,"Total_lists"]==3)&(res[,1]==1)&(res[,2]==1)&(res[,3]==1),])
-     if(is.null(nABC)) nABC=1
-     nBCD = nrow(res[(res[,"Total_lists"]==3)&(res[,2]==1)&(res[,3]==1)&(res[,4]==1),])
-     if(is.null(nBCD)) nBCD=1
-     nACD = nrow(res[(res[,"Total_lists"]==3)&(res[,1]==1)&(res[,3]==1)&(res[,4]==1),])
-     if(is.null(nACD)) nACD=1
-     nABD = nrow(res[(res[,"Total_lists"]==3)&(res[,1]==1)&(res[,2]==1)&(res[,4]==1),])
-     if(is.null(nABD)) nABD=1
-     
-     nABCD = nrow(res[res[,"Total_lists"]==4,])
-     if(is.null(nABCD)) nABCD=1
-     
-     listeA = colnames(res)[1]
-     listeB = colnames(res)[2]
-     listeC = colnames(res)[3]
-     listeD = colnames(res)[4]
-     
-     if(ud)
-     {
-        nAud = as.numeric(data_r[(data_r[,"Total_lists"]==1)&(data_r[,1]==1),6])
-        nAu = length(nAud[nAud>=1])
-        nAd = length(nAud[nAud<1])      
-        nBud = as.numeric(data_r[(data_r[,"Total_lists"]==1)&(data_r[,2]==1),7])
-        nBu = length(nBud[nBud>=1])
-        nBd = length(nBud[nBud<1])       
-        nCud = as.numeric(data_r[(data_r[,"Total_lists"]==1)&(data_r[,3]==1),8])
-        nCu = length(nCud[nCud>=1])
-        nCd = length(nCud[nCud<1])       
-        nDud = as.numeric(data_r[(data_r[,"Total_lists"]==1)&(data_r[,4]==1),9])
-        nDu = length(nDud[nDud>=1])
-        nDd = length(nDud[nDud<1])
-        
-        nABud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,1]==1)&(data_r[,2]==1),6:7]
-        nABud = compte(nABud)        
-        nACud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,1]==1)&(data_r[,3]==1),c(6,8)]
-        nACud = compte(nACud)   
-        nBCud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,2]==1)&(data_r[,3]==1),7:8]
-        nBCud = compte(nBCud)
-        nBDud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,2]==1)&(data_r[,4]==1),c(7,9)]
-        nBDud = compte(nBDud)
-        nCDud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,3]==1)&(data_r[,4]==1),8:9]
-        nCDud = compte(nCDud)
-        nADud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,1]==1)&(data_r[,4]==1),c(6,9)]
-        nADud = compte(nADud)   
-        
-        nABCud = data_r[(data_r[,"Total_lists"]==3)&(data_r[,1]==1)&(data_r[,2]==1)&(data_r[,3]==1),6:8]
-        nABCud = compte(nABCud)
-        nBCDud = data_r[(data_r[,"Total_lists"]==3)&(data_r[,2]==1)&(data_r[,3]==1)&(data_r[,4]==1),7:9]
-        nBCDud = compte(nBCDud)
-        nACDud = data_r[(data_r[,"Total_lists"]==3)&(data_r[,1]==1)&(data_r[,3]==1)&(data_r[,4]==1),c(6,8,9)]
-        nACDud = compte(nACDud)
-        nABDud = data_r[(data_r[,"Total_lists"]==3)&(data_r[,1]==1)&(data_r[,2]==1)&(data_r[,4]==1),c(6,7,9)]
-        nABDud = compte(nABDud)  
-        
-        nABCDud = data_r[data_r[,"Total_lists"]==4,6:9]
-        nABCDud = compte(nABCDud)
-
-        graph_4(path, listeA, listeB, listeC, listeD, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, ud, nAu, nAd, nBu, nBd, nCu, nCd, nDu, nDd, nABud, nACud, nBCud, nBDud, nCDud, nADud, nABCud, nBCDud, nABDud, nACDud, nABCDud, couleurs)
-     }else{
-        graph_4(path, listeA, listeB, listeC, listeD, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, ud, couleurs=couleurs)
-     }
-     if(prop) graph_prop_4(path, res, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs=couleurs)
+       if(ud)
+       {
+          nAud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,1]==1),5]
+          nAu = length(nAud[nAud>=1])
+          nAd = length(nAud[nAud<1])
+          nBud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,2]==1),6]
+          nBu = length(nBud[nBud>=1])
+          nBd = length(nBud[nBud<1])
+          nCud = data_r[(data_r[,"Total_lists"]==1)&(data_r[,3]==1),7]
+          nCu = length(nCud[nCud>=1])
+          nCd = length(nCud[nCud<1])
+          
+          nABud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,1]==1)&(data_r[,2]==1),5:6]
+          nABud = compte(nABud)
+          nACud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,1]==1)&(data_r[,3]==1),c(5,7)]
+          nACud = compte(nACud)
+          nBCud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,2]==1)&(data_r[,3]==1),6:7]
+          nBCud = compte(nBCud)
+          
+          nABCud = data_r[data_r[,"Total_lists"]==3,5:7]
+          nABCud = compte(nABCud)
+          
+          graph_3(path, listeA, listeB, listeC, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, ud, nAu, nAd, nBu, nBd, nCu, nCd, nABud, nACud, nBCud, nABCud, couleurs)
+       }else{
+          graph_3(path, listeA, listeB, listeC, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, ud, couleurs=couleurs)
+       }
+       if(prop) graph_prop_3(path, res, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs=couleurs)
+    }
+    
+    if((ncol(res)>=5)&(colnames(res)[5]=="Total_lists"))
+    {
+       nA = nrow(res[(res[,"Total_lists"]==1)&(res[,1]==1),])
+       if(is.null(nA)) nA=1
+       nB = nrow(res[(res[,"Total_lists"]==1)&(res[,2]==1),])
+       if(is.null(nB)) nB=1
+       nC = nrow(res[(res[,"Total_lists"]==1)&(res[,3]==1),])
+       if(is.null(nC)) nC=1
+       nD = nrow(res[(res[,"Total_lists"]==1)&(res[,4]==1),])
+       if(is.null(nD)) nD=1    
+       
+       nAB = nrow(res[(res[,"Total_lists"]==2)&(res[,1]==1)&(res[,2]==1),])
+       if(is.null(nAB)) nAB=1
+       nAC = nrow(res[(res[,"Total_lists"]==2)&(res[,1]==1)&(res[,3]==1),])
+       if(is.null(nAC)) nAC=1
+       nBD = nrow(res[(res[,"Total_lists"]==2)&(res[,2]==1)&(res[,4]==1),])
+       if(is.null(nBD)) nBD=1
+       nCD = nrow(res[(res[,"Total_lists"]==2)&(res[,3]==1)&(res[,4]==1),])
+       if(is.null(nCD)) nCD=1
+       nAD = nrow(res[(res[,"Total_lists"]==2)&(res[,1]==1)&(res[,4]==1),])
+       if(is.null(nAD)) nAD=1
+       nBC = nrow(res[(res[,"Total_lists"]==2)&(res[,2]==1)&(res[,3]==1),])
+       if(is.null(nBC)) nBC=1
+           
+       nABC = nrow(res[(res[,"Total_lists"]==3)&(res[,1]==1)&(res[,2]==1)&(res[,3]==1),])
+       if(is.null(nABC)) nABC=1
+       nBCD = nrow(res[(res[,"Total_lists"]==3)&(res[,2]==1)&(res[,3]==1)&(res[,4]==1),])
+       if(is.null(nBCD)) nBCD=1
+       nACD = nrow(res[(res[,"Total_lists"]==3)&(res[,1]==1)&(res[,3]==1)&(res[,4]==1),])
+       if(is.null(nACD)) nACD=1
+       nABD = nrow(res[(res[,"Total_lists"]==3)&(res[,1]==1)&(res[,2]==1)&(res[,4]==1),])
+       if(is.null(nABD)) nABD=1
+       
+       nABCD = nrow(res[res[,"Total_lists"]==4,])
+       if(is.null(nABCD)) nABCD=1
+       
+       listeA = colnames(res)[1]
+       listeB = colnames(res)[2]
+       listeC = colnames(res)[3]
+       listeD = colnames(res)[4]
+       
+       if(ud)
+       {
+          nAud = as.numeric(data_r[(data_r[,"Total_lists"]==1)&(data_r[,1]==1),6])
+          nAu = length(nAud[nAud>=1])
+          nAd = length(nAud[nAud<1])      
+          nBud = as.numeric(data_r[(data_r[,"Total_lists"]==1)&(data_r[,2]==1),7])
+          nBu = length(nBud[nBud>=1])
+          nBd = length(nBud[nBud<1])       
+          nCud = as.numeric(data_r[(data_r[,"Total_lists"]==1)&(data_r[,3]==1),8])
+          nCu = length(nCud[nCud>=1])
+          nCd = length(nCud[nCud<1])       
+          nDud = as.numeric(data_r[(data_r[,"Total_lists"]==1)&(data_r[,4]==1),9])
+          nDu = length(nDud[nDud>=1])
+          nDd = length(nDud[nDud<1])
+          
+          nABud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,1]==1)&(data_r[,2]==1),6:7]
+          nABud = compte(nABud)        
+          nACud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,1]==1)&(data_r[,3]==1),c(6,8)]
+          nACud = compte(nACud)   
+          nBCud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,2]==1)&(data_r[,3]==1),7:8]
+          nBCud = compte(nBCud)
+          nBDud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,2]==1)&(data_r[,4]==1),c(7,9)]
+          nBDud = compte(nBDud)
+          nCDud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,3]==1)&(data_r[,4]==1),8:9]
+          nCDud = compte(nCDud)
+          nADud = data_r[(data_r[,"Total_lists"]==2)&(data_r[,1]==1)&(data_r[,4]==1),c(6,9)]
+          nADud = compte(nADud)   
+          
+          nABCud = data_r[(data_r[,"Total_lists"]==3)&(data_r[,1]==1)&(data_r[,2]==1)&(data_r[,3]==1),6:8]
+          nABCud = compte(nABCud)
+          nBCDud = data_r[(data_r[,"Total_lists"]==3)&(data_r[,2]==1)&(data_r[,3]==1)&(data_r[,4]==1),7:9]
+          nBCDud = compte(nBCDud)
+          nACDud = data_r[(data_r[,"Total_lists"]==3)&(data_r[,1]==1)&(data_r[,3]==1)&(data_r[,4]==1),c(6,8,9)]
+          nACDud = compte(nACDud)
+          nABDud = data_r[(data_r[,"Total_lists"]==3)&(data_r[,1]==1)&(data_r[,2]==1)&(data_r[,4]==1),c(6,7,9)]
+          nABDud = compte(nABDud)  
+          
+          nABCDud = data_r[data_r[,"Total_lists"]==4,6:9]
+          nABCDud = compte(nABCDud)
+  
+          graph_4(path, listeA, listeB, listeC, listeD, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, ud, nAu, nAd, nBu, nBd, nCu, nCd, nDu, nDd, nABud, nACud, nBCud, nBDud, nCDud, nADud, nABCud, nBCDud, nABDud, nACDud, nABCDud, couleurs)
+       }else{
+          graph_4(path, listeA, listeB, listeC, listeD, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, ud, couleurs=couleurs)
+       }
+       if(prop) graph_prop_4(path, res, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs=couleurs)
+    }
+    if(overlaps)  overlapp(res, path, f)
+  }else{
+    if(!annot)  return(res)
+    if(annot)  return(data_all)
   }
-  if(overlaps)  overlapp(res, path, f)
 }
