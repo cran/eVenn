@@ -1,10 +1,10 @@
 \name{man.evenn}
 \alias{man.evenn}
 \title{
-Quick manual for eVenn.
+Quick manual for eVenn
 }
 \description{
-Print a quick help and quick start informations.
+Help for quick start informations.
 }
 \usage{
 man.evenn()
