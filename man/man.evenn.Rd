@@ -4,7 +4,7 @@
 Quick manual for eVenn
 }
 \description{
-Help for quick start informations.
+Informations for quick start.
 }
 \usage{
 man.evenn()

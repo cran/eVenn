@@ -6,14 +6,14 @@
 A Powerful Tool to Quickly Compare Huge Lists and Draw Venn Diagrams
 }
 \description{
-Compute a matrix comparison of lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4) or a bar chart. It is can to produce a complete annotated file, merging the annotations of the compared lists. It is can also to compute an overlaps table to compute the overlaps proportions of all the couples of lists.
+Compare lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4) with regulation details. It allows to produce a complete annotated file, merging the annotations of the compared lists. It is also possible to compute an overlaps table to show the overlaps proportions of all the couples of lists and draw proportional Venn diagrams.
 }
 \details{
 \tabular{ll}{
 Package: \tab eVenn\cr
 Type: \tab Package\cr
-Version: \tab 2.2\cr
-Date: \tab 2015-02-251\cr
+Version: \tab 2.2.1\cr
+Date: \tab 2015-08-04\cr
 License: \tab GPL\cr
 LazyLoad: \tab yes\cr
 }
@@ -26,7 +26,6 @@ Author & Maintainer: Nicolas Cagnard <nicolas.cagnard@gmail.com>
 }
 \keyword{ package }
 \examples{
-library(eVenn)
 library(eVenn)
 YNdisplay = TRUE	# Allows commentaries and display of the main steps of the process
 

@@ -4,12 +4,13 @@
 A Powerful Tool to Quickly Compare Huge Lists and Draw Venn Diagrams
 }
 \description{
-Compute a matrix comparison of lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4) or a bar chart. It is can to produce a complete annotated file, merging the annotations of the compared lists. It is can also to compute an overlaps table to compute the overlaps proportions of all the couples of lists.
+Compare lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4) with regulation details. It allows to produce a complete annotated file, merging the annotations of the compared lists. It is also possible to compute an overlaps table to show the overlaps proportions of all the couples of lists and draw proportional Venn diagrams.
 }
 \usage{
-evenn(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, prop=FALSE, noms="",
-	overlaps=FALSE, f=0, display=FALSE, couleurs="", VennBar=FALSE, CompName="",
-	transp=0.5, Solid=TRUE, Profils=FALSE, OnlyVariable=FALSE, colBlack=FALSE)
+evenn(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, prop=FALSE, 
+	 noms="", overlaps=FALSE, f=0, display=FALSE, couleurs="", VennBar=FALSE, 
+	 CompName="", transp=0.5, Solid=TRUE, Profils=FALSE, OnlyVariable=FALSE,
+	 colBlack=FALSE, Ptest=FALSE)
 }
 \arguments{
   \item{annot}{
@@ -66,10 +67,13 @@ evenn expect a variable in (matList) and produce a binary matrix. (=> BinaryMatr
   \item{colBlack}{
 No color, only Black on a white background.
 }
+  \item{Ptest}{
+Proportional test (Fisher's exact) of the non null areas.
+}
 }
 \value{
 All the results are saved in a folder names with date and hour.
-The comparison binary matrix is saved as a csv file "venn_matrix.csv".
+The comparison binary matrix is saved as a tabulated text file "venn_matrix.txt".
 If annot is True, the resulting file (same as venn matrix with annotation given by the source lists) is saved as a text file "venn_annot.txt".
 The venn diagram is saved in a png file "venn_diagram.png".
 }

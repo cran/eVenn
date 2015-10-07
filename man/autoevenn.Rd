@@ -8,7 +8,7 @@ This function creates a list of folders where are placed sources files for venn 
 }
 \usage{
 autoevenn(FolderPath = "", annot = TRUE, ud = TRUE, VennBar = FALSE, Solid = TRUE,
-Profils = TRUE, prop = FALSE, display = FALSE)
+Profils = TRUE, prop = FALSE, display = FALSE, Ptest=FALSE)
 }
 \arguments{
   \item{FolderPath}{
@@ -34,6 +34,9 @@ If the surfaces of the disks should be proportional to the size of the lists.
 }
   \item{display}{
 Print commentaries during the process.
+}
+  \item{Ptest}{
+Proportional test (Fisher's exact) of the non null areas.
 }
 }
 \references{

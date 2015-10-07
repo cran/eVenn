@@ -1,3 +1,5 @@
-import(tcltk)
-
 export(evenn, autoevenn, man.evenn)
+import(grDevices)
+import(graphics)
+import(stats)
+import(utils)
