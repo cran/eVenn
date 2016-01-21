@@ -7,10 +7,11 @@ A Powerful Tool to Quickly Compare Huge Lists and Draw Venn Diagrams
 Compare lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4) with regulation details. It allows to produce a complete annotated file, merging the annotations of the compared lists. It is also possible to compute an overlaps table to show the overlaps proportions of all the couples of lists and draw proportional Venn diagrams.
 }
 \usage{
-evenn(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, prop=FALSE, 
-	 noms="", overlaps=FALSE, f=0, display=FALSE, couleurs="", VennBar=FALSE, 
-	 CompName="", transp=0.5, Solid=TRUE, Profils=FALSE, OnlyVariable=FALSE,
-	 colBlack=FALSE, Ptest=FALSE)
+evenn(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE,
+	 prop=FALSE, noms="", overlaps=FALSE, f=0, display=FALSE, couleurs="",
+	 VennBar=FALSE, CompName="", transp=0.5, Solid=TRUE, Profils=FALSE,
+	 OnlyVariable=FALSE, colBlack=FALSE, ColorTxt="", Ptest=FALSE, tUD=NULL,
+	 tUDp=NULL, tnoUD=NULL, Gtype="png")
 }
 \arguments{
   \item{annot}{
@@ -67,8 +68,23 @@ evenn expect a variable in (matList) and produce a binary matrix. (=> BinaryMatr
   \item{colBlack}{
 No color, only Black on a white background.
 }
+  \item{ColorTxt}{
+Custom color of the counts.
+}
   \item{Ptest}{
 Proportional test (Fisher's exact) of the non null areas.
+}
+  \item{tnoUD}{
+Font size of the total count of a zone.
+}
+  \item{tUDp}{
+Font size of the count and profile names of common zones.
+}
+  \item{tUD}{
+Font size of the count and profile names of specific zones.
+}
+  \item{Gtype}{
+File format of the graphic (png or svg).
 }
 }
 \value{
@@ -85,7 +101,14 @@ Author & Maintainer: Nicolas Cagnard <nicolas.cagnard@gmail.com>
 }
 \examples{
 library(eVenn)
-YNdisplay = TRUE	# Allows commentaries and display of the main steps of the process
+
+#	Text tabulated files placed in a specific folder
+#	evenn(pathLists="./SpecificFolder", ud=TRUE, annot=TRUE)
+
+#	Text tabulated files placed in multiple folders placed in a main folder=> multiple diagrams
+#	autoevenn(FolderPath="./MainFolder", ud=TRUE, annot=TRUE)
+
+#	YNdisplay = TRUE	# Allows commentaries and display of the main steps of the process
 
 #	Matrix of binary data
 #   data(Data_Binary_Matrix)
@@ -98,7 +121,6 @@ YNdisplay = TRUE	# Allows commentaries and display of the main steps of the proc
 #	Matrix of ratios
 #   data(Data_Matrix_Of_Ratios)
 #   evenn(matLists=Data_Matrix_Of_Ratios, display=YNdisplay, CompName="Matrix_Of_Ratios")
-
 
 #	List of 2, 3 or 4 matrix w/wo modulations and w/wo profils data
 

@@ -1,8 +1,8 @@
-6078d19eb938f958eb7c7d6f37f052f8 *DESCRIPTION
+0dca380c771cdd9eba0cfca6fc60e3fa *DESCRIPTION
 67e80df8b4c662d0c9a847596b142090 *NAMESPACE
-abf3f7cf5e198996e1c3c1e807f49d94 *R/autoevenn.R
-f6a5ea34a9aa2fdd4c2b019ab081cba7 *R/evenn.R
-ce185be698d3a331edb9298eaa6ac691 *R/man.evenn.R
+0091144c5e12bfad8a4ee3f07e36e06f *R/autoevenn.R
+28ef956ee01077cbfe0e5e507d848e5c *R/evenn.R
+724b1fe5dca9db6ea227805d954ba6da *R/man.evenn.R
 84bc31875a08600ff634f79a2f24422f *data/Data_Binary_Matrix.rda
 dcf46914e74854fb579bcc936db47167 *data/Data_Lists.rda
 fffd2a9a830879ed995a1457efd585d4 *data/Data_Matrix_Of_Folds.rda
@@ -11,7 +11,7 @@ aae0adf7ca9e2262f4c62a82c5befb62 *data/Data_Matrix_Of_Ratios.rda
 21ce2a97fc89eed1046c52d02c0d9b58 *man/Data_Lists.Rd
 565da2908d2cd822ba8bbbe2a1d71638 *man/Data_Matrix_Of_Folds.Rd
 1196a1d52a3da047edf071519627b76b *man/Data_Matrix_Of_Ratios.Rd
-f8d5a6c802042950ad6dd44b228d2738 *man/autoevenn.Rd
-ea90389372c017e61e5e941d8311ecbc *man/eVenn-package.Rd
-dcf571fa3eac98e26829c0927c76a262 *man/evenn.Rd
+624379b72130c0a50d863b0ffd2efca4 *man/autoevenn.Rd
+7740f27dceb87173b338aadbcc973009 *man/eVenn-package.Rd
+ec1e28ae0f85d702b81fe25e35186ee6 *man/evenn.Rd
 0bb114bee4cdd1a6b7828160660b4e49 *man/man.evenn.Rd

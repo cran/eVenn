@@ -7,8 +7,9 @@ Automates the process of several eVenn
 This function creates a list of folders where are placed sources files for venn diagrams and call the eVenn function for each one. 
 }
 \usage{
-autoevenn(FolderPath = "", annot = TRUE, ud = TRUE, VennBar = FALSE, Solid = TRUE,
-Profils = TRUE, prop = FALSE, display = FALSE, Ptest=FALSE)
+autoevenn(FolderPath = "", annot = TRUE, ud = TRUE, VennBar = FALSE,
+Solid = TRUE, Profils = TRUE, prop = FALSE, display = FALSE, Ptest=FALSE,
+tUD=NULL, tUDp=NULL, tnoUD=NULL, ColorTxt="", Gtype="png")
 }
 \arguments{
   \item{FolderPath}{
@@ -37,6 +38,21 @@ Print commentaries during the process.
 }
   \item{Ptest}{
 Proportional test (Fisher's exact) of the non null areas.
+}
+  \item{tnoUD}{
+Font size of the total count of a zone.
+}
+  \item{tUDp}{
+Font size of the count and profile names of common zones.
+}
+  \item{tUD}{
+Font size of the count and profile names of specific zones.
+}
+  \item{ColorTxt}{
+Custom color of the counts.
+}
+  \item{Gtype}{
+File format of the graphic (png or svg).
 }
 }
 \references{
