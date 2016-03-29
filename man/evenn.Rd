@@ -7,11 +7,10 @@ A Powerful Tool to Quickly Compare Huge Lists and Draw Venn Diagrams
 Compare lists (from 2 to infinite) and plot the results in a Venn diagram if (N<=4) with regulation details. It allows to produce a complete annotated file, merging the annotations of the compared lists. It is also possible to compute an overlaps table to show the overlaps proportions of all the couples of lists and draw proportional Venn diagrams.
 }
 \usage{
-evenn(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE,
-	 prop=FALSE, noms="", overlaps=FALSE, f=0, display=FALSE, couleurs="",
-	 VennBar=FALSE, CompName="", transp=0.5, Solid=TRUE, Profils=FALSE,
-	 OnlyVariable=FALSE, colBlack=FALSE, ColorTxt="", Ptest=FALSE, tUD=NULL,
-	 tUDp=NULL, tnoUD=NULL, Gtype="png")
+evenn(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, prop=FALSE, noms="",
+	 overlaps=FALSE, f=0, display=FALSE, couleurs="", VennBar=FALSE, CompName="",
+	 transp=0.5, Solid=TRUE, Profils=FALSE, OnlyVariable=FALSE, colBlack=FALSE,
+	 ColorTxt="", Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png", title="")
 }
 \arguments{
   \item{annot}{
@@ -85,6 +84,9 @@ Font size of the count and profile names of specific zones.
 }
   \item{Gtype}{
 File format of the graphic (png or svg).
+}
+  \item{title}{
+Main title of the graphic.
 }
 }
 \value{
