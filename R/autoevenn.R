@@ -1,4 +1,7 @@
-autoevenn <-function(FolderPath="", annot=TRUE, ud=TRUE, VennBar=FALSE, Solid=TRUE, Profils=TRUE, prop=FALSE, display=FALSE, Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL, ColorTxt="", Gtype="png")
+autoevenn <-function(FolderPath="", pathRes="", annot=TRUE, ud=TRUE, prop=FALSE,
+		overlaps=FALSE, display=FALSE, couleurs="", VennBar=FALSE, transp=0.5,
+		Solid=TRUE, Profils=FALSE, ColorTxt="", colBlack=FALSE, Ptest=FALSE,
+		tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png",lw=1, NutShell=TRUE, VennClust=TRUE)
 {
 	if(FolderPath=="")
 	{
@@ -10,9 +13,12 @@ autoevenn <-function(FolderPath="", annot=TRUE, ud=TRUE, VennBar=FALSE, Solid=TR
 	
 	Venns = list.dirs(FolderPath, full.names=TRUE)
 	
-	FolderDest = paste(getwd(), "/Venn.diagrams/", sep="")
-	dir.create(file.path(FolderDest), showWarnings = FALSE)
-	FolderDest = paste(getwd(), "/Venn.diagrams/", basename(FolderPath), sep="")
+	if(pathRes!="")
+	{
+		FolderDest = pathRes
+	}else{
+		FolderDest = paste(getwd(), "/Venn.diagrams/", sep="")
+	}	
 	dir.create(file.path(FolderDest), showWarnings = FALSE)
 	
 	Venns = Venns[Venns!=FolderPath]  # filtre le repertoire principal de la liste
@@ -20,6 +26,9 @@ autoevenn <-function(FolderPath="", annot=TRUE, ud=TRUE, VennBar=FALSE, Solid=TR
 	for(V in 1:length(Venns))
 	{
 		write(paste(V, " / ", length(Venns), ": ", basename(Venns[V]), sep=""), file="")
-		evenn(annot=annot, ud=ud, VennBar=VennBar, pathRes=FolderDest, pathLists=Venns[V], display=display, Solid=Solid, Profils=Profils, prop=prop, Ptest=Ptest, , tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, ColorTxt=ColorTxt, Gtype=Gtype)
+		evenn(annot=annot, pathRes=FolderDest, pathLists=Venns[V], ud=ud, prop=prop, overlaps=overlaps,
+				display=display, couleurs=couleurs,	VennBar=VennBar, transp=transp, Solid=Solid,
+				Profils=Profils, ColorTxt=ColorTxt, colBlack=colBlack, Ptest=Ptest, tUD=tUD, 
+				tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, lw=lw, NutShell=NutShell, VennClust=VennClust)
 	}
 }

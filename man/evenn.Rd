@@ -10,7 +10,8 @@ Compare lists (from 2 to infinite) and plot the results in a Venn diagram if (N<
 evenn(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, prop=FALSE, noms="",
 	 overlaps=FALSE, f=0, display=FALSE, couleurs="", VennBar=FALSE, CompName="",
 	 transp=0.5, Solid=TRUE, Profils=FALSE, OnlyVariable=FALSE, colBlack=FALSE,
-	 ColorTxt="", Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png", title="")
+	 ColorTxt="", Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png", title="",
+	 lw=1, NutShell=TRUE, VennClust=TRUE)
 }
 \arguments{
   \item{annot}{
@@ -73,20 +74,29 @@ Custom color of the counts.
   \item{Ptest}{
 Proportional test (Fisher's exact) of the non null areas.
 }
-  \item{tnoUD}{
-Font size of the total count of a zone.
+  \item{tUD}{
+Font size of the count and profile names of specific zones.
 }
   \item{tUDp}{
 Font size of the count and profile names of common zones.
 }
-  \item{tUD}{
-Font size of the count and profile names of specific zones.
+  \item{tnoUD}{
+Font size of the total count of a zone.
 }
   \item{Gtype}{
 File format of the graphic (png or svg).
 }
   \item{title}{
 Main title of the graphic.
+}
+  \item{lw}{
+Line width relative to the default (default=1). 2 is twice as wide.
+}
+  \item{NutShell}{
+All the Venn zones and UD profiles in a nutshell (count table).
+}
+  \item{VennClust}{
+Creates two clusterings (using Spearman correlation similarity measure and average or Ward.D2 linkage algorithm) to model links between the lists.
 }
 }
 \value{

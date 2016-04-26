@@ -1,6 +1,6 @@
-#	annot=TRUE; matLists=""; pathRes=""; pathLists="./Lists_4_justeID/"; ud=FALSE; prop=FALSE; noms=""; overlaps=FALSE; f=0; display=TRUE; couleurs=""; VennBar=FALSE; CompName=""; transp=0.5; Solid=TRUE; Profils=FALSE; OnlyVariable=FALSE; colBlack=FALSE; ColorTxt=""; Ptest=FALSE; tUD=NULL; tUDp=NULL; tnoUD=NULL; Gtype="png"; title=""
+#	annot=TRUE; matLists=""; pathRes=""; pathLists="./FichiersTests/Lists_4_UD/"; ud=TRUE; prop=TRUE; noms=""; overlaps=TRUE; f=0; display=TRUE; couleurs=""; VennBar=TRUE; CompName=""; transp=0.5; Solid=TRUE; Profils=FALSE; OnlyVariable=FALSE; colBlack=FALSE; ColorTxt=""; Ptest=TRUE; tUD=NULL; tUDp=NULL; tnoUD=NULL; Gtype="png"; lwd=1; title=""; NutShell=TRUE; VennClust=TRUE
 evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, prop=FALSE, noms="", overlaps=FALSE, f=0, display=FALSE, couleurs="", VennBar=FALSE,
-		CompName="", transp=0.5, Solid=TRUE, Profils=FALSE, OnlyVariable=FALSE, colBlack=FALSE, ColorTxt="", Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png", title="")
+		CompName="", transp=0.5, Solid=TRUE, Profils=FALSE, OnlyVariable=FALSE, colBlack=FALSE, ColorTxt="", Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png", title="", lw=1, NutShell=TRUE, VennClust=TRUE)
 {  
 	if(OnlyVariable)
 	{
@@ -34,12 +34,12 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				tmpFile = as.matrix(unlist(tmpFile))
 				if(sum(grepl("\"|\'|#", tmpFile))!=0)	# caracteres interdits
 				{
-					write(paste("\t", sum(grepl("\"|\'|#", tmpFile)), " lines with unauthorized characters (\",\',# )have been detected in ", basename(Liste[L]), sep=""), file="")
+					#	write(paste("\t", sum(grepl("\"|\'|#", tmpFile)), " lines with unauthorized characters (\",\',# ) have been detected in ", basename(Liste[L]), sep=""), file="")
 					
 					#	identification des unauthorized characters
-					if(sum(grepl("\"", tmpFile))>0) write(paste("\t", sum(grepl("\"", tmpFile)), " lines with \"", sep=""), file="")
-					if(sum(grepl("\'", tmpFile))>0) write(paste("\t", sum(grepl("\'", tmpFile)), " lines with \'", sep=""), file="")
-					if(sum(grepl("#", tmpFile))>0) write(paste("\t", sum(grepl("#", tmpFile)), " lines with #", sep=""), file="")
+					if(sum(grepl("\"", tmpFile))>0) write(paste("\t", sum(grepl("\"", tmpFile)), " lines with unauthorized character \" have been detected in ", basename(Liste[L]), sep=""), file="")
+					if(sum(grepl("\'", tmpFile))>0) write(paste("\t", sum(grepl("\'", tmpFile)), " lines with unauthorized character \' have been detected in ", basename(Liste[L]), sep=""), file="")
+					if(sum(grepl("#", tmpFile))>0) write(paste("\t", sum(grepl("#", tmpFile)), " lines with unauthorized character # have been detected in ", basename(Liste[L]), sep=""), file="")
 					
 					tmpFile = gsub("\"|\'|#", "", tmpFile)
 					tmpFile = t(apply(as.matrix(tmpFile), 1, function(x) unlist(strsplit(x, "\t"))))
@@ -57,9 +57,10 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 					tmpList = as.matrix(tmpList)
 					
 				}else{
-					tmprnames = tmpList[,1]
-					tmpList = as.matrix(tmpList[,2:ncol(tmpList)])
-					rownames(tmpList) = tmprnames
+					tmpL = tmpList
+					tmpList = as.matrix(tmpList[,2:ncol(tmpL)])
+					rownames(tmpList) = rownames(tmpL)
+					colnames(tmpList) = colnames(tmpL)[2:ncol(tmpL)]
 				}
 				matLists[[length(matLists)+1]] = tmpList
 			}
@@ -75,17 +76,17 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			}
 		}	
 	}
-	
+
 	if(display&FilesOut){
-		write("        ,.-.,                                                                         ", file="")
-		write("      .`     `.                                                                       ", file="")
-		write("     /.-., ,.-.`            *       *                                 ****     ****   ", file="")
-		write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *    *  ", file="")
-		write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *        *   ", file="")
-		write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *         *   ", file="")
-		write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *       *    *  ", file="")
-		write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** *  ****   ", file="")
-		write("     `'-'` `'-'`                                                                      ", file="")
+		write("        ,.-.,                                                                                  ", file="")
+		write("      .`     `.                                                                                ", file="")
+		write("     /.-., ,.-.`            *       *                                 ****     ****     * *    ", file="")
+		write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *    *   *  *    ", file="")
+		write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *        *       *    ", file="")
+		write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *         *       *    ", file="")
+		write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *       *    *      *    ", file="")
+		write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** *  ****  * ******* ", file="")
+		write("     `'-'` `'-'`                                                                               ", file="")
 		#write("\n\t[Run man.evenn() for quick help]\n", file="")
 		flush.console()  
 	}                                       
@@ -101,8 +102,14 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 	{
 		apply(sapply(col, col2rgb)/255, 2, function(x)	rgb(x[1], x[2], x[3], alpha=alpha))  
 	}
-
-	BarVenn<-function(resTmp, path, ud)
+	
+	sombre<-function(col, pcent)
+	{
+		pcent = (100-pcent)/100
+		apply(sapply(col, col2rgb), 2, function(x)	rgb(round(x[1]*pcent), round(x[2]*pcent), round(x[3]*pcent)))  
+	}
+	
+	BarVenn<-function(resTmp, path, ud, lw)
 	{
 		path = paste(path, "/BarVenn", sep="")
 		dir.create(path)
@@ -221,12 +228,12 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				if(S==max(as.numeric(tableau[,"size"])))                               	# Centrage pour le groupe commun All                               
 				{
 					decalx = sizeH/2
-					polygon(c((decalx-Csize/2),(decalx-Csize/2),(decalx+Csize/2), (decalx+Csize/2)),c(0,FCtots, FCtots,0),col=240, density=10)
-					segments(x0=(decalx-Csize/2), y0=-60, x1=(decalx+Csize/2), y1=-60) 	# Barre horizontale ~0
+					polygon(c((decalx-Csize/2),(decalx-Csize/2),(decalx+Csize/2), (decalx+Csize/2)),c(0,FCtots, FCtots,0),col=240, density=10, lwd=lw)
+					segments(x0=(decalx-Csize/2), y0=-60, x1=(decalx+Csize/2), y1=-60, lwd=lw) 	# Barre horizontale ~0
 				}else{
 					decalx = decal+Csize/2
-					polygon(c(decal,decal,(decal+Csize), (decal+Csize)),c(0,FCtots, FCtots,0),col=240, density=10)
-					segments(x0=0, y0=-60, x1=(decal+Csize), y1=-60)                	# Barre horizontale ~0
+					polygon(c(decal,decal,(decal+Csize), (decal+Csize)),c(0,FCtots, FCtots,0),col=240, density=10, lwd=lw)
+					segments(x0=0, y0=-60, x1=(decal+Csize), y1=-60, lwd=lw)                	# Barre horizontale ~0
 				}
 				
 				text(x=decalx, y=FCtots, labels=paste(G, "\n", sep=""), cex=1)   		# Nom de la zone 20 au dessus de la barre
@@ -257,7 +264,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		}
 	}
 	
-	cercle<-function(x, y, rayon, int=NA, out=NA, lty, lwd)
+	cercle<-function(x, y, rayon, int=NA, out=NA, lty, lw)
 	{
 		xylim <- par("usr")
 		plotdim <- par("pin")
@@ -271,7 +278,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			if(is.na(int[I])) dens=0
 			xv <- cos(angles) * rayon[I] + x[I]
 			yv <- sin(angles) * rayon[I] * ymult + y[I]
-			polygon(xv, yv, border = out[I], col=int[I], lty, lwd, density=dens)
+			polygon(xv, yv, border = out[I], col=int[I], lty=lty, density=dens, lwd=lw)
 		}
 	}
 	
@@ -381,7 +388,6 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		return(table(profils))
 	}
 	
-	
 	format_label<-function(n, m, nom, x, y, dtitre, dprofils, noms, couleurs, cex.main, ps)
 	{
 		nProfils = length(m)
@@ -417,43 +423,31 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		}
 	}
 	
-	#	liste=Liste[1]; type="Res"
+	#	filename=Liste[1]; type="Res"
 	test_list<-function(filename, type, matLists, noms, path, affich=TRUE)	#test des formats des Liste
 	{
-		if(!is.list(matLists))
+		ext = substr(basename(filename), (nchar(basename(filename))-2), nchar(basename(filename)))
+		nomListe = substr(basename(filename), 0, (nchar(basename(filename))-4))
+		data_t=""
+		if(exists("data_t"))  rm("data_t")
+		if(ext == "txt") data_t = read.table(file=filename, header=TRUE, sep="\t")
+		if(ext == "tsv") data_t = read.table(file=filename, header=TRUE, sep="\t")
+		if(ext == "csv") data_t = try(read.table(file=filename, header=TRUE, sep=","), silent=TRUE)
+		if((ext == "csv")&(class(data_t)=="try-error")) data_t = try(read.table(file=filename, header=TRUE, sep=";"), silent=TRUE)
+		if((ext!="csv")&(ext!="txt"))
 		{
-			ext = substr(basename(filename), (nchar(basename(filename))-2), nchar(basename(filename)))
-			nomListe = substr(basename(filename), 0, (nchar(basename(filename))-4))
-			data_t=""
-			if(exists("data_t"))  rm("data_t")
-			if(ext == "txt") data_t = read.table(file=filename, header=TRUE, sep="\t")
-			if(ext == "tsv") data_t = read.table(file=filename, header=TRUE, sep="\t")
-			if(ext == "csv") data_t = try(read.table(file=filename, header=TRUE, sep=","), silent=TRUE)
-			if((ext == "csv")&(class(data_t)=="try-error")) data_t = try(read.table(file=filename, header=TRUE, sep=";"), silent=TRUE)
-			if((ext!="csv")&(ext!="txt"))
-			{
-				if(display) write("The file format is not supported (must be txt/tab or csv/,;)", file="")
-				flush.console()
-				break;
-			}
-		}else{
-			data_t = matLists[[seq(1, length(noms), by=1)[noms==filename]]]
-			colnames(data_t) = names(matLists[[seq(1, length(noms), by=1)[noms==filename]]])
-			nomListe = filename
+			if(display) write("The file format is not supported (must be txt/tab or csv/,;)", file="")
+			flush.console()
+			break;
 		}
-		
+
 		data_t=DuplicateTest(filename=filename, fich=data_t, resPath=path, nomlignes=FALSE, affich=affich)
 		
-		if(ncol(data_t)<3)                                                          #juste les ID
-		{
-			rownames(data_t) = data_t[,1]                                           #ID = 1ere colonne
-		}
-		if(ncol(data_t)>=3)                                                         #ID et une seule colonne
-		{
-			rownames(data_t) = data_t[,1]                                           #ID = 1ere colonne
-			data_t = data_t[,2:ncol(data_t)]
-		}
-		data_t = as.matrix(data_t)
+		tmpL = data_t
+		data_t = as.matrix(data_t[,2:ncol(data_t)])
+		rownames(data_t) = rownames(tmpL)
+		colnames(data_t) = colnames(tmpL)[2:ncol(tmpL)]
+
 		return(data_t)
 	}
 	
@@ -487,7 +481,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		return(TempListe)
 	}
 	
-	graph_2<-function(path, ListN, tot_ugenes, noms, ud, couleurs, couleursIn, ColorTxt, Solid, Ptest, tUD, tUDp, tnoUD, Gtype, title)
+	graph_2<-function(path, ListN, tot_ugenes, noms, ud, couleurs, couleursIn, ColorTxt, Solid, Ptest, tUD, tUDp, tnoUD, Gtype, title, lw)
 	{
 		if(is.null(tUD))	tUD = 2.5
 		if(is.null(tUDp))	tUDp = 2
@@ -509,10 +503,10 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		rcercles = c(sizeGy/3, sizeGy/3)
 		if(Solid)
 		{
-			cercle(xcercles, ycercles, rcercles, out=NA, int=couleursIn, lty=1, lwd=1)
+			cercle(xcercles, ycercles, rcercles, out=NA, int=couleursIn, lty=1, lw=lw)
 			colTxt = "white"
 		}else{
-			cercle(xcercles, ycercles, rcercles, out=couleurs, lty=1, lwd=1)
+			cercle(xcercles, ycercles, rcercles, out=couleurs, lty=1, lw=lw)
 			colTxt = "black"
 		}
 		
@@ -550,7 +544,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		dev.off()
 	}
 	
-	graph_3<-function(path, ListN, tot_ugenes, noms, ud, couleurs, couleursIn, ColorTxt, Solid, Ptest, tUD, tUDp, tnoUD, Gtype, title)
+	graph_3<-function(path, ListN, tot_ugenes, noms, ud, couleurs, couleursIn, ColorTxt, Solid, Ptest, tUD, tUDp, tnoUD, Gtype, title, lw)
 	{
 		if(is.null(tUD))	tUD = 2.5
 		if(is.null(tUDp))	tUDp = 2
@@ -573,11 +567,11 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		rcercles = rep((7.5*sizeG)/30, 3)
 		if(Solid)
 		{
-			cercle(xcercles, ycercles, rcercles, out=NA, int=couleursIn, lty=1, lwd=1)
+			cercle(xcercles, ycercles, rcercles, out=NA, int=couleursIn, lty=1, lw=lw)
 			colTxt = "white"
 			colGreen = "darkgreen"
 		}else{
-			cercle(xcercles, ycercles, rcercles, out=couleurs, lty=1, lwd=1)
+			cercle(xcercles, ycercles, rcercles, out=couleurs, lty=1, lw=lw)
 			colTxt = "black"
 			colGreen = "green"
 		}
@@ -637,7 +631,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		dev.off()
 	}
 	
-	graph_4<-function(path, ListN, tot_ugenes, noms, ud, couleurs, couleursIn, ColorTxt, Solid, Ptest, tUD, tUDp, tnoUD, Gtype, title)
+	graph_4<-function(path, ListN, tot_ugenes, noms, ud, couleurs, couleursIn, ColorTxt, Solid, Ptest, tUD, tUDp, tnoUD, Gtype, title, lw)
 	{
 		if(is.null(tUD))	tUD=2
 		if(is.null(tUDp))	tUDp=1.5
@@ -667,12 +661,12 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		
 		if(Solid)
 		{
-			cercle(xcercles, ycercles, rcercles, out=NA, int=c(couleursIn, couleursIn[c(1,4,2,3)]), lty=1, lwd=1)
+			cercle(xcercles, ycercles, rcercles, out=NA, int=c(couleursIn, couleursIn[c(1,4,2,3)]), lty=1, lw=lw)
 			colTxt = "white"
 			coulGroups = c("darkblue", "darkred", "darkgreen", "brown")
 			couleursTxt = c(couleurs[1:3], "yellow")
 		}else{
-			cercle(xcercles, ycercles, rcercles, out=c(couleurs[1], couleurs[2], couleurs[3], couleurs[4], couleurs[1], couleurs[4], couleurs[2], couleurs[3]), lty=1, lwd=1)
+			cercle(xcercles, ycercles, rcercles, out=c(couleurs[1], couleurs[2], couleurs[3], couleurs[4], couleurs[1], couleurs[4], couleurs[2], couleurs[3]), lty=1, lw=lw)
 			colTxt = "black"
 			couleursTxt=couleurs
 			coulGroups=couleurs
@@ -766,7 +760,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		dev.off()
 	}
 	
-	graph_prop_2<-function(path, res, nA, nB, nAB, tot_ugenes, noms, couleurs, tlog, colBlack)
+	graph_prop_2<-function(path, res, nA, nB, nAB, tot_ugenes, noms, couleurs, couleursIn, tlog, colBlack, title, lw)
 	{
 		if(!colBlack)  
 		{
@@ -804,7 +798,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		xA = rA
 		xB = xBtot + rBtot - rB
 		
-		yAtot = max(rAtot, rBtot, rAB)*1.1
+		yAtot = max(rAtot, rBtot, rAB)*1.2
 		yBtot = yAtot
 		yAB = yAtot
 		yA = yAtot
@@ -816,27 +810,28 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		ySpeCircles = c(yA, yB)
 		rCircles = c(rAtot, rBtot, rAB)
 		rSpeCircles = c(rA, rB)
-		colorCircles = c("blue", "red", "black")
-		colorSpeCircles = c("blue", "red")
+		colorCircles = c(couleurs[1:2], "black")
+		colorSpeCircles = couleursIn[1:2]
 		
 		xmax = (2*rAtot + 2*rBtot+2*rAB) *1.2  # decal de 10% de rAtot pour avoir le meme decalage qu'a gauche
 		xmin = 0
 		ymax = max((yAtot+rAtot), (yBtot+rBtot), (yAB+rAB))*1.1
 		ymin = 0
 		
-		if(!tlog)  png(filename = paste(path, "/venn_diagram_prop", if(tlog) paste("_tlog2", sep=""), ".png", sep=""), width=xmax*100, height=ymax*90, pointsize = 6, bg = "white")
-		if(tlog)  png(filename = paste(path, "/venn_diagram_prop", if(tlog) paste("_tlog2", sep=""), ".png", sep=""), width=xmax*100, height=ymax*140, pointsize = 5, bg = "white")
+		if(!tlog)  png(filename = paste(path, "/venn_diagram_prop", if(tlog) paste("_tlog2", sep=""), ".png", sep=""), width=xmax*100, height=ymax*130, pointsize=9, bg="white")
+		if(tlog)  png(filename = paste(path, "/venn_diagram_prop", if(tlog) paste("_tlog2", sep=""), ".png", sep=""), width=xmax*100, height=ymax*130, pointsize=5, bg="white")
 		
 		plot.new()
+		par(mar=c(0,0,0,0))
 		plot.window(c(0, xmax), c(ymin, ymax+abs(ymin)), asp=1)
 		segments(x0=c(xAtot, xBtot),
 				y0=c(ySpeCircles, ySpeCircles),
 				x1=c(xAB, xAB),
 				y1=c(yCircles, yCircles),
-				col=c("blue", "red"))
+				col=couleurs[1:2], lwd=lw)
 		
-		symbols(x=xCircles, y=yCircles, circles=rCircles, main = "PropCircles", fg=colorCircles, bg="white", add=TRUE, inches=FALSE)
-		symbols(x=xSpeCircles, y=ySpeCircles, circles=rSpeCircles, main = "PropCircles", fg="white", bg=colorSpeCircles, add=TRUE, inches=FALSE)
+		symbols(x=xCircles, y=yCircles, circles=rCircles, main = "PropCircles", fg=colorCircles, bg="white", add=TRUE, inches=FALSE, lwd=lw)
+		symbols(x=xSpeCircles, y=ySpeCircles, circles=rSpeCircles, main = "PropCircles", fg="white", bg=colorSpeCircles, add=TRUE, inches=FALSE, lwd=1)
 		
 		# N groupes
 		taille = 7
@@ -846,13 +841,16 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		
 		#titres
 		taille = 6    
-		text(x=xAB, y=ymin, labels=paste(colnames(res)[1], " (", n[1], ")", sep=""), cex=taille, col=couleurs[1])
-		text(x=xAB, y=ymax, labels=paste(colnames(res)[2], " (", n[2], ")", sep=""), cex=taille, col=couleurs[2])
+		text(x=xAB, y=ymin*1.6, labels=paste(colnames(res)[1], " (", n[1], ")", sep=""), cex=taille, col=couleurs[1], pos=1,  offset=taille)
+		text(x=xAB, y=ymin*1.5, labels=paste(colnames(res)[2], " (", n[2], ")", sep=""), cex=taille, col=couleurs[2], pos=1, offset=taille*2)
+		
+		tTitres=6
+		if(title!="")	text(x=xAB, y=ymax*1.05, labels=title, cex=tTitres*1.2, col="black")
 		
 		dev.off()
 	}
 	
-	graph_prop_3<-function(path, res, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs, tlog, colBlack)
+	graph_prop_3<-function(path, res, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs, couleursIn, tlog, colBlack, title, lw)
 	{
 		if(!colBlack)  
 		{
@@ -957,8 +955,8 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		
 		rCircles = c(rAtot, rBtot, rCtot, rAB, rAC, rBC, rABC)
 		rSpeCircles = c(rA, rB, rC)
-		colorCircles = c(couleurs[1], couleurs[2], couleurs[3], "black", "black", "black", "black")
-		colorSpeCircles = c(couleurs[1], couleurs[2], couleurs[3])
+		colorCircles = c(couleurs, "black", "black", "black", "black")
+		colorSpeCircles = couleursIn
 		
 		png(filename = paste(path, "/venn_diagram_prop", if(tlog) paste("_tlog2", sep=""), ".png", sep=""), width=30, height=30, bg="white", units='cm', res=300)
 		plot.new()
@@ -972,12 +970,12 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				 y0=c(yAtot, yBtot, yAtot, yCtot, yBtot, yCtot, yAtot, yBtot, yCtot),
 				 x1=c(xAB, xAB, xAC, xAC, xBC, xBC, xABC, xABC, xABC),
 				 y1=c(yAB, yAB, yAC, yAC, yBC, yBC, yABC, yABC, yABC),
-				 col=c(couleurs[1], couleurs[2], couleurs[1], couleurs[3], couleurs[2], couleurs[3], couleurs[1], couleurs[2], couleurs[3]))
+				 col=c(couleurs[1], couleurs[2], couleurs[1], couleurs[3], couleurs[2], couleurs[3], couleurs[1], couleurs[2], couleurs[3]), lwd=lw)
 		#ajouter les 3 segments pour le cercle central
-		symbols(x=xCircles, y=yCircles, circles=rCircles, main = "PropCircles", fg=colorCircles, bg="white", add=TRUE, inches=FALSE)
-		symbols(x=xSpeCircles, y=ySpeCircles, circles=rSpeCircles, main = "PropCircles", fg=colorSpeCircles, bg=colorSpeCircles, add=TRUE, inches=FALSE)
+		symbols(x=xCircles, y=yCircles, circles=rCircles, main = "PropCircles", fg=colorCircles, bg="white", add=TRUE, inches=FALSE, lwd=lw)
+		symbols(x=xSpeCircles, y=ySpeCircles, circles=rSpeCircles, main = "PropCircles", fg=colorSpeCircles, bg=colorSpeCircles, add=TRUE, inches=FALSE, lwd=1)
 		
-		taille=1.5
+		taille=2
 		#effectifs
 		text(x=xAtot, y=(yAtot-rAtot)+((yA-rA)-(yAtot-rAtot))/2, labels=paste(n[1]-nA), cex=taille, col=coultxt[1], font=1)
 		text(x=xA, y=yA, labels=paste(nA), cex=taille, col=colWhite, font=2)
@@ -996,14 +994,18 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		text(x=0.1, y=(yAB+yAtot)/2, labels=paste("Total: ", tot_ugenes, collapse="\n"), cex=taille, col="black", font=2)
 		
 		#titres
-		taille=1.4
-		text(x=xAtot, y=ymax*1.2, labels=paste(colnames(res)[1], " (", n[1], ")", sep=""), cex=taille, col=couleurs[1], pos=1, offset=0)
-		text(x=xAtot, y=ymax*1.2, labels=paste(colnames(res)[2], " (", n[2], ")", sep=""), cex=taille, col=couleurs[2], pos=1, offset=1.2)
-		text(x=xAtot, y=ymax*1.2, labels=paste(colnames(res)[3], " (", n[3], ")", sep=""), cex=taille, col=couleurs[3], pos=1, offset=2.4)
+		taille=2
+		text(x=xAtot, y=ymin*1.2, labels=paste(colnames(res)[1], " (", n[1], ")", sep=""), cex=taille, col=couleurs[1], pos=1, offset=0)
+		text(x=xAtot, y=ymin*1.2, labels=paste(colnames(res)[2], " (", n[2], ")", sep=""), cex=taille, col=couleurs[2], pos=1, offset=2)
+		text(x=xAtot, y=ymin*1.2, labels=paste(colnames(res)[3], " (", n[3], ")", sep=""), cex=taille, col=couleurs[3], pos=1, offset=4)
+		
+		tTitres=3
+		if(title!="")	text(x=xA, y=ymax*1.15, labels=title, cex=tTitres, col="black")
+		
 		dev.off()
 	}
 	
-	graph_prop_4<-function(path, res, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs, tlog, colBlack)
+	graph_prop_4<-function(path, res, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs, couleursIn, tlog, colBlack, title, lw)
 	{
 		if(!colBlack)  
 		{
@@ -1119,7 +1121,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			xCircles = c(xAtot, xBtot, xCtot, xDtot, xAB, xAC, xAD, xBC, xBD, xCD, xABC, xABD, xACD, xBCD, xABCD, xA, xB, xC, xD)
 			yCircles = c(yAtot, yBtot, yCtot, yDtot, yAB, yAC, yAD, yBC, yBD, yCD, yABC, yABD, yACD, yBCD, yABCD, yA, yB, yC, yD)
 			rCircles = c(rAtot, rBtot, rCtot, rDtot, rAB, rAC, rAD, rBC, rBD, rCD, rABC, rABD, rACD, rBCD, rABCD, rA, rB, rC, rD)
-			colorCircles = c(couleurs[1], couleurs[2], couleurs[3], couleurs[4], "black", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black", "blue", "red", "green", "orange")
+			colorCircles = c(couleursIn[1], couleursIn[2], couleursIn[3], couleursIn[4], "black", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black", couleursIn[1], couleursIn[2], couleursIn[3], couleursIn[4])
 			data_graph=cbind(xCircles, yCircles, rCircles, colorCircles)
 			colnames(data_graph) = c("xCircles", "yCircles", "rCircles", "colorCircles")
 			rownames(data_graph) = c("Atot", "Btot", "Ctot", "Dtot", "AB", "AC", "AD", "BC", "BD", "CD", "ABC", "ABD", "ACD", "BCD", "ABCD", "A", "B", "C", "D")
@@ -1128,7 +1130,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		}
 		
 		expx = 1
-		expy = 1
+		expy = 1.3
 		data_graph = calc_coord(rAtot, rBtot, rCtot, rDtot, rA, rB, rC, rD, rAB, rAC, rAD, rBC, rBD, rCD, rABC, rABD, rACD, rBCD, rABCD, expy, expx)
 		
 		adjust<-function(data_graph)	#calcul de l'ajustement
@@ -1173,7 +1175,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		xmin = (min(as.numeric(data_graph[,"xCircles"])) - max(as.numeric(data_graph[,"rCircles"])))
 		xmax = (max(as.numeric(data_graph[,"xCircles"])) + max(as.numeric(data_graph[,"rCircles"])))
 		ymin = (min(as.numeric(data_graph[,"yCircles"])) - max(as.numeric(data_graph[,"rCircles"])))
-		ymax = (max(as.numeric(data_graph[,"yCircles"])) + max(as.numeric(data_graph[,"rCircles"])))*1.2
+		ymax = (max(as.numeric(data_graph[,"yCircles"])) + max(as.numeric(data_graph[,"rCircles"])))*1.1
 		
 		#si ajustement expx, expy
 		d = adjust(data_graph)
@@ -1195,35 +1197,35 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				x0=as.numeric(c(data_graph["Atot", "xCircles"], data_graph["Atot", "xCircles"], data_graph["Atot", "xCircles"], data_graph["Atot", "xCircles"], data_graph["Atot", "xCircles"], data_graph["Atot", "xCircles"], data_graph["Atot", "xCircles"])),
 				y0=as.numeric(c(data_graph["Atot", "yCircles"], data_graph["Atot", "yCircles"], data_graph["Atot", "yCircles"], data_graph["Atot", "yCircles"], data_graph["Atot", "yCircles"], data_graph["Atot", "yCircles"], data_graph["Atot", "yCircles"])),
 				x1=as.numeric(c(data_graph["AD", "xCircles"], data_graph["AC", "xCircles"], data_graph["AB", "xCircles"], data_graph["ABD", "xCircles"], data_graph["ABC", "xCircles"], data_graph["ACD", "xCircles"], data_graph["ABCD", "xCircles"])),
-				y1=as.numeric(c(data_graph["AD", "yCircles"], data_graph["AC", "yCircles"], data_graph["AB", "yCircles"], data_graph["ABD", "yCircles"], data_graph["ABC", "yCircles"], data_graph["ACD", "yCircles"], data_graph["ABCD", "yCircles"])), col="blue")
+				y1=as.numeric(c(data_graph["AD", "yCircles"], data_graph["AC", "yCircles"], data_graph["AB", "yCircles"], data_graph["ABD", "yCircles"], data_graph["ABC", "yCircles"], data_graph["ACD", "yCircles"], data_graph["ABCD", "yCircles"])), col=couleurs[1], lwd=lw)
 		#rouge
 		segments(
 				x0=as.numeric(c(data_graph["Btot", "xCircles"], data_graph["Btot", "xCircles"], data_graph["Btot", "xCircles"], data_graph["Btot", "xCircles"], data_graph["Btot", "xCircles"], data_graph["Btot", "xCircles"], data_graph["Btot", "xCircles"])),
 				y0=as.numeric(c(data_graph["Btot", "yCircles"], data_graph["Btot", "yCircles"], data_graph["Btot", "yCircles"], data_graph["Btot", "yCircles"], data_graph["Btot", "yCircles"], data_graph["Btot", "yCircles"], data_graph["Btot", "yCircles"])),
 				x1=as.numeric(c(data_graph["BC", "xCircles"], data_graph["BD", "xCircles"], data_graph["AB", "xCircles"], data_graph["ABD", "xCircles"], data_graph["ABC", "xCircles"], data_graph["BCD", "xCircles"], data_graph["ABCD", "xCircles"])),
-				y1=as.numeric(c(data_graph["BC", "yCircles"], data_graph["BD", "yCircles"], data_graph["AB", "yCircles"], data_graph["ABD", "yCircles"], data_graph["ABC", "yCircles"], data_graph["BCD", "yCircles"], data_graph["ABCD", "yCircles"])), col="red")
+				y1=as.numeric(c(data_graph["BC", "yCircles"], data_graph["BD", "yCircles"], data_graph["AB", "yCircles"], data_graph["ABD", "yCircles"], data_graph["ABC", "yCircles"], data_graph["BCD", "yCircles"], data_graph["ABCD", "yCircles"])), col=couleurs[2], lwd=lw)
 		#vert
 		segments(
 				x0=as.numeric(c(data_graph["Ctot", "xCircles"], data_graph["Ctot", "xCircles"], data_graph["Ctot", "xCircles"], data_graph["Ctot", "xCircles"], data_graph["Ctot", "xCircles"], data_graph["Ctot", "xCircles"], data_graph["Ctot", "xCircles"])),
 				y0=as.numeric(c(data_graph["Ctot", "yCircles"], data_graph["Ctot", "yCircles"], data_graph["Ctot", "yCircles"], data_graph["Ctot", "yCircles"], data_graph["Ctot", "yCircles"], data_graph["Ctot", "yCircles"], data_graph["Ctot", "yCircles"])),
 				x1=as.numeric(c(data_graph["BC", "xCircles"], data_graph["CD", "xCircles"], data_graph["AC", "xCircles"], data_graph["ABC", "xCircles"], data_graph["ACD", "xCircles"], data_graph["BCD", "xCircles"], data_graph["ABCD", "xCircles"])),
-				y1=as.numeric(c(data_graph["BC", "yCircles"], data_graph["CD", "yCircles"], data_graph["AC", "yCircles"], data_graph["ABC", "yCircles"], data_graph["ACD", "yCircles"], data_graph["BCD", "yCircles"], data_graph["ABCD", "yCircles"])), col="green")
+				y1=as.numeric(c(data_graph["BC", "yCircles"], data_graph["CD", "yCircles"], data_graph["AC", "yCircles"], data_graph["ABC", "yCircles"], data_graph["ACD", "yCircles"], data_graph["BCD", "yCircles"], data_graph["ABCD", "yCircles"])), col=couleurs[3], lwd=lw)
 		#orange
 		segments(
 				x0=as.numeric(c(data_graph["Dtot", "xCircles"], data_graph["Dtot", "xCircles"], data_graph["Dtot", "xCircles"], data_graph["Dtot", "xCircles"], data_graph["Dtot", "xCircles"], data_graph["Dtot", "xCircles"], data_graph["Dtot", "xCircles"])),
 				y0=as.numeric(c(data_graph["Dtot", "yCircles"], data_graph["Dtot", "yCircles"], data_graph["Dtot", "yCircles"], data_graph["Dtot", "yCircles"], data_graph["Dtot", "yCircles"], data_graph["Dtot", "yCircles"], data_graph["Dtot", "yCircles"])),
 				x1=as.numeric(c(data_graph["CD", "xCircles"], data_graph["AD", "xCircles"], data_graph["BD", "xCircles"], data_graph["ABD", "xCircles"], data_graph["ACD", "xCircles"], data_graph["BCD", "xCircles"], data_graph["ABCD", "xCircles"])),
-				y1=as.numeric(c(data_graph["CD", "yCircles"],data_graph["AD", "yCircles"], data_graph["BD", "yCircles"], data_graph["ABD", "yCircles"], data_graph["ACD", "yCircles"], data_graph["BCD", "yCircles"], data_graph["ABCD", "yCircles"])), col="orange")
+				y1=as.numeric(c(data_graph["CD", "yCircles"],data_graph["AD", "yCircles"], data_graph["BD", "yCircles"], data_graph["ABD", "yCircles"], data_graph["ACD", "yCircles"], data_graph["BCD", "yCircles"], data_graph["ABCD", "yCircles"])), col=couleurs[4], lwd=lw)
 		
-		symbols(x=as.numeric(data_graph[1:15,"xCircles"]), y=as.numeric(data_graph[1:15,"yCircles"]), circles=as.numeric(data_graph[1:15,"rCircles"]), main = "PropCircles", fg=data_graph[1:15,"colorCircles"], bg="white", add=TRUE, inches=FALSE)
-		symbols(x=as.numeric(data_graph[16:19,"xCircles"]), y=as.numeric(data_graph[16:19,"yCircles"]), circles=as.numeric(data_graph[16:19,"rCircles"]), main = "PropCircles", fg=data_graph[16:19,"colorCircles"], bg=data_graph[16:19,"colorCircles"], add=TRUE, inches=FALSE)
+		symbols(x=as.numeric(data_graph[1:15,"xCircles"]), y=as.numeric(data_graph[1:15,"yCircles"]), circles=as.numeric(data_graph[1:15,"rCircles"]), main = "PropCircles", fg=data_graph[1:15,"colorCircles"], bg="white", add=TRUE, inches=FALSE, lwd=lw)
+		symbols(x=as.numeric(data_graph[16:19,"xCircles"]), y=as.numeric(data_graph[16:19,"yCircles"]), circles=as.numeric(data_graph[16:19,"rCircles"]), main = "PropCircles", fg=data_graph[16:19,"colorCircles"], bg=data_graph[16:19,"colorCircles"], add=TRUE, inches=FALSE, lwd=1)
 		
 		#titres
-		taille = 1.4
-		text(x=xmax/2, y=ymax, labels=paste(colnames(res)[1], " (", n[1], ")", sep=""), cex=taille, col=couleurs[1], pos=1, offset=0)
-		text(x=xmax/2, y=ymax, labels=paste(colnames(res)[2], " (", n[2], ")", sep=""), cex=taille, col=couleurs[2], pos=1, offset=1.2)
-		text(x=xmax/2, y=ymax, labels=paste(colnames(res)[3], " (", n[3], ")", sep=""), cex=taille, col=couleurs[3], pos=1, offset=2.4)
-		text(x=xmax/2, y=ymax, labels=paste(colnames(res)[4], " (", n[4], ")", sep=""), cex=taille, col=couleurs[4], pos=1, offset=3.6)
+		taille = 1.5
+		text(x=xmax/2, y=ymax*0.85, labels=paste(colnames(res)[1], " (", n[1], ")", sep=""), cex=taille, col=couleurs[1], pos=1, offset=0)
+		text(x=xmax/2, y=ymax*0.85, labels=paste(colnames(res)[2], " (", n[2], ")", sep=""), cex=taille, col=couleurs[2], pos=1, offset=1.3)
+		text(x=xmax/2, y=ymax*0.85, labels=paste(colnames(res)[3], " (", n[3], ")", sep=""), cex=taille, col=couleurs[3], pos=1, offset=2.6)
+		text(x=xmax/2, y=ymax*0.85, labels=paste(colnames(res)[4], " (", n[4], ")", sep=""), cex=taille, col=couleurs[4], pos=1, offset=3.9)
 		
 		xAll = as.matrix(as.numeric(data_graph[,"xCircles"]))
 		rownames(xAll) = rownames(data_graph)
@@ -1256,6 +1258,9 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				labels=c(paste(nAB),paste(nAC),paste(nAD),paste(nBC), paste(nBD), paste(nCD), paste(nABC), paste(nABD), paste(nACD),paste(nBCD),paste(nABCD)),
 				cex=taille, col="black", font=1)
 		
+		tTitres=2.5
+		if(title!="")	text(x=data_graph["AB", "xCircles"], y=ymax*0.9, labels=title, cex=tTitres, col="black")
+		
 		dev.off()
 	}
 	
@@ -1278,7 +1283,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 	{
 		couleursIn <- add.alpha(couleurs, alpha=transp)
 	}else{
-		couleurs=c("blue", "red", "green", "orange")
+		couleurs=c("blue", "red", "green", "orange", "yellow", "pink", "brown", "purple", "seagreen", "cyan", "darkgreen", "grey")
 		couleursIn <- add.alpha(couleurs, alpha=transp)
 	}
 	
@@ -1322,10 +1327,11 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		
 		if(display) write(paste("     => Source = ", length(matLists), " Liste" , sep=""), file="")
 		flush.console()
-		Liste = matLists
+		Listes = matLists
 		noms = names(matLists)
 		nListe = length(noms)
 	}else{ # matLists = une matrice
+		noms = colnames(matLists)
 		if((min(matLists[!is.na(matLists)])==0)&(max(matLists[!is.na(matLists)])==1))  # Matrice binaire
 		{
 			if(display) write(paste("     => Source = binary matrix" , sep=""), file="")
@@ -1376,7 +1382,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				}
 			}else{  # Liste d'IDs
 				ud=FALSE
-				Liste = matLists 
+				Listes = matLists 
 				noms = names(matLists)  
 			}
 		}
@@ -1385,12 +1391,12 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 	if(!is.matrix(res))	# Si res est vide: ce n est pas un exemple => lecture de fichiers
 	{
 		# Traitement 1ere liste, amorce les variables
-		if(!is.list(matLists)) data_t = test_list(filename=Liste[1], type="Res", matLists, noms, path)
+		if(!is.list(matLists)) data_t = test_list(filename=Listes[1], type="Res", matLists, noms, path)
 		if(is.list(matLists)) data_t = matLists[[1]]
-		if((length(noms)>1)&(length(noms)!=length(Liste)))	#	Si pas de noms de listes
+		if((length(noms)>1)&(length(noms)!=length(Listes)))	#	Si pas de noms de listes
 		{
-			write(paste("Only ", length(noms), " names for ", length(Liste), " lists.\nThe default names ", c("A", "B", "C", "D")[1:length(Liste)], " will be used.", sep=""), file="")
-			noms=c("A", "B", "C", "D")[1:length(Liste)]		
+			write(paste("Only ", length(noms), " names for ", length(Listes), " lists.\nThe default names ", c("A", "B", "C", "D")[1:length(Listes)], " will be used.", sep=""), file="")
+			noms=c("A", "B", "C", "D")[1:length(Listes)]		
 			flush.console()
 		}
 		
@@ -1402,7 +1408,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			flush.console()
 		}
 		
-		if(is.null(length(Liste)))
+		if(is.null(length(Listes)))
 		{
 			write("The directory is empty.", file="")
 			flush.console()
@@ -1411,7 +1417,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		
 		nomListe = noms[1]
 		Cud=TRUE
-		if(ud&(ncol(data_t)>1))
+		if(ud&(grepl("ratio", colnames(data_t), ignore.case=TRUE)))
 		{
 			if(sum(is.na(as.numeric(data_t[,grepl("ratio", colnames(data_t), ignore.case=TRUE)])))!=0)
 			{
@@ -1430,21 +1436,21 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			Cud=FALSE
 			ud=FALSE
 		}
-		data_t = rownames(data_t)
+		#	data_t = rownames(data_t)
 		
-		res = matrix(1, ncol=1, nrow=length(data_t))
-		rownames(res) = data_t
-		if(!is.list(matLists)) noms_Liste = paste(substr(basename(Liste[1]), 0, (nchar(basename(Liste[1]))-4)), "_(", length(data_t), ")", sep="")
+		res = matrix(1, ncol=1, nrow=nrow(data_t))
+		rownames(res) = rownames(data_t)
+		if(!is.list(matLists)) noms_Liste = paste(substr(basename(Listes[1]), 0, (nchar(basename(Listes[1]))-4)), "_(", nrow(data_t), ")", sep="")
 		if(is.list(matLists)) noms_Liste = noms
 		
-		for(i in 2:length(Liste))
+		for(i in 2:length(Listes))
 		{
-			if(!is.list(matLists)) data_t = test_list(filename=Liste[i], type="Res", matLists, noms, path)
+			if(!is.list(matLists)) data_t = test_list(filename=Listes[i], type="Res", matLists, noms, path)
 			if(is.list(matLists)) data_t = matLists[[i]]
 			
 			nomListe = noms[i]
 			
-			if(ncol(data_t)>1)		
+			if(grepl("ratio", colnames(data_t), ignore.case=TRUE))		
 			{
 				if(Cud&(sum(grepl("ratio", colnames(data_t), ignore.case=TRUE))!=0))  # teste la presence de la col ratio et le type de data
 				{
@@ -1497,7 +1503,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			rownames(ajout) = c(rownames(temp_old)[temp_old==1], listID)
 			ajout = ajout[order(rownames(ajout)),]
 			
-			if(!is.list(matLists)) noms_Liste = c(noms_Liste, paste(substr(basename(Liste[i]), 0, (nchar(basename(Liste[i]))-4)), "_(", length(listID), ")", sep=""))
+			if(!is.list(matLists)) noms_Liste = c(noms_Liste, paste(substr(basename(Listes[i]), 0, (nchar(basename(Listes[i]))-4)), "_(", length(listID), ")", sep=""))
 			if(is.list(matLists)) noms_Liste = noms
 			res = cbind(res, as.matrix(ajout))
 		}
@@ -1519,10 +1525,10 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			#ajout des datas de chaque liste
 			#res = matrice des appartenances
 			data_all = res
-			for(M in 1:length(Liste)) #liste par liste
+			for(M in 1:length(Listes)) #liste par liste
 			{
 				#lecture du fichier
-				if(!is.list(matLists)) data_t = test_list(filename=Liste[M], type="Annot", matLists, noms, path, affich=FALSE)
+				if(!is.list(matLists)) data_t = test_list(filename=Listes[M], type="Annot", matLists, noms, path, affich=FALSE)
 				if(is.list(matLists)) data_t = matLists[[M]]
 				#ajoute une colonne vide entre les annots de chaque liste
 				data_all = cbind(data_all, matrix("", ncol=1, nrow=nrow(data_all)))
@@ -1530,12 +1536,16 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				{
 					data_all = data_all[order(rownames(data_all)),]  #classe tous les IDs
 					data_all = data_all[order(data_all[,M], decreasing = TRUE),]  #regroupe en tete les IDs classes de la liste en cours
+					
+					tmpL = data_t
 					data_t = as.matrix(data_t[order(rownames(data_t)),]) #classe les IDs de la liste en cours
+					colnames(data_t) = colnames(tmpL)	#	Recupere le nom si colonne unique perdue par order
+
 					data_all = cbind(data_all, rbind(data_t, matrix("", ncol=ncol(data_t), nrow=nrow(data_all)-nrow(data_t))))
 				}
 			}
 			
-			if(ud&ncol(data_t)>1)
+			if(ud&(sum(grepl("ratio", colnames(data_t), ignore.case=TRUE))==1))
 			{
 				# 1- recupere les colonnes ratios => dans l'ordre
 				profils = data_all[,grepl("ratio", colnames(data_all), ignore.case=TRUE)]
@@ -1549,13 +1559,13 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				}
 				UDprofils[UDprofils==""] = "n"
 				UDp = as.matrix(apply(UDprofils, 1, function(x) concat(x)))
-				data_all = cbind(data_all[,1:length(Liste)], UDp, data_all[,(length(Liste)+1):ncol(data_all)])
-				colnames(data_all)[length(Liste)+1] = "Profils"
+				data_all = cbind(data_all[,1:length(Listes)], UDp, data_all[,(length(Listes)+1):ncol(data_all)])
+				colnames(data_all)[length(Listes)+1] = "Profils"
 			}
 			if(FilesOut)
 			{
 				if(sum(grepl("Profils", colnames(data_all)))==1)  data_all=data_all[order(data_all[,"Profils"], decreasing=TRUE),]
-				for(L in 1:length(Liste))  data_all=data_all[order(data_all[,L], decreasing=TRUE),]
+				for(L in 1:length(Listes))  data_all=data_all[order(data_all[,L], decreasing=TRUE),]
 				
 				dataAlltmp = cbind(rownames(data_all), data_all)
 				write.table(dataAlltmp, file = paste(path, "/VennAnnot.txt", sep=""), sep="\t", row.names = FALSE, quote=FALSE)
@@ -1565,25 +1575,29 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			if(!annot&ud)
 			{
 				data_all = res
-				for(M in 1:length(Liste)) #liste par liste
+				for(M in 1:length(Listes)) #liste par liste
 				{
 					#lecture du fichier
-					if(!is.list(matLists)) data_t = test_list(filename=Liste[M], type="Annot", matLists, noms, path)
+					if(!is.list(matLists)) data_t = test_list(filename=Listes[M], type="Annot", matLists, noms, path)
 					if(is.list(matLists)) data_t = matLists[[M]]
 					if(ncol(data_t)>=2)		if(sum(grepl("ratio", colnames(data_t), ignore.case=TRUE))==1)
 					{
 						data_all = data_all[order(rownames(data_all)),]
 						data_all = data_all[order(data_all[,M], decreasing = TRUE),]
+						
+						tmpL = data_t
 						data_t = data_t[order(rownames(data_t)),]
+						colnames(data_t) = colnames(tmpL)
+						
 						data_all = cbind(data_all, rbind(as.matrix(data_t[,grepl("ratio", colnames(data_t), ignore.case=TRUE)]), matrix(NA, ncol=1, nrow=nrow(data_all)-nrow(data_t))))
 						colnames(data_all)[ncol(data_all)] = paste("ratios_", colnames(data_all)[M], sep="")
 					}else{
-						if(!is.list(matLists)) print(paste("!!! Ratio column not found in ", basename(Liste[M]), sep=""))
+						if(!is.list(matLists)) print(paste("!!! Ratio column not found in ", basename(Listes[M]), sep=""))
 						if(is.list(matLists)) print(paste("!!! Ratio column not found in ", noms[M], sep=""))
 					}
 				}
 				
-				if(ud&(ncol(data_t)>1))
+				if(ud&(sum(grepl("ratio", colnames(data_t), ignore.case=TRUE))==1))
 				{
 					# 1- recupere les colonnes ratios => dans l'ordre
 					profils = data_all[,grepl("ratio", colnames(data_all), ignore.case=TRUE)]
@@ -1597,8 +1611,8 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 					}
 					UDprofils[UDprofils==""] = "n"
 					UDp = as.matrix(apply(UDprofils, 1, function(x) concat(x)))
-					data_all = cbind(data_all[,1:length(Liste)], UDp, data_all[,(length(Liste)+1):ncol(data_all)])
-					colnames(data_all)[length(Liste)+1] = "Profils"
+					data_all = cbind(data_all[,1:length(Listes)], UDp, data_all[,(length(Listes)+1):ncol(data_all)])
+					colnames(data_all)[length(Listes)+1] = "Profils"
 					data_all[is.na(data_all)]=""
 				}
 			}
@@ -1702,6 +1716,84 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 	}
 	nomTot = colnames(res)[grep("total", colnames(res), ignore.case=TRUE)]
 	
+#################################################################################################################################
+	if(NutShell)
+	{
+		ABCresTable = res[,1:(ncol(res)-1)]
+		for(ABC in 1:(ncol(res)-1))	ABCresTable[ABCresTable[,ABC]==1,ABC]=LETTERS[ABC]
+		ABCresTable[ABCresTable==0]=""
+		
+		Profilbin = apply(res[,1:(ncol(res)-1)], 1, function(x) paste(x, sep="", collapse=""))
+		ProfilABC = apply(ABCresTable, 1, function(x) paste(x, sep="", collapse=""))
+	
+		if(ud)
+		{
+			ABCprof = table(ProfilABC)
+			UDprofs = matrix(0, ncol=4, nrow=0)
+			for(P in 1:length(ABCprof))
+			{
+				tmpProf = data_all[ProfilABC==names(ABCprof)[P],"Profils"]
+				SpeProfs = as.matrix(table(tmpProf))
+				SpeProfs = cbind(rep(names(ABCprof)[P], ABCprof[P]), rep(nchar(names(ABCprof)[P]), ,ABCprof[P]), rownames(SpeProfs), SpeProfs)
+			}
+			colnames(SpeProfs) = c("Profils", "N_lists", "UD_profils", "Count")
+			write.table(SpeProfs, file=paste(path, "/NutShellTableUD.txt", sep=""), sep="\t", quote=FALSE, row.names=FALSE)
+		}
+		
+		MainProfils = as.matrix(table(ProfilABC))
+		MainProfils = cbind(rownames(MainProfils), apply(as.matrix(rownames(MainProfils)), 1, function(x) nchar(x)), MainProfils)
+		colnames(MainProfils) = c("Profils", "N_lists", "Count")
+		write.table(MainProfils, file=paste(path, "/NutShellTable.txt", sep=""), sep="\t", quote=FALSE, row.names=FALSE)
+	}
+	
+#################################################################################################################################
+	
+	colorclust<-function(DataClust, methclust, metcor, couleurs, noms, w=15, h=15, path)
+	{
+		c <- cor(DataClust, method=metcor)
+		c[is.na(c)]=0
+		dc <- as.dist(1-c)
+		hc = hclust(dc, method = methclust, members=NULL)
+		
+		g = max(nchar(colnames(DataClust)))/15
+		if(h<=15*g){h=(20+(ncol(DataClust)/10))*g; w=h*0.8}
+		
+		png(filename = paste(path, "/clust[", metcor, ".", methclust, "].png", sep=""), height=h, width=w, units="cm", bg="white", res=150)
+			hcd = as.dendrogram(hc)                             
+			colleaf<-function(n)
+			{
+				if(is.leaf(n))
+				{
+					a <- attributes(n)
+					attr(n, "edgePar") <- list(col=couleurs[noms==a$label])
+					attr(n, "nodePar") <- list(pch = NA, lab.col=couleurs[noms==a$label], lab.cex=1.5)
+				}
+				n
+			}
+			#	dendrapply(hcd, function(n) utils::str(attributes(n)))
+			par(cex=0.9, mar=c(15*g, 5, 1, 1))
+			plot(dendrapply(hcd, function(n) colleaf(n)), cex=0.6)
+		dev.off()
+	}
+
+	if(VennClust&((ncol(res)-1)>2))	#	Si plus de deux listes
+	{
+		DataClust = res[,1:(ncol(res)-1)]
+		DataTempNum = matrix(as.numeric(unlist(DataClust)),nrow=nrow(DataClust))
+		colnames(DataTempNum) = colnames(DataClust)
+		DataClust = DataTempNum
+		
+		w = 15 + (ncol(DataClust)/10)
+		h = 20 + (ncol(DataClust)/10)
+		
+		if(ncol(DataClust)>=13)	couleurs = rep("black", ncol(DataClust))
+		
+		colorclust(DataClust, methclust="ward.D2", metcor="spearman", couleurs, noms, w, h, path)
+		colorclust(DataClust, methclust="average", metcor="spearman", couleurs, noms, w, h, path)
+	}
+	
+#################################################################################################################################
+
 	if(FilesOut)	#graphs
 	{
 		if(grep("total", colnames(res), ignore.case=TRUE)==3)
@@ -1733,14 +1825,14 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			}
 			ListN[sapply(ListN, FUN=function(x) is.null(x))]=1			#	Remplace les compatges NULL par 1
 			
-			graph_2(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, Solid=Solid, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title)
+			graph_2(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, Solid=Solid, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title, lw)
 				
 			if(prop)
 			{
-				graph_prop_2(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nAB, tot_ugenes, noms, couleurs=couleurs, tlog=FALSE, colBlack=colBlack)
+				graph_prop_2(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nAB, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw)
 				
 				if(max(nA, nB, nAB)/min(nA, nB, nAB)>10) # Si le ratio max/min>10 => log2
-					graph_prop_2(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nAB, tot_ugenes, noms, couleurs=couleurs, tlog=TRUE, colBlack=colBlack)
+					graph_prop_2(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nAB, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=TRUE, colBlack=colBlack, title=title, lw=lw)
 
 			}
 		}
@@ -1790,14 +1882,14 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			}
 			ListN[sapply(ListN, FUN=function(x) is.null(x))]=1			#	Remplace les compatges NULL par 1
 			
-			graph_3(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, Solid=Solid, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title)
+			graph_3(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, Solid=Solid, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title, lw=lw)
 
 			if(prop)
 			{ 
-				graph_prop_3(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs=couleurs, tlog=FALSE, colBlack=colBlack)
+				graph_prop_3(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw)
 				
 				if(max(nA, nB, nC, nAB, nAC, nBC, nABC)/min(nA, nB, nC, nAB, nAC, nBC, nABC)>10) # Si le ratio max/min>10 => log2
-					graph_prop_3(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs=couleurs, tlog=FALSE, colBlack=colBlack)
+					graph_prop_3(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw)
 			}
 		}
 		
@@ -1874,14 +1966,14 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			}
 			ListN[sapply(ListN, FUN=function(x) is.null(x))]=1			#	Remplace les compatges NULL par 1
 			
-			graph_4(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, Solid=Solid, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title)
+			graph_4(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, Solid=Solid, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title, lw=lw)
 				
 			if(prop) 
 			{
-				graph_prop_4(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs=couleurs, tlog=FALSE, colBlack=colBlack)
+				graph_prop_4(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw)
 				
 				if(max(nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD)/min(nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD)>10) # Si le ratio max/min>10 => log2
-					graph_prop_4(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs=couleurs, tlog=TRUE, colBlack=colBlack)
+					graph_prop_4(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=TRUE, colBlack=colBlack, title=title, lw=lw)
 			}
 		}
 		if(overlaps)  overlapp(res, path, f)
@@ -1899,7 +1991,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		resTmp = res
 	}
 	
-	if(VennBar)  BarVenn(resTmp=resTmp, path=path, ud=ud)	# Si plus de 4 Liste => VennBar=TRUE
+	if(VennBar)  BarVenn(resTmp=resTmp, path=path, ud=ud, lw=lw)	# Si plus de 4 Liste => VennBar=TRUE
 	
 	if(OnlyVariable) return(data_all)
 }
