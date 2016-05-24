@@ -1,6 +1,10 @@
-#	annot=TRUE; matLists=""; pathRes=""; pathLists="./FichiersTests/Lists_4_UD/"; ud=TRUE; prop=TRUE; noms=""; overlaps=TRUE; f=0; display=TRUE; couleurs=""; VennBar=TRUE; CompName=""; transp=0.5; Solid=TRUE; Profils=FALSE; OnlyVariable=FALSE; colBlack=FALSE; ColorTxt=""; Ptest=TRUE; tUD=NULL; tUDp=NULL; tnoUD=NULL; Gtype="png"; lwd=1; title=""; NutShell=TRUE; VennClust=TRUE
+#	TestAll
+#	annot=TRUE; matLists=""; pathRes=""; pathLists="./FichiersTests/Lists_4_UD/"; ud=TRUE; prop=TRUE; noms=""; overlaps=TRUE; f=0; display=TRUE; couleurs=""; VennBar=TRUE; CompName=""; transp=0.5; Solid=TRUE; Profils=FALSE; OnlyVariable=FALSE; colBlack=FALSE; ColorTxt=""; Ptest=TRUE; tUD=NULL; tUDp=NULL; tnoUD=NULL; Gtype="png"; lw=1; title="Test All"; NutShell=TRUE; VennClust=TRUE; OnlyVenn=FALSE
+#	pathLists="./for_Venns/APDS1__(s_i_vs_ns_i)_Napp/"
+#	pathLists="./FichiersTests/Matrix_Of_Folds"
+#	annot=TRUE; matLists=""; pathRes=""; pathLists="./FichiersTests/Lists_4_UD/"; ud=TRUE; prop=FALSE; noms=""; overlaps=FALSE; f=0; display=TRUE; couleurs=""; VennBar=FALSE; CompName=""; transp=0.5; Solid=TRUE; Profils=FALSE; OnlyVariable=FALSE; colBlack=FALSE; ColorTxt=""; Ptest=FALSE; tUD=NULL; tUDp=NULL; tnoUD=NULL; Gtype="png"; lw=1; title=""; NutShell=TRUE; VennClust=TRUE; OnlyVenn=FALSE
 evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, prop=FALSE, noms="", overlaps=FALSE, f=0, display=FALSE, couleurs="", VennBar=FALSE,
-		CompName="", transp=0.5, Solid=TRUE, Profils=FALSE, OnlyVariable=FALSE, colBlack=FALSE, ColorTxt="", Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png", title="", lw=1, NutShell=TRUE, VennClust=TRUE)
+		CompName="", transp=0.5, Solid=TRUE, Profils=FALSE, OnlyVariable=FALSE, colBlack=FALSE, ColorTxt="", Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png", title="", lw=1, NutShell=TRUE, VennClust=TRUE, OnlyVenn=FALSE)
 {  
 	if(OnlyVariable)
 	{
@@ -47,10 +51,10 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 					colnames(tmpList) = tmpFile[1,]	
 				}
 				
-				tmpList = read.table(Liste[L], header=TRUE, sep="\t")
+				tmpList = as.matrix(read.table(Liste[L], header=TRUE, sep="\t"))
 				# test unicite des id
 				if(sum(duplicated(tmpList[,1]))!=0)	write(paste("Error: duplicated ", sum(duplicated(tmpList[,1])), " IDs in ", Liste[L], " :\n\t\t ", tmpList[duplicated(tmpList[,1]),1], sep=""), file="")
-											
+				
 				if(ncol(tmpList)==1)
 				{					
 					rownames(tmpList) = tmpList[,1]
@@ -59,7 +63,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				}else{
 					tmpL = tmpList
 					tmpList = as.matrix(tmpList[,2:ncol(tmpL)])
-					rownames(tmpList) = rownames(tmpL)
+					rownames(tmpList) = tmpL[,1]
 					colnames(tmpList) = colnames(tmpL)[2:ncol(tmpL)]
 				}
 				matLists[[length(matLists)+1]] = tmpList
@@ -72,19 +76,20 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			if(sum(is.na(as.numeric(matLists)))!=0)
 			{
 				write("         !!! Non numerical elements in the source file", file="")
+				matLists[is.na(matLists)]=""
 				#	break	# Un seul fichier non numerique
 			}
 		}	
 	}
-
+	
 	if(display&FilesOut){
 		write("        ,.-.,                                                                                  ", file="")
 		write("      .`     `.                                                                                ", file="")
-		write("     /.-., ,.-.`            *       *                                 ****     ****     * *    ", file="")
-		write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *    *   *  *    ", file="")
-		write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *        *       *    ", file="")
+		write("     /.-., ,.-.`            *       *                                 ****     ****     ****   ", file="")
+		write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *    *   *    *  ", file="")
+		write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *        *        *   ", file="")
 		write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *         *       *    ", file="")
-		write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *       *    *      *    ", file="")
+		write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *       *    *    *      ", file="")
 		write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** *  ****  * ******* ", file="")
 		write("     `'-'` `'-'`                                                                               ", file="")
 		#write("\n\t[Run man.evenn() for quick help]\n", file="")
@@ -319,7 +324,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		{
 			for(K in 1:nrow(comps))
 			{
-				tmp = res[,c(comps[K,])] #extrait les deux colonnes en question
+				tmp = t(cbind(apply(res[,c(comps[K,])], 1, function(x) as.numeric(x)))) #extrait les deux colonnes en question
 				tmp = cbind(tmp, (tmp[,1] + tmp[,2]))
 				comm = nrow(tmp[tmp[,3]==2,])
 				if(!is.null(comm))
@@ -440,14 +445,15 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			flush.console()
 			break;
 		}
-
-		data_t=DuplicateTest(filename=filename, fich=data_t, resPath=path, nomlignes=FALSE, affich=affich)
+		
+		data_t=DuplicateTest(filename=filename, fich=data_t, resPath=path, nomlignes=TRUE, affich=affich)
 		
 		tmpL = data_t
+		data_t = as.matrix(data_t)
 		data_t = as.matrix(data_t[,2:ncol(data_t)])
 		rownames(data_t) = rownames(tmpL)
 		colnames(data_t) = colnames(tmpL)[2:ncol(tmpL)]
-
+		
 		return(data_t)
 	}
 	
@@ -481,7 +487,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		return(TempListe)
 	}
 	
-	graph_2<-function(path, ListN, tot_ugenes, noms, ud, couleurs, couleursIn, ColorTxt, Solid, Ptest, tUD, tUDp, tnoUD, Gtype, title, lw)
+	graph_2<-function(path, ListN, tot_ugenes, noms, ud, couleurs, couleursIn, ColorTxt, Solid, Ptest, tUD, tUDp, tnoUD, Gtype, title, lw, OnlyVenn)
 	{
 		if(is.null(tUD))	tUD = 2.5
 		if(is.null(tUDp))	tUDp = 2
@@ -527,24 +533,45 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			text(x=(19*sizeGx)/30, y=ycercles[2], labels=ListN$nB,  cex=tnoUD, col=colTxt)
 			text(x=sizeGx/2,    	y=ycercles[2],   labels=ListN$nAB, cex=tnoUD, col=colTxt)
 		}
-		#titres
-		tTitres = 2
-		text(x=sizeGx/7, y=(7*sizeGy)/10, labels=paste("Total: ", tot_ugenes, sep=""), cex=tTitres, col="black")	#	Total
 		
-		if(title!="")	text(x=sizeGx/2, y=sizeGy, labels=title, cex=tTitres*1.2, col="black")
-		
-		text(x=sizeGx/2, y=1.6*sizeGy/10, labels=paste(ListN$listeA, " (", sum(ListN$nA, ListN$nAB), ")", sep=""), cex=tTitres, col=couleurs[1])
-		text(x=sizeGx/2, y=sizeGy/10,     labels=paste(ListN$listeB, " (", sum(ListN$nB, ListN$nAB), ")", sep=""), cex=tTitres, col=couleurs[2])
-		
-		if(Ptest)
+		if(!OnlyVenn)
 		{
-			VennTest <- matrix(c(ListN$nA, ListN$nB, ListN$nAB, ListN$nAB), nrow = 2, dimnames = list(c(ListN$listeA, ListN$listeB), c("Spe", "Commun")))
-			text(x=(5*sizeGx/6), y=(7*sizeGy)/10, llabels=paste("Fisher's exact test pval:\n", signif(as.numeric(fisher.test(VennTest[, apply(VennTest, 2, function(x) sum(x)!=0)], alternative = "two.sided")[1]), digits=4), sep=""), cex=1, col="black")
+			#titres
+			tTitres = 2
+			text(x=sizeGx/7, y=(7*sizeGy)/10, labels=paste("Total: ", tot_ugenes, sep=""), cex=tTitres, col="black")	#	Total
+			
+			if(title!="")	text(x=sizeGx/2, y=sizeGy, labels=title, cex=tTitres*1.2, col="black")
+			
+			text(x=sizeGx/2, y=1.6*sizeGy/10, labels=paste(ListN$listeA, " (", sum(ListN$nA, ListN$nAB), ")", sep=""), cex=tTitres, col=couleurs[1])
+			text(x=sizeGx/2, y=sizeGy/10,     labels=paste(ListN$listeB, " (", sum(ListN$nB, ListN$nAB), ")", sep=""), cex=tTitres, col=couleurs[2])
+			
+			if(Ptest)
+			{
+				VennTest <- matrix(c(ListN$nA, ListN$nB, ListN$nAB, ListN$nAB), nrow = 2, dimnames = list(c(ListN$listeA, ListN$listeB), c("Spe", "Commun")))
+				
+				DataTest = VennTest[, apply(VennTest, 2, function(x) sum(x)!=0)]
+				
+				pvalProp = try(signif(as.numeric(fisher.test(DataTest, alternative = "two.sided")[1]), digits=4), silent = TRUE)
+				if(is.na(as.numeric(pvalProp)))
+				{
+					pvalProp = try(signif(as.numeric(chisq.test(DataTest)[3]), digits=4), silent = TRUE)
+					text(x=(5*sizeGx/6), y=(7*sizeGy)/10,  labels=paste("chi-squared test pval:\n", pvalProp, sep=""), cex=1, col="black")
+				}else{
+					text(x=(5*sizeGx/6), y=(7*sizeGy)/10,  labels=paste("Fisher's exact test pval:\n", pvalProp, sep=""), cex=1, col="black")
+				}
+			}
 		}
 		dev.off()
+		
+		if(!OnlyVenn&Ptest)	
+		{
+			png(filename=paste(path, "/MosaicPlot.png", sep=""), pointsize=30, bg="white", width=1000, height=1000)
+			mosaicplot(VennTest[, apply(VennTest, 2, function(x) sum(x)!=0)], color=couleurs, main=title)
+			dev.off()
+		}
 	}
 	
-	graph_3<-function(path, ListN, tot_ugenes, noms, ud, couleurs, couleursIn, ColorTxt, Solid, Ptest, tUD, tUDp, tnoUD, Gtype, title, lw)
+	graph_3<-function(path, ListN, tot_ugenes, noms, ud, couleurs, couleursIn, ColorTxt, Solid, Ptest, tUD, tUDp, tnoUD, Gtype, title, lw, OnlyVenn)
 	{
 		if(is.null(tUD))	tUD = 2.5
 		if(is.null(tUDp))	tUDp = 2
@@ -606,32 +633,51 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			text(x=xcercles[1],                                y=mean(ycercles),                            labels=ListN$nABC, cex=tnoUD, col=colTxt)
 		}
 		
-		#titres
-		tTitres = 2.5
-		
-		if(title!="")	text(x=(sizeG/2), y=sizeG, labels=title, cex=tTitres*1.3, col="black", pos=1)
-		
-		text(x=(sizeG/2), y=1.5*sizeG/8, labels=paste(ListN$listeA, " (", sum(ListN$nA, ListN$nAB, ListN$nAC, ListN$nABC), ")", sep=""), cex=tTitres, col=couleurs[1], pos=1, offset=(tTitres))
-		text(x=(sizeG/2), y=1.5*sizeG/8, labels=paste(ListN$listeB, " (", sum(ListN$nB, ListN$nAB, ListN$nBC, ListN$nABC), ")", sep=""), cex=tTitres, col=couleurs[2], pos=1, offset=(tTitres*2))
-		text(x=(sizeG/2), y=1.5*sizeG/8, labels=paste(ListN$listeC, " (", sum(ListN$nC, ListN$nAC, ListN$nBC, ListN$nABC), ")", sep=""), cex=tTitres, col=couleurs[3], pos=1, offset=(tTitres*3))
-		
-		text(x=(xcercles[3]+rcercles[3]), y=ycercles[1], labels=paste("Total: ", tot_ugenes, collapse="\n"), cex=tTitres, col="black")
-		
-		if(Ptest)	
+		if(!OnlyVenn)
 		{
-			VennTest <- matrix(c(  ListN$nA,   ListN$nB,    ListN$nC, #	Spe 
-								  ListN$nAB,  ListN$nAB,           0, #	nAB 
-								  ListN$nAC,          0,   ListN$nAC, #	nAC
-							              0,  ListN$nBC,   ListN$nBC, #	nBC
-								 ListN$nABC, ListN$nABC, ListN$nABC), #	nABC
-					nrow = 3, dimnames = list(c(ListN$listeA, ListN$listeB, ListN$listeC), c("Spe", "AB", "AC", "BC", "Communs")))		
-					
-			text(x=(25*sizeG)/30, y=(2*sizeG)/30,  labels=paste("Fisher's exact test pval:\n", signif(as.numeric(fisher.test(VennTest[, apply(VennTest, 2, function(x) sum(x)!=0)], alternative = "two.sided")[1]), digits=4), sep=""), cex=1, col="black")
+			#titres
+			tTitres = 2.5
+			
+			if(title!="")	text(x=(sizeG/2), y=sizeG, labels=title, cex=tTitres*1.3, col="black", pos=1)
+			
+			text(x=(sizeG/2), y=1.5*sizeG/8, labels=paste(ListN$listeA, " (", sum(ListN$nA, ListN$nAB, ListN$nAC, ListN$nABC), ")", sep=""), cex=tTitres, col=couleurs[1], pos=1, offset=(tTitres))
+			text(x=(sizeG/2), y=1.5*sizeG/8, labels=paste(ListN$listeB, " (", sum(ListN$nB, ListN$nAB, ListN$nBC, ListN$nABC), ")", sep=""), cex=tTitres, col=couleurs[2], pos=1, offset=(tTitres*2))
+			text(x=(sizeG/2), y=1.5*sizeG/8, labels=paste(ListN$listeC, " (", sum(ListN$nC, ListN$nAC, ListN$nBC, ListN$nABC), ")", sep=""), cex=tTitres, col=couleurs[3], pos=1, offset=(tTitres*3))
+			
+			text(x=(xcercles[3]+rcercles[3]), y=ycercles[1], labels=paste("Total: ", tot_ugenes, collapse="\n"), cex=tTitres, col="black")
+			
+			if(Ptest)	
+			{
+				VennTest <- matrix(c(  ListN$nA,   ListN$nB,    ListN$nC, #	Spe 
+								ListN$nAB,  ListN$nAB,           0, #	nAB 
+								ListN$nAC,          0,   ListN$nAC, #	nAC
+								0,  ListN$nBC,   ListN$nBC, #	nBC
+								ListN$nABC, ListN$nABC, ListN$nABC), #	nABC
+						nrow = 3, dimnames = list(c(ListN$listeA, ListN$listeB, ListN$listeC), c("Spe", "AB", "AC", "BC", "Communs")))		
+				
+				DataTest = VennTest[, apply(VennTest, 2, function(x) sum(x)!=0)]
+				
+				pvalProp = try(signif(as.numeric(fisher.test(DataTest, alternative = "two.sided")[1]), digits=4), silent = TRUE)
+				if(is.na(as.numeric(pvalProp)))
+				{
+					pvalProp = try(signif(as.numeric(chisq.test(DataTest)[3]), digits=4), silent = TRUE)
+					text(x=(25*sizeG)/30, y=(2*sizeG)/30,  labels=paste("chi-squared test pval:\n", pvalProp, sep=""), cex=1, col="black")
+				}else{
+					text(x=(25*sizeG)/30, y=(2*sizeG)/30,  labels=paste("Fisher's exact test pval:\n", pvalProp, sep=""), cex=1, col="black")
+				}
+			}
 		}
 		dev.off()
+		
+		if(!OnlyVenn&Ptest)	
+		{
+			png(filename=paste(path, "/MosaicPlot.png", sep=""), pointsize=30, bg="white", width=1000, height=1000)
+			mosaicplot(VennTest[, apply(VennTest, 2, function(x) sum(x)!=0)], color=couleurs, main=title)
+			dev.off()
+		}
 	}
 	
-	graph_4<-function(path, ListN, tot_ugenes, noms, ud, couleurs, couleursIn, ColorTxt, Solid, Ptest, tUD, tUDp, tnoUD, Gtype, title, lw)
+	graph_4<-function(path, ListN, tot_ugenes, noms, ud, couleurs, couleursIn, ColorTxt, Solid, Ptest, tUD, tUDp, tnoUD, Gtype, title, lw, OnlyVenn)
 	{
 		if(is.null(tUD))	tUD=2
 		if(is.null(tUDp))	tUDp=1.5
@@ -728,43 +774,66 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			
 			text(x=(11*sizeG)/30, y=(11*sizeG)/30, labels=ListN$nABCD, cex=tnoUD, col=colTxt)
 		}
-		#titres
-		tTitres=3
 		
-		if(title!="")	text(x=(sizeG/2), y=sizeG, labels=title, cex=tTitres*1.2, col="black", pos=1)
-		
-		text(x=sizeG/2, y=(29*sizeG)/30, labels=paste(ListN$listeA, " (", sum(ListN$nA, ListN$nAB, ListN$nAC, ListN$nAD, ListN$nABC, ListN$nABD, ListN$nACD, ListN$nABCD), ")", sep=""), cex=tTitres, col=couleurs[1], pos=1, offset=tTitres)
-		text(x=sizeG/2, y=(29*sizeG)/30, labels=paste(ListN$listeB, " (", sum(ListN$nB, ListN$nAB, ListN$nBD, ListN$nBC, ListN$nABC, ListN$nABD, ListN$nBCD, ListN$nABCD), ")", sep=""), cex=tTitres, col=couleurs[2], pos=1, offset=tTitres*2)
-		text(x=sizeG/2, y=(29*sizeG)/30, labels=paste(ListN$listeC, " (", sum(ListN$nC, ListN$nAC, ListN$nCD, ListN$nBC, ListN$nABC, ListN$nACD, ListN$nBCD, ListN$nABCD), ")", sep=""), cex=tTitres, col=couleurs[3], pos=1, offset=tTitres*3)
-		text(x=sizeG/2, y=(29*sizeG)/30, labels=paste(ListN$listeD, " (", sum(ListN$nD, ListN$nBD, ListN$nCD, ListN$nAD, ListN$nABD, ListN$nACD, ListN$nBCD, ListN$nABCD), ")", sep=""), cex=tTitres, col=couleurs[4], pos=1, offset=tTitres*4)
-		
-		text(x=(25*sizeG)/30, y=(3*sizeG)/30,  labels=paste("Total: ", tot_ugenes, collapse="\n"), cex=tTitres, col="black")
-		
-		if(Ptest)
+		if(!OnlyVenn)
 		{
-			VennTest <- matrix(c(   ListN$nA,    ListN$nB,    ListN$nC,    ListN$nD,	#	Spe 
-								   ListN$nAB,   ListN$nAB,           0,            0,	#	nAB 
-								   ListN$nAC,           0,   ListN$nAC,            0,	#	nAC
-								   ListN$nAD,           0,           0,    ListN$nAD,	#	nAD
-								     	   0,   ListN$nBC,   ListN$nBC,            0,	#	nBC
-								     	   0,   ListN$nBD,           0,    ListN$nBD,	#	nBD
-								     	   0,           0,   ListN$nCD,    ListN$nCD,	#	nCD
-								  ListN$nABC,  ListN$nABC,  ListN$nABC,            0,	#	nABC
-								  ListN$nABD,  ListN$nABD,           0,   ListN$nABD,	#	nABD
-								  ListN$nACD,           0,  ListN$nACD,   ListN$nACD,	#	nACD
-								    	   0,  ListN$nBCD,  ListN$nBCD,   ListN$nBCD,	#	nBCD
-								 ListN$nABCD, ListN$nABCD, ListN$nABCD, ListN$nABCD),   #	nABCD
-					nrow = 4, dimnames = list(c(ListN$listeA, ListN$listeB, ListN$listeC, ListN$listeD), c("Spe", "AB", "AC", "AD", "BC", "BD", "CD", "ABC", "ABD", "ACD", "BCD", "Communs")))		
-			text(x=(25*sizeG)/30, y=(1*sizeG)/30,  labels=paste("Fisher's exact test pval:\n", signif(as.numeric(fisher.test(VennTest[, apply(VennTest, 2, function(x) sum(x)!=0)], alternative = "two.sided")[1]), digits=4), sep=""), cex=1, col="black")
+			#titres
+			tTitres=3
+			
+			if(title!="")	text(x=(sizeG/2), y=sizeG, labels=title, cex=tTitres*1.2, col="black", pos=1)
+			
+			text(x=sizeG/2, y=(29*sizeG)/30, labels=paste(ListN$listeA, " (", sum(ListN$nA, ListN$nAB, ListN$nAC, ListN$nAD, ListN$nABC, ListN$nABD, ListN$nACD, ListN$nABCD), ")", sep=""), cex=tTitres, col=couleurs[1], pos=1, offset=tTitres)
+			text(x=sizeG/2, y=(29*sizeG)/30, labels=paste(ListN$listeB, " (", sum(ListN$nB, ListN$nAB, ListN$nBD, ListN$nBC, ListN$nABC, ListN$nABD, ListN$nBCD, ListN$nABCD), ")", sep=""), cex=tTitres, col=couleurs[2], pos=1, offset=tTitres*2)
+			text(x=sizeG/2, y=(29*sizeG)/30, labels=paste(ListN$listeC, " (", sum(ListN$nC, ListN$nAC, ListN$nCD, ListN$nBC, ListN$nABC, ListN$nACD, ListN$nBCD, ListN$nABCD), ")", sep=""), cex=tTitres, col=couleurs[3], pos=1, offset=tTitres*3)
+			text(x=sizeG/2, y=(29*sizeG)/30, labels=paste(ListN$listeD, " (", sum(ListN$nD, ListN$nBD, ListN$nCD, ListN$nAD, ListN$nABD, ListN$nACD, ListN$nBCD, ListN$nABCD), ")", sep=""), cex=tTitres, col=couleurs[4], pos=1, offset=tTitres*4)
+			
+			text(x=(25*sizeG)/30, y=(3*sizeG)/30,  labels=paste("Total: ", tot_ugenes, collapse="\n"), cex=tTitres, col="black")
+			
+			if(Ptest)
+			{
+				VennTest <- matrix(c(   ListN$nA,    ListN$nB,    ListN$nC,    ListN$nD,	#	Spe 
+								ListN$nAB,   ListN$nAB,           0,            0,	#	nAB 
+								ListN$nAC,           0,   ListN$nAC,            0,	#	nAC
+								ListN$nAD,           0,           0,    ListN$nAD,	#	nAD
+								0,   ListN$nBC,   ListN$nBC,            0,	#	nBC
+								0,   ListN$nBD,           0,    ListN$nBD,	#	nBD
+								0,           0,   ListN$nCD,    ListN$nCD,	#	nCD
+								ListN$nABC,  ListN$nABC,  ListN$nABC,            0,	#	nABC
+								ListN$nABD,  ListN$nABD,           0,   ListN$nABD,	#	nABD
+								ListN$nACD,           0,  ListN$nACD,   ListN$nACD,	#	nACD
+								0,  ListN$nBCD,  ListN$nBCD,   ListN$nBCD,	#	nBCD
+								ListN$nABCD, ListN$nABCD, ListN$nABCD, ListN$nABCD),   #	nABCD
+						nrow = 4, dimnames = list(c(ListN$listeA, ListN$listeB, ListN$listeC, ListN$listeD), c("Spe", "AB", "AC", "AD", "BC", "BD", "CD", "ABC", "ABD", "ACD", "BCD", "Communs")))		
+				
+				DataTest = VennTest[, apply(VennTest, 2, function(x) sum(x)!=0)]
+				
+				pvalProp = try(signif(as.numeric(fisher.test(DataTest, alternative = "two.sided")[1]), digits=4), silent = TRUE)
+				if(is.na(as.numeric(pvalProp)))
+				{
+					pvalProp = try(signif(as.numeric(chisq.test(DataTest)[3]), digits=4), silent = TRUE)
+					text(x=(25*sizeG)/30, y=(1*sizeG)/30,  labels=paste("chi-squared test pval:\n", pvalProp, sep=""), cex=1, col="black")
+				}else{
+					text(x=(25*sizeG)/30, y=(1*sizeG)/30,  labels=paste("Fisher's exact test pval:\n", pvalProp, sep=""), cex=1, col="black")
+				}
+				
+			}
 		}
 		dev.off()
+		
+		if(!OnlyVenn&Ptest)	
+		{
+			png(filename=paste(path, "/MosaicPlot.png", sep=""), pointsize=30, bg="white", width=1000, height=1000)
+			mosaicplot(VennTest[, apply(VennTest, 2, function(x) sum(x)!=0)], color=couleurs, main=title)
+			dev.off()
+		}
 	}
 	
-	graph_prop_2<-function(path, res, nA, nB, nAB, tot_ugenes, noms, couleurs, couleursIn, tlog, colBlack, title, lw)
+	graph_prop_2<-function(path, res, nA, nB, nAB, tot_ugenes, noms, couleurs, couleursIn, tlog, colBlack, title, lw, OnlyVenn)
 	{
 		if(!colBlack)  
 		{
-			colWhite="white"; coultxt=couleurs
+			#	colWhite="white"; coultxt=couleurs
+			colWhite = add.alpha(couleurs, alpha=0.7); coultxt=couleurs
 		}else{
 			colWhite="black"; coultxt = rep("black", length(couleurs))
 		}
@@ -783,7 +852,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			nrB = round(nB/max(n, nA, nB)*50)
 			nrAB = round(nAB/max(n, nA, nB)*50)
 		}
-
+		
 		#calculs des rayons pour que la surface des cercles reflete la taille des Liste
 		if(is.infinite(nr[1])){rAtot=0}else{rAtot=sqrt(nr[1]/pi)}
 		if(is.infinite(nr[2])){rBtot=0}else{rBtot=sqrt(nr[2]/pi)}
@@ -835,26 +904,29 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		
 		# N groupes
 		taille = 7
-		text(x=xA, y=yA, labels=paste(nA), cex=taille, col=colWhite)
-		text(x=xB, y=yB, labels=paste(nB), cex=taille, col=colWhite)
+		text(x=xA, y=yA, labels=paste(nA), cex=taille, col=colWhite[1])
+		text(x=xB, y=yB, labels=paste(nB), cex=taille, col=colWhite[2])
 		text(x=xAB, y=yAB, labels=paste(nAB), col="black", cex=taille)
 		
-		#titres
-		taille = 6    
-		text(x=xAB, y=ymin*1.6, labels=paste(colnames(res)[1], " (", n[1], ")", sep=""), cex=taille, col=couleurs[1], pos=1,  offset=taille)
-		text(x=xAB, y=ymin*1.5, labels=paste(colnames(res)[2], " (", n[2], ")", sep=""), cex=taille, col=couleurs[2], pos=1, offset=taille*2)
-		
-		tTitres=6
-		if(title!="")	text(x=xAB, y=ymax*1.05, labels=title, cex=tTitres*1.2, col="black")
-		
+		if(!OnlyVenn)
+		{
+			#titres
+			taille = 6    
+			text(x=xAB, y=ymin*1.6, labels=paste(colnames(res)[1], " (", n[1], ")", sep=""), cex=taille, col=couleurs[1], pos=1, offset=taille)
+			text(x=xAB, y=ymin*1.5, labels=paste(colnames(res)[2], " (", n[2], ")", sep=""), cex=taille, col=couleurs[2], pos=1, offset=taille*2)
+			
+			tTitres=6
+			if(title!="")	text(x=xAB, y=ymax*1.05, labels=title, cex=tTitres*1.2, col="black")
+		}
 		dev.off()
 	}
 	
-	graph_prop_3<-function(path, res, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs, couleursIn, tlog, colBlack, title, lw)
+	graph_prop_3<-function(path, res, nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs, couleursIn, tlog, colBlack, title, lw, OnlyVenn)
 	{
 		if(!colBlack)  
 		{
-			colWhite="white"; coultxt=couleurs
+			#colWhite="white"; coultxt=couleurs
+			colWhite = add.alpha(couleurs, alpha=0.7); coultxt=couleurs
 		}else{
 			colWhite="black"; coultxt = rep("black", length(couleurs))
 		}
@@ -967,10 +1039,10 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		ymax = (yAtot + rAtot)
 		plot.window(c(xmin, xmax), c(ymin, ymax), asp=1)
 		segments(x0=c(xAtot, xBtot, xAtot, xCtot, xBtot, xCtot, xAtot, xBtot, xCtot),
-				 y0=c(yAtot, yBtot, yAtot, yCtot, yBtot, yCtot, yAtot, yBtot, yCtot),
-				 x1=c(xAB, xAB, xAC, xAC, xBC, xBC, xABC, xABC, xABC),
-				 y1=c(yAB, yAB, yAC, yAC, yBC, yBC, yABC, yABC, yABC),
-				 col=c(couleurs[1], couleurs[2], couleurs[1], couleurs[3], couleurs[2], couleurs[3], couleurs[1], couleurs[2], couleurs[3]), lwd=lw)
+				y0=c(yAtot, yBtot, yAtot, yCtot, yBtot, yCtot, yAtot, yBtot, yCtot),
+				x1=c(xAB, xAB, xAC, xAC, xBC, xBC, xABC, xABC, xABC),
+				y1=c(yAB, yAB, yAC, yAC, yBC, yBC, yABC, yABC, yABC),
+				col=c(couleurs[1], couleurs[2], couleurs[1], couleurs[3], couleurs[2], couleurs[3], couleurs[1], couleurs[2], couleurs[3]), lwd=lw)
 		#ajouter les 3 segments pour le cercle central
 		symbols(x=xCircles, y=yCircles, circles=rCircles, main = "PropCircles", fg=colorCircles, bg="white", add=TRUE, inches=FALSE, lwd=lw)
 		symbols(x=xSpeCircles, y=ySpeCircles, circles=rSpeCircles, main = "PropCircles", fg=colorSpeCircles, bg=colorSpeCircles, add=TRUE, inches=FALSE, lwd=1)
@@ -978,38 +1050,42 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		taille=2
 		#effectifs
 		text(x=xAtot, y=(yAtot-rAtot)+((yA-rA)-(yAtot-rAtot))/2, labels=paste(n[1]-nA), cex=taille, col=coultxt[1], font=1)
-		text(x=xA, y=yA, labels=paste(nA), cex=taille, col=colWhite, font=2)
+		text(x=xA, y=yA, labels=paste(nA), cex=taille, col=colWhite[1], font=2)
 		
 		text(x=xBtot+(rB*cos(pi/6)), y=yBtot+(rB*sin(pi/6)), labels=paste(n[2]-nB), cex=taille, col=coultxt[2], font=1)
-		text(x=xB, y=yB, labels=paste(nB), cex=taille, col=colWhite, font=2)
+		text(x=xB, y=yB, labels=paste(nB), cex=taille, col=colWhite[2], font=2)
 		
 		text(x=xCtot-(rC*cos(pi/6)), y=yCtot+(rC*sin(pi/6)), labels=paste(n[3]-nC), cex=taille, col=coultxt[3], font=1)
-		text(x=xC, y=yC, labels=paste(nC), cex=taille, col=colWhite, font=2)
+		text(x=xC, y=yC, labels=paste(nC), cex=taille, col=colWhite[3], font=2)
 		
 		text(x=xAB, y=yAB, labels=paste(nAB), cex=taille, col="black", font=1)
 		text(x=xAC, y=yAC, labels=paste(nAC), cex=taille, col="black", font=1)
 		text(x=xBC, y=yBC, labels=paste(nBC), cex=taille, col="black", font=1)
 		text(x=xABC, y=yABC, labels=paste(nABC), cex=taille, col="black", font=1)
 		
-		text(x=0.1, y=(yAB+yAtot)/2, labels=paste("Total: ", tot_ugenes, collapse="\n"), cex=taille, col="black", font=2)
-		
-		#titres
-		taille=2
-		text(x=xAtot, y=ymin*1.2, labels=paste(colnames(res)[1], " (", n[1], ")", sep=""), cex=taille, col=couleurs[1], pos=1, offset=0)
-		text(x=xAtot, y=ymin*1.2, labels=paste(colnames(res)[2], " (", n[2], ")", sep=""), cex=taille, col=couleurs[2], pos=1, offset=2)
-		text(x=xAtot, y=ymin*1.2, labels=paste(colnames(res)[3], " (", n[3], ")", sep=""), cex=taille, col=couleurs[3], pos=1, offset=4)
-		
-		tTitres=3
-		if(title!="")	text(x=xA, y=ymax*1.15, labels=title, cex=tTitres, col="black")
-		
+		if(!OnlyVenn)
+		{
+			text(x=0.1, y=(yAB+yAtot)/2, labels=paste("Total: ", tot_ugenes, collapse="\n"), cex=taille, col="black", font=2)
+			
+			#titres
+			taille=2
+			text(x=xAtot, y=ymin*1.2, labels=paste(colnames(res)[1], " (", n[1], ")", sep=""), cex=taille, col=couleurs[1], pos=1, offset=0)
+			text(x=xAtot, y=ymin*1.2, labels=paste(colnames(res)[2], " (", n[2], ")", sep=""), cex=taille, col=couleurs[2], pos=1, offset=2)
+			text(x=xAtot, y=ymin*1.2, labels=paste(colnames(res)[3], " (", n[3], ")", sep=""), cex=taille, col=couleurs[3], pos=1, offset=4)
+			
+			tTitres=3
+			if(title!="")	text(x=xA, y=ymax*1.15, labels=title, cex=tTitres, col="black")
+		}
 		dev.off()
 	}
 	
-	graph_prop_4<-function(path, res, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs, couleursIn, tlog, colBlack, title, lw)
+	graph_prop_4<-function(path, res, nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs, couleursIn, tlog, colBlack, title, lw, OnlyVenn)
 	{
+		taille=2
 		if(!colBlack)  
 		{
-			colWhite="white"; coultxt=couleurs
+			#colWhite="white"; coultxt=couleurs
+			colWhite = add.alpha(couleurs, alpha=0.7); coultxt=couleurs
 		}else{
 			colWhite="black"; coultxt = rep("black", length(couleurs))
 		}
@@ -1220,13 +1296,6 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		symbols(x=as.numeric(data_graph[1:15,"xCircles"]), y=as.numeric(data_graph[1:15,"yCircles"]), circles=as.numeric(data_graph[1:15,"rCircles"]), main = "PropCircles", fg=data_graph[1:15,"colorCircles"], bg="white", add=TRUE, inches=FALSE, lwd=lw)
 		symbols(x=as.numeric(data_graph[16:19,"xCircles"]), y=as.numeric(data_graph[16:19,"yCircles"]), circles=as.numeric(data_graph[16:19,"rCircles"]), main = "PropCircles", fg=data_graph[16:19,"colorCircles"], bg=data_graph[16:19,"colorCircles"], add=TRUE, inches=FALSE, lwd=1)
 		
-		#titres
-		taille = 1.5
-		text(x=xmax/2, y=ymax*0.85, labels=paste(colnames(res)[1], " (", n[1], ")", sep=""), cex=taille, col=couleurs[1], pos=1, offset=0)
-		text(x=xmax/2, y=ymax*0.85, labels=paste(colnames(res)[2], " (", n[2], ")", sep=""), cex=taille, col=couleurs[2], pos=1, offset=1.3)
-		text(x=xmax/2, y=ymax*0.85, labels=paste(colnames(res)[3], " (", n[3], ")", sep=""), cex=taille, col=couleurs[3], pos=1, offset=2.6)
-		text(x=xmax/2, y=ymax*0.85, labels=paste(colnames(res)[4], " (", n[4], ")", sep=""), cex=taille, col=couleurs[4], pos=1, offset=3.9)
-		
 		xAll = as.matrix(as.numeric(data_graph[,"xCircles"]))
 		rownames(xAll) = rownames(data_graph)
 		yAll = as.matrix(as.numeric(data_graph[,"yCircles"]))
@@ -1243,24 +1312,33 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		
 		#effectifs
 		text(x=(xAll["Atot",]+(2*rAll["A",]/3)), y=(yAll["Atot",]-(2*rAll["A",]/3)), labels=paste(n[1]-nA), cex=taille, col=coultxt[1], font=1)
-		text(x=xAll["A",], y=yAll["A",], labels=paste(nA), cex=taille, col=colWhite, font=2)
+		text(x=xAll["A",], y=yAll["A",], labels=paste(nA), cex=taille, col=colWhite[1], font=2)
 		text(x=(xAll["Btot",]-(2*rAll["B",]/3)), y=(yAll["Btot",]-(2*rAll["B",]/3)), labels=paste(n[2]-nB), cex=taille, col=coultxt[2], font=1)
-		text(x=xAll["B",], y=yAll["B",], labels=paste(nB), cex=taille, col=colWhite, font=2)
+		text(x=xAll["B",], y=yAll["B",], labels=paste(nB), cex=taille, col=colWhite[2], font=2)
 		text(x=(xAll["Ctot",]+(2*rAll["C",]/3)), y=(yAll["Ctot",]+(2*rAll["C",]/3)), labels=paste(n[3]-nC), cex=taille, col=coultxt[3], font=1)
-		text(x=xAll["C",], y=yAll["C",], labels=paste(nC), cex=taille, col=colWhite, font=2)
+		text(x=xAll["C",], y=yAll["C",], labels=paste(nC), cex=taille, col=colWhite[3], font=2)
 		text(x=(xAll["Dtot",]-(2*rAll["D",]/3)), y=(yAll["Dtot",]+(2*rAll["D",]/3)), labels=paste(n[4]-nD), cex=taille, col=coultxt[4], font=1)
-		text(x=xAll["D",], y=yAll["D",], labels=paste(nD), cex=taille, col=colWhite, font=2)
-		
-		text(x=(xmin+xAll["A",])/2, y=(yAll["Atot",]+yAll["AC",])/2, labels=paste("Total: ", tot_ugenes, collapse="\n"), cex=taille, col="black", font=2)
-		
-		text(x=c(xAll["AB",], xAll["AC",], xAll["AD",], xAll["BC",], xAll["BD",], x=xAll["CD",],xAll["ABC",], xAll["ABD",],xAll["ACD",], xAll["BCD",],xAll["ABCD",]),
-				y=c(yAll["AB",], yAll["AC",],yAll["AD",], yAll["BC",], yAll["BD",], yAll["CD",], yAll["ABC",], yAll["ABD",], yAll["ACD",], yAll["BCD",], yAll["ABCD",]),
-				labels=c(paste(nAB),paste(nAC),paste(nAD),paste(nBC), paste(nBD), paste(nCD), paste(nABC), paste(nABD), paste(nACD),paste(nBCD),paste(nABCD)),
-				cex=taille, col="black", font=1)
+		text(x=xAll["D",], y=yAll["D",], labels=paste(nD), cex=taille, col=colWhite[4], font=2)
 		
 		tTitres=2.5
 		if(title!="")	text(x=data_graph["AB", "xCircles"], y=ymax*0.9, labels=title, cex=tTitres, col="black")
 		
+		if(!OnlyVenn)
+		{
+			#titres
+			taille = 1.5
+			text(x=xmax/2, y=ymax*0.85, labels=paste(colnames(res)[1], " (", n[1], ")", sep=""), cex=taille, col=couleurs[1], pos=1, offset=0)
+			text(x=xmax/2, y=ymax*0.85, labels=paste(colnames(res)[2], " (", n[2], ")", sep=""), cex=taille, col=couleurs[2], pos=1, offset=1.3)
+			text(x=xmax/2, y=ymax*0.85, labels=paste(colnames(res)[3], " (", n[3], ")", sep=""), cex=taille, col=couleurs[3], pos=1, offset=2.6)
+			text(x=xmax/2, y=ymax*0.85, labels=paste(colnames(res)[4], " (", n[4], ")", sep=""), cex=taille, col=couleurs[4], pos=1, offset=3.9)
+			
+			text(x=c(xAll["AB",], xAll["AC",], xAll["AD",], xAll["BC",], xAll["BD",], x=xAll["CD",],xAll["ABC",], xAll["ABD",],xAll["ACD",], xAll["BCD",],xAll["ABCD",]),
+					y=c(yAll["AB",], yAll["AC",],yAll["AD",], yAll["BC",], yAll["BD",], yAll["CD",], yAll["ABC",], yAll["ABD",], yAll["ACD",], yAll["BCD",], yAll["ABCD",]),
+					labels=c(paste(nAB),paste(nAC),paste(nAD),paste(nBC), paste(nBD), paste(nCD), paste(nABC), paste(nABD), paste(nACD),paste(nBCD),paste(nABCD)),
+					cex=taille, col="black", font=1)
+			
+			text(x=(xmin+xAll["A",])/2, y=(yAll["Atot",]+yAll["AC",])/2, labels=paste("Total: ", tot_ugenes, collapse="\n"), cex=taille, col="black", font=2)
+		}
 		dev.off()
 	}
 	
@@ -1353,8 +1431,8 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 					MatBin[is.na(matLists)]=0
 					MatBin[!is.na(matLists)]=1
 					matLists[is.na(matLists)]=""
-					res = cbind(MatBin, apply(MatBin, 1, function(x) sum(x)), matLists)
-					colnames(res)[ncol(MatBin)+1] = "Total"
+					res = cbind(MatBin, apply(MatBin, 1, function(x) sum(as.numeric(x))), matLists)
+					colnames(res)[ncol(MatBin)+1] = "Total_lists"
 					colnames(res)[(ncol(MatBin)+2):ncol(res)] = paste("ratios_", colnames(MatBin), sep="")
 					nListe = ncol(matLists)
 				}else{
@@ -1366,16 +1444,16 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 						TempListeRatio = matLists
 						for(y in 1:ncol(matLists))	#	transforme les folds en ratios
 							for(x in 1:nrow(matLists))
-								if(!is.na(matLists[x, y])&(matLists[x, y]<0)) TempListeRatio[x, y] = -1/matLists[x, y]
+								if(!is.na(as.numeric(matLists[x, y])))	if((matLists[x, y]<0)) TempListeRatio[x, y] = -1/as.numeric(matLists[x, y])
 						colnames(TempListeRatio) = paste("ratios_", colnames(TempListeRatio), sep="")
 						
 						# Ajoute la matrice binaire
 						MatBin = TempListeRatio
-						MatBin[is.na(TempListeRatio)]=0
-						MatBin[!is.na(TempListeRatio)]=1
+						MatBin[is.na(as.numeric(TempListeRatio))]=0
+						MatBin[!is.na(as.numeric(TempListeRatio))]=1
 						matLists[is.na(matLists)]=""
-						res = cbind(MatBin, apply(MatBin, 1, function(x) sum(x)), TempListeRatio)
-						colnames(res)[ncol(MatBin)+1] = "Total"
+						res = cbind(MatBin, apply(MatBin, 1, function(x) sum(as.numeric(x))), TempListeRatio)
+						colnames(res)[ncol(MatBin)+1] = "Total_lists"
 						colnames(res)[(ncol(MatBin)+2):ncol(res)] = paste("ratios_", colnames(MatBin), sep="")
 						nListe = ncol(matLists)
 					}
@@ -1385,9 +1463,19 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				Listes = matLists 
 				noms = names(matLists)  
 			}
+			
+			# Colonne Profils UD
+			
+			UDprofils = res[,(grep("Total_lists", colnames(res))+1):ncol(res)]
+			UDprofils[is.na(as.numeric(UDprofils))] = "n"
+			UDprofils[as.numeric(UDprofils)>1] = "U"
+			UDprofils[as.numeric(UDprofils)<1] = "D"
+			
+			res = cbind(res, apply(UDprofils, 1, function(x) paste(x, sep="", collapse="")))
+			colnames(res)[ncol(res)] = "Profils"
 		}
 	}
-
+	
 	if(!is.matrix(res))	# Si res est vide: ce n est pas un exemple => lecture de fichiers
 	{
 		# Traitement 1ere liste, amorce les variables
@@ -1400,7 +1488,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			flush.console()
 		}
 		
-	    if((nListe<=4)&(length(couleurs)<nListe))
+		if((nListe<=4)&(length(couleurs)<nListe))
 		{
 			couleurs=c("blue", "red", "green", "orange")[1:nListe]
 			couleursIn <- add.alpha(couleurs, alpha=transp)
@@ -1417,7 +1505,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		
 		nomListe = noms[1]
 		Cud=TRUE
-		if(ud&(grepl("ratio", colnames(data_t), ignore.case=TRUE)))
+		if(ud&(sum(grepl("ratio", colnames(data_t), ignore.case=TRUE))==1))
 		{
 			if(sum(is.na(as.numeric(data_t[,grepl("ratio", colnames(data_t), ignore.case=TRUE)])))!=0)
 			{
@@ -1450,7 +1538,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			
 			nomListe = noms[i]
 			
-			if(grepl("ratio", colnames(data_t), ignore.case=TRUE))		
+			if(sum(grepl("ratio", colnames(data_t), ignore.case=TRUE))!=0)		
 			{
 				if(Cud&(sum(grepl("ratio", colnames(data_t), ignore.case=TRUE))!=0))  # teste la presence de la col ratio et le type de data
 				{
@@ -1476,7 +1564,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				}
 			}
 			listID = rownames(data_t)
-
+			
 			#id a ajouter a res ~ new sans les communs
 			dupli_new = duplicated(c(rownames(res), listID))
 			dupli_new = dupli_new[(nrow(res)+1):length(dupli_new)]
@@ -1540,7 +1628,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 					tmpL = data_t
 					data_t = as.matrix(data_t[order(rownames(data_t)),]) #classe les IDs de la liste en cours
 					colnames(data_t) = colnames(tmpL)	#	Recupere le nom si colonne unique perdue par order
-
+					
 					data_all = cbind(data_all, rbind(data_t, matrix("", ncol=ncol(data_t), nrow=nrow(data_all)-nrow(data_t))))
 				}
 			}
@@ -1581,20 +1669,20 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 					if(!is.list(matLists)) data_t = test_list(filename=Listes[M], type="Annot", matLists, noms, path)
 					if(is.list(matLists)) data_t = matLists[[M]]
 					if(ncol(data_t)>=2)		if(sum(grepl("ratio", colnames(data_t), ignore.case=TRUE))==1)
-					{
-						data_all = data_all[order(rownames(data_all)),]
-						data_all = data_all[order(data_all[,M], decreasing = TRUE),]
-						
-						tmpL = data_t
-						data_t = data_t[order(rownames(data_t)),]
-						colnames(data_t) = colnames(tmpL)
-						
-						data_all = cbind(data_all, rbind(as.matrix(data_t[,grepl("ratio", colnames(data_t), ignore.case=TRUE)]), matrix(NA, ncol=1, nrow=nrow(data_all)-nrow(data_t))))
-						colnames(data_all)[ncol(data_all)] = paste("ratios_", colnames(data_all)[M], sep="")
-					}else{
-						if(!is.list(matLists)) print(paste("!!! Ratio column not found in ", basename(Listes[M]), sep=""))
-						if(is.list(matLists)) print(paste("!!! Ratio column not found in ", noms[M], sep=""))
-					}
+						{
+							data_all = data_all[order(rownames(data_all)),]
+							data_all = data_all[order(data_all[,M], decreasing = TRUE),]
+							
+							tmpL = data_t
+							data_t = data_t[order(rownames(data_t)),]
+							colnames(data_t) = colnames(tmpL)
+							
+							data_all = cbind(data_all, rbind(as.matrix(data_t[,grepl("ratio", colnames(data_t), ignore.case=TRUE)]), matrix(NA, ncol=1, nrow=nrow(data_all)-nrow(data_t))))
+							colnames(data_all)[ncol(data_all)] = paste("ratios_", colnames(data_all)[M], sep="")
+						}else{
+							if(!is.list(matLists)) print(paste("!!! Ratio column not found in ", basename(Listes[M]), sep=""))
+							if(is.list(matLists)) print(paste("!!! Ratio column not found in ", noms[M], sep=""))
+						}
 				}
 				
 				if(ud&(sum(grepl("ratio", colnames(data_t), ignore.case=TRUE))==1))
@@ -1683,7 +1771,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				data_f = data_all[data_all[,"Total_lists"]==TotLists,]
 				DataTmpLog2 = DataMoyLog2[data_all[,"Total_lists"]==TotLists,]
 				png(filename = paste(path, "/Profiles_C", TotLists, ".png", sep=""), height=2000, width=2000, pointsize = 18, bg = "white")
-
+				
 				if(length(names(table(data_f[,"Profils"])))<=12)  old.par <- par(mfrow=c((ceiling(length(names(table(data_f[,"Profils"])))/2)), 2))
 				if(length(names(table(data_f[,"Profils"])))>12)  old.par <- par(mfrow=c((ceiling(length(names(table(data_f[,"Profils"])))/3)), 3))
 				
@@ -1734,15 +1822,15 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			{
 				tmpProf = data_all[ProfilABC==names(ABCprof)[P],"Profils"]
 				SpeProfs = as.matrix(table(tmpProf))
-				SpeProfs = cbind(rep(names(ABCprof)[P], ABCprof[P]), rep(nchar(names(ABCprof)[P]), ,ABCprof[P]), rownames(SpeProfs), SpeProfs)
+				UDprofs = rbind(UDprofs, cbind(rep(names(ABCprof)[P], ABCprof[P]), rep(nchar(names(ABCprof)[P]), ,ABCprof[P]), rownames(SpeProfs), SpeProfs))
 			}
-			colnames(SpeProfs) = c("Profils", "N_lists", "UD_profils", "Count")
-			write.table(SpeProfs, file=paste(path, "/NutShellTableUD.txt", sep=""), sep="\t", quote=FALSE, row.names=FALSE)
+			colnames(UDprofs) = c("NameZone", "N_lists", "UD_profils", "Count")
+			write.table(UDprofs, file=paste(path, "/NutShellTableUD.txt", sep=""), sep="\t", quote=FALSE, row.names=FALSE)
 		}
 		
 		MainProfils = as.matrix(table(ProfilABC))
 		MainProfils = cbind(rownames(MainProfils), apply(as.matrix(rownames(MainProfils)), 1, function(x) nchar(x)), MainProfils)
-		colnames(MainProfils) = c("Profils", "N_lists", "Count")
+		colnames(MainProfils) = c("NameZone", "N_lists", "Count")
 		write.table(MainProfils, file=paste(path, "/NutShellTable.txt", sep=""), sep="\t", quote=FALSE, row.names=FALSE)
 	}
 	
@@ -1798,9 +1886,9 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 	{
 		if(grep("total", colnames(res), ignore.case=TRUE)==3)
 		{
-			nA = nrow(res[(res[,nomTot]==1)&(res[,1]==1),])		
-			nB = nrow(res[(res[,nomTot]==1)&(res[,2]==1),])
-			nAB = nrow(res[(res[,nomTot]==2)&(res[,1]==1)&(res[,2]==1),])
+			nA = sum((res[,nomTot]==1)&(res[,1]==1))		
+			nB = sum((res[,nomTot]==1)&(res[,2]==1))
+			nAB = sum((res[,nomTot]==2)&(res[,1]==1)&(res[,2]==1))
 			listeA = colnames(res)[1]
 			listeB = colnames(res)[2]			
 			tot_ugenes = sum(nA, nB, nAB)			
@@ -1825,27 +1913,27 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			}
 			ListN[sapply(ListN, FUN=function(x) is.null(x))]=1			#	Remplace les compatges NULL par 1
 			
-			graph_2(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, Solid=Solid, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title, lw)
+			graph_2(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, Solid=Solid, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title, lw, OnlyVenn=OnlyVenn)
 				
 			if(prop)
 			{
-				graph_prop_2(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nAB, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw)
+				graph_prop_2(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nAB, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw, OnlyVenn=OnlyVenn)
 				
 				if(max(nA, nB, nAB)/min(nA, nB, nAB)>10) # Si le ratio max/min>10 => log2
-					graph_prop_2(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nAB, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=TRUE, colBlack=colBlack, title=title, lw=lw)
+					graph_prop_2(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nAB, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=TRUE, colBlack=colBlack, title=title, lw=lw, OnlyVenn=OnlyVenn)
 
 			}
 		}
 		
 		if(grep("total", colnames(res), ignore.case=TRUE)==4)
 		{
-			nA = nrow(res[(res[,nomTot]==1)&(res[,1]==1),])
-			nB = nrow(res[(res[,nomTot]==1)&(res[,2]==1),])
-			nC = nrow(res[(res[,nomTot]==1)&(res[,3]==1),])
-			nAB = nrow(res[(res[,nomTot]==2)&(res[,1]==1)&(res[,2]==1),])
-			nAC = nrow(res[(res[,nomTot]==2)&(res[,1]==1)&(res[,3]==1),])
-			nBC = nrow(res[(res[,nomTot]==2)&(res[,2]==1)&(res[,3]==1),])
-			nABC = nrow(res[res[,nomTot]==3,])
+			nA = sum((res[,nomTot]==1)&(res[,1]==1))
+			nB = sum((res[,nomTot]==1)&(res[,2]==1))
+			nC = sum((res[,nomTot]==1)&(res[,3]==1))
+			nAB = sum((res[,nomTot]==2)&(res[,1]==1)&(res[,2]==1))
+			nAC = sum((res[,nomTot]==2)&(res[,1]==1)&(res[,3]==1))
+			nBC = sum((res[,nomTot]==2)&(res[,2]==1)&(res[,3]==1))
+			nABC = sum(res[,nomTot]==3)
 			tot_ugenes = sum(nA, nB, nC, nAB, nAC, nBC, nABC)
 			listeA = colnames(res)[1]
 			listeB = colnames(res)[2]
@@ -1882,34 +1970,34 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			}
 			ListN[sapply(ListN, FUN=function(x) is.null(x))]=1			#	Remplace les compatges NULL par 1
 			
-			graph_3(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, Solid=Solid, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title, lw=lw)
+			graph_3(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, Solid=Solid, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title, lw=lw, OnlyVenn=OnlyVenn)
 
 			if(prop)
 			{ 
-				graph_prop_3(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw)
+				graph_prop_3(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw, OnlyVenn=OnlyVenn)
 				
 				if(max(nA, nB, nC, nAB, nAC, nBC, nABC)/min(nA, nB, nC, nAB, nAC, nBC, nABC)>10) # Si le ratio max/min>10 => log2
-					graph_prop_3(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw)
+					graph_prop_3(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw, OnlyVenn=OnlyVenn)
 			}
 		}
 		
 		if(grep("total", colnames(res), ignore.case=TRUE)==5)
 		{
-			nA = nrow(res[(res[,nomTot]==1)&(res[,1]==1),])
-			nB = nrow(res[(res[,nomTot]==1)&(res[,2]==1),])
-			nC = nrow(res[(res[,nomTot]==1)&(res[,3]==1),])
-			nD = nrow(res[(res[,nomTot]==1)&(res[,4]==1),])
-			nAB = nrow(res[(res[,nomTot]==2)&(res[,1]==1)&(res[,2]==1),])
-			nAC = nrow(res[(res[,nomTot]==2)&(res[,1]==1)&(res[,3]==1),])
-			nBD = nrow(res[(res[,nomTot]==2)&(res[,2]==1)&(res[,4]==1),])
-			nCD = nrow(res[(res[,nomTot]==2)&(res[,3]==1)&(res[,4]==1),])
-			nAD = nrow(res[(res[,nomTot]==2)&(res[,1]==1)&(res[,4]==1),])
-			nBC = nrow(res[(res[,nomTot]==2)&(res[,2]==1)&(res[,3]==1),])
-			nABC = nrow(res[(res[,nomTot]==3)&(res[,1]==1)&(res[,2]==1)&(res[,3]==1),])
-			nBCD = nrow(res[(res[,nomTot]==3)&(res[,2]==1)&(res[,3]==1)&(res[,4]==1),])
-			nACD = nrow(res[(res[,nomTot]==3)&(res[,1]==1)&(res[,3]==1)&(res[,4]==1),])
-			nABD = nrow(res[(res[,nomTot]==3)&(res[,1]==1)&(res[,2]==1)&(res[,4]==1),])
-			nABCD = nrow(res[res[,nomTot]==4,])
+			nA = sum((res[,nomTot]==1)&(res[,1]==1))
+			nB = sum((res[,nomTot]==1)&(res[,2]==1))
+			nC = sum((res[,nomTot]==1)&(res[,3]==1))
+			nD = sum((res[,nomTot]==1)&(res[,4]==1))
+			nAB = sum((res[,nomTot]==2)&(res[,1]==1)&(res[,2]==1))
+			nAC = sum((res[,nomTot]==2)&(res[,1]==1)&(res[,3]==1))
+			nBD = sum((res[,nomTot]==2)&(res[,2]==1)&(res[,4]==1))
+			nCD = sum((res[,nomTot]==2)&(res[,3]==1)&(res[,4]==1))
+			nAD = sum((res[,nomTot]==2)&(res[,1]==1)&(res[,4]==1))
+			nBC = sum((res[,nomTot]==2)&(res[,2]==1)&(res[,3]==1))
+			nABC = sum((res[,nomTot]==3)&(res[,1]==1)&(res[,2]==1)&(res[,3]==1))
+			nBCD = sum((res[,nomTot]==3)&(res[,2]==1)&(res[,3]==1)&(res[,4]==1))
+			nACD = sum((res[,nomTot]==3)&(res[,1]==1)&(res[,3]==1)&(res[,4]==1))
+			nABD = sum((res[,nomTot]==3)&(res[,1]==1)&(res[,2]==1)&(res[,4]==1))
+			nABCD = sum(res[,nomTot]==4)
 			tot_ugenes=sum(nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD)
 			listeA = colnames(res)[1]
 			listeB = colnames(res)[2]
@@ -1966,17 +2054,17 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			}
 			ListN[sapply(ListN, FUN=function(x) is.null(x))]=1			#	Remplace les compatges NULL par 1
 			
-			graph_4(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, Solid=Solid, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title, lw=lw)
+			graph_4(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, Solid=Solid, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title, lw=lw, OnlyVenn=OnlyVenn)
 				
 			if(prop) 
 			{
-				graph_prop_4(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw)
+				graph_prop_4(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw, OnlyVenn=OnlyVenn)
 				
 				if(max(nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD)/min(nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD)>10) # Si le ratio max/min>10 => log2
-					graph_prop_4(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=TRUE, colBlack=colBlack, title=title, lw=lw)
+					graph_prop_4(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=TRUE, colBlack=colBlack, title=title, lw=lw, OnlyVenn=OnlyVenn)
 			}
 		}
-		if(overlaps)  overlapp(res, path, f)
+		if(overlaps)  overlapp(res=res, path=path, f=f)
 	}else{
 		if(!annot)  return(res)
 		if(annot)  return(data_all)

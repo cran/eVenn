@@ -11,7 +11,7 @@ evenn(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, prop=FALSE, 
 	 overlaps=FALSE, f=0, display=FALSE, couleurs="", VennBar=FALSE, CompName="",
 	 transp=0.5, Solid=TRUE, Profils=FALSE, OnlyVariable=FALSE, colBlack=FALSE,
 	 ColorTxt="", Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png", title="",
-	 lw=1, NutShell=TRUE, VennClust=TRUE)
+	 lw=1, NutShell=TRUE, VennClust=TRUE, OnlyVenn=FALSE)
 }
 \arguments{
   \item{annot}{
@@ -97,6 +97,9 @@ All the Venn zones and UD profiles in a nutshell (count table).
 }
   \item{VennClust}{
 Creates two clusterings (using Spearman correlation similarity measure and average or Ward.D2 linkage algorithm) to model links between the lists.
+}
+  \item{OnlyVenn}{
+Draw only the venn diagram without any text outside (remove the total and lists names).
 }
 }
 \value{

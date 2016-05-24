@@ -10,7 +10,7 @@ This function creates a list of folders where are placed sources files for venn 
 autoevenn(FolderPath="", pathRes="", annot=TRUE, ud=TRUE, prop=FALSE, overlaps=FALSE,
 display=FALSE, couleurs="", VennBar=FALSE, transp=0.5, Solid=TRUE, Profils=FALSE,
 ColorTxt="", colBlack=FALSE, Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL,
-Gtype="png", lw=1, NutShell=TRUE, VennClust=TRUE)
+Gtype="png", lw=1, NutShell=TRUE, VennClust=TRUE, OnlyVenn=FALSE)
 }
 \arguments{
   \item{FolderPath}{
@@ -78,6 +78,9 @@ All the Venn zones and UD profiles in a nutshell (count table).
 }
   \item{VennClust}{
 Creates two clusterings (using Spearman correlation similarity measure and average or Ward.D2 linkage algorithm) to model links between the lists.
+}
+  \item{OnlyVenn}{
+Draw only the venn diagram without any text outside (remove the total and lists names).
 }
 }
 \references{
