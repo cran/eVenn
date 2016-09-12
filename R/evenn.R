@@ -1,10 +1,8 @@
 #	TestAll
-#	annot=TRUE; matLists=""; pathRes=""; pathLists="./FichiersTests/Lists_4_UD/"; ud=TRUE; prop=TRUE; noms=""; overlaps=TRUE; f=0; display=TRUE; couleurs=""; VennBar=TRUE; CompName=""; transp=0.5; Solid=TRUE; Profils=FALSE; OnlyVariable=FALSE; colBlack=FALSE; ColorTxt=""; Ptest=TRUE; tUD=NULL; tUDp=NULL; tnoUD=NULL; Gtype="png"; lw=1; title="Test All"; NutShell=TRUE; VennClust=TRUE; OnlyVenn=FALSE
-#	pathLists="./for_Venns/APDS1__(s_i_vs_ns_i)_Napp/"
-#	pathLists="./FichiersTests/Matrix_Of_Folds"
-#	annot=TRUE; matLists=""; pathRes=""; pathLists="./FichiersTests/Lists_4_UD/"; ud=TRUE; prop=FALSE; noms=""; overlaps=FALSE; f=0; display=TRUE; couleurs=""; VennBar=FALSE; CompName=""; transp=0.5; Solid=TRUE; Profils=FALSE; OnlyVariable=FALSE; colBlack=FALSE; ColorTxt=""; Ptest=FALSE; tUD=NULL; tUDp=NULL; tnoUD=NULL; Gtype="png"; lw=1; title=""; NutShell=TRUE; VennClust=TRUE; OnlyVenn=FALSE
+#	annot=TRUE; matLists=""; pathRes=""; pathLists="./FichiersTests/Lists_5_UD/"; ud=TRUE; prop=TRUE; noms=""; overlaps=TRUE; f=0; display=TRUE; couleurs=""; VennBar=TRUE; CompName=""; transp=0.5; Solid=TRUE; Profils=FALSE; OnlyVariable=FALSE; colBlack=FALSE; ColorTxt=""; Ptest=TRUE; tUD=NULL; tUDp=NULL; tnoUD=NULL; Gtype="png"; lw=1; title="Test All"; NutShell=TRUE; VennClust=TRUE; OnlyVenn=FALSE
+
 evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, prop=FALSE, noms="", overlaps=FALSE, f=0, display=FALSE, couleurs="", VennBar=FALSE,
-		CompName="", transp=0.5, Solid=TRUE, Profils=FALSE, OnlyVariable=FALSE, colBlack=FALSE, ColorTxt="", Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png", title="", lw=1, NutShell=TRUE, VennClust=TRUE, OnlyVenn=FALSE)
+		CompName="", transp=0.5, Solid=TRUE, Profils=FALSE, OnlyVariable=FALSE, colBlack=FALSE, ColorTxt="", Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png", title="", lw=1, NutShell=TRUE, VennClust=FALSE, OnlyVenn=FALSE)
 {  
 	if(OnlyVariable)
 	{
@@ -88,9 +86,9 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		write("     /.-., ,.-.`            *       *                                 ****     ****     ****   ", file="")
 		write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *    *   *    *  ", file="")
 		write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *        *        *   ", file="")
-		write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *         *       *    ", file="")
-		write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *       *    *    *      ", file="")
-		write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** *  ****  * ******* ", file="")
+		write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *         *        *   ", file="")
+		write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *       *    *   *    *  ", file="")
+		write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** *  ****  *  ****   ", file="")
 		write("     `'-'` `'-'`                                                                               ", file="")
 		#write("\n\t[Run man.evenn() for quick help]\n", file="")
 		flush.console()  
@@ -705,21 +703,21 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		ycercles[c(5, 6)] = ycercles[c(5, 6)]
 		ycercles[c(7, 8)] = ycercles[c(7, 8)]
 		
+		if(ColorTxt!="")	colTxt = ColorTxt
+		couleursOut = c(couleurs[1:4], couleurs[c(1,4)], couleurs[c(2,3)])
+		couleursInt = c(couleursIn[1:4], couleursIn[c(1,4)], couleursIn[c(2,3)])
 		if(Solid)
 		{
-			cercle(xcercles, ycercles, rcercles, out=NA, int=c(couleursIn, couleursIn[c(1,4,2,3)]), lty=1, lw=lw)
+			cercle(xcercles, ycercles, rcercles, out=couleursOut, int=couleursInt, lty=1, lw=lw)
 			colTxt = "white"
 			coulGroups = c("darkblue", "darkred", "darkgreen", "brown")
 			couleursTxt = c(couleurs[1:3], "yellow")
 		}else{
-			cercle(xcercles, ycercles, rcercles, out=c(couleurs[1], couleurs[2], couleurs[3], couleurs[4], couleurs[1], couleurs[4], couleurs[2], couleurs[3]), lty=1, lw=lw)
+			cercle(xcercles, ycercles, rcercles, out=couleursOut, lty=1, lw=lw)
 			colTxt = "black"
 			couleursTxt=couleurs
 			coulGroups=couleurs
 		}
-		
-		
-		if(ColorTxt!="")	colTxt = ColorTxt
 		
 		if(ud)
 		{
@@ -1484,7 +1482,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		if((length(noms)>1)&(length(noms)!=length(Listes)))	#	Si pas de noms de listes
 		{
 			write(paste("Only ", length(noms), " names for ", length(Listes), " lists.\nThe default names ", c("A", "B", "C", "D")[1:length(Listes)], " will be used.", sep=""), file="")
-			noms=c("A", "B", "C", "D")[1:length(Listes)]		
+			noms=c("A", "B", "C", "D", "E", "F", "G")[1:length(Listes)]		
 			flush.console()
 		}
 		

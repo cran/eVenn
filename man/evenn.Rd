@@ -11,7 +11,7 @@ evenn(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, prop=FALSE, 
 	 overlaps=FALSE, f=0, display=FALSE, couleurs="", VennBar=FALSE, CompName="",
 	 transp=0.5, Solid=TRUE, Profils=FALSE, OnlyVariable=FALSE, colBlack=FALSE,
 	 ColorTxt="", Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png", title="",
-	 lw=1, NutShell=TRUE, VennClust=TRUE, OnlyVenn=FALSE)
+	 lw=1, NutShell=TRUE, VennClust=FALSE, OnlyVenn=FALSE)
 }
 \arguments{
   \item{annot}{

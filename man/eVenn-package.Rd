@@ -12,8 +12,8 @@ Compare lists (from 2 to infinite) and plot the results in a Venn diagram if (N<
 \tabular{ll}{
 Package: \tab eVenn\cr
 Type: \tab Package\cr
-Version: \tab 2.3.2\cr
-Date: \tab 2016-05-24\cr
+Version: \tab 2.3.3\cr
+Date: \tab 2016-09-12\cr
 License: \tab GPL\cr
 LazyLoad: \tab yes\cr
 }
