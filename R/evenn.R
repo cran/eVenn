@@ -81,15 +81,15 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 	}
 	
 	if(display&FilesOut){
-		write("        ,.-.,                                                                                  ", file="")
-		write("      .`     `.                                                                                ", file="")
-		write("     /.-., ,.-.`            *       *                                 ****     ****     ****   ", file="")
-		write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *    *   *    *  ", file="")
-		write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *        *        *   ", file="")
-		write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *         *        *   ", file="")
-		write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *       *    *   *    *  ", file="")
-		write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** *  ****  *  ****   ", file="")
-		write("     `'-'` `'-'`                                                                               ", file="")
+		write("        ,.-.,                                                                                   ", file="")
+		write("      .`     `.                                                                                 ", file="")
+		write("     /.-., ,.-.`            *       *                                 ****     ****         *   ", file="")
+		write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *    *      * *   ", file="")
+		write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *        *      *  *   ", file="")
+		write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *         *     *   *   ", file="")
+		write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *       *    *  *******   ", file="")
+		write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** *  ****  *      *   ", file="")
+		write("     `'-'` `'-'`                                                                                ", file="")
 		#write("\n\t[Run man.evenn() for quick help]\n", file="")
 		flush.console()  
 	}                                       
@@ -373,8 +373,8 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 	compte<-function(x) #compte les types de profils up/down
 	{
 		t = x
-		t[x<1] = "D"
-		t[x>=1] = "U"
+		t[as.numeric(x)<1] = "D"
+		t[as.numeric(x)>=1] = "U"
 		#corrige bug si 1 seul res
 		if(!(class(t)=="character"))
 		{
@@ -1582,8 +1582,8 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			{
 				res = rbind(res, matrix(0, ncol=ncol(res), nrow=sum(temp_new)))
 				rownames(res)[(nrow(res)-sum(temp_new)+1):nrow(res)] = rownames(temp_new)[temp_new==1]
-				res = res[order(rownames(res)),]
 			}
+			res = res[order(rownames(res)),]
 			
 			ajout = rbind(matrix(0, ncol=1, nrow=sum(temp_old)), matrix(1, ncol=1, nrow=length(listID)))
 			rownames(ajout) = c(rownames(temp_old)[temp_old==1], listID)
