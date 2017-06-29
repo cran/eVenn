@@ -12,8 +12,8 @@ Compare lists (from 2 to infinite) and plot the results in a Venn diagram if (N<
 \tabular{ll}{
 Package: \tab eVenn\cr
 Type: \tab Package\cr
-Version: \tab 2.3.4\cr
-Date: \tab 2016-11-26\cr
+Version: \tab 2.3.5\cr
+Date: \tab 2017-11-09\cr
 License: \tab GPL\cr
 LazyLoad: \tab yes\cr
 }
@@ -40,7 +40,6 @@ YNdisplay = TRUE	# Allows commentaries and display of the main steps of the proc
 #	Matrix of ratios
 #   data(Data_Matrix_Of_Ratios)
 #   evenn(matLists=Data_Matrix_Of_Ratios, display=YNdisplay, CompName="Matrix_Of_Ratios")
-
 
 #	List of 2, 3 or 4 matrix w/wo modulations and w/wo profils data
 

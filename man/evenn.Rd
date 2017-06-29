@@ -9,7 +9,7 @@ Compare lists (from 2 to infinite) and plot the results in a Venn diagram if (N<
 \usage{
 evenn(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, prop=FALSE, noms="",
 	 overlaps=FALSE, f=0, display=FALSE, couleurs="", VennBar=FALSE, CompName="",
-	 transp=0.5, Solid=TRUE, Profils=FALSE, OnlyVariable=FALSE, colBlack=FALSE,
+	 transp=0.5, filled=TRUE, Profils=FALSE, OnlyVariable=FALSE, colBlack=FALSE,
 	 ColorTxt="", Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png", title="",
 	 lw=1, NutShell=TRUE, VennClust=FALSE, OnlyVenn=FALSE)
 }
@@ -56,7 +56,7 @@ Custom name for the main folder.
   \item{transp}{
 Percentage of transparency of the disks.
 }
-  \item{Solid}{
+  \item{filled}{
 No transparancy, disks are filled with solid colours.
 }
   \item{Profils}{

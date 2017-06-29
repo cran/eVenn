@@ -1,6 +1,6 @@
 autoevenn <-function(FolderPath="", pathRes="", annot=TRUE, ud=TRUE, prop=FALSE,
 		overlaps=FALSE, display=FALSE, couleurs="", VennBar=FALSE, transp=0.5,
-		Solid=TRUE, Profils=FALSE, ColorTxt="", colBlack=FALSE, Ptest=FALSE,
+		filled=TRUE, Profils=FALSE, ColorTxt="", colBlack=FALSE, Ptest=FALSE,
 		tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png",lw=1, NutShell=TRUE, VennClust=TRUE, OnlyVenn=FALSE)
 {
 	if(FolderPath=="")
@@ -27,7 +27,7 @@ autoevenn <-function(FolderPath="", pathRes="", annot=TRUE, ud=TRUE, prop=FALSE,
 	{
 		write(paste(V, " / ", length(Venns), ": ", basename(Venns[V]), sep=""), file="")
 		evenn(annot=annot, pathRes=FolderDest, pathLists=Venns[V], ud=ud, prop=prop, overlaps=overlaps,
-				display=display, couleurs=couleurs,	VennBar=VennBar, transp=transp, Solid=Solid,
+				display=display, couleurs=couleurs,	VennBar=VennBar, transp=transp, filled=filled,
 				Profils=Profils, ColorTxt=ColorTxt, colBlack=colBlack, Ptest=Ptest, tUD=tUD, 
 				tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, lw=lw, NutShell=NutShell, VennClust=VennClust, OnlyVenn=OnlyVenn)
 	}

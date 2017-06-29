@@ -8,7 +8,7 @@ This function creates a list of folders where are placed sources files for venn 
 }
 \usage{
 autoevenn(FolderPath="", pathRes="", annot=TRUE, ud=TRUE, prop=FALSE, overlaps=FALSE,
-display=FALSE, couleurs="", VennBar=FALSE, transp=0.5, Solid=TRUE, Profils=FALSE,
+display=FALSE, couleurs="", VennBar=FALSE, transp=0.5, filled=TRUE, Profils=FALSE,
 ColorTxt="", colBlack=FALSE, Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL,
 Gtype="png", lw=1, NutShell=TRUE, VennClust=TRUE, OnlyVenn=FALSE)
 }
@@ -43,7 +43,7 @@ Represent the zones of a venn diagram with a bars chart even for more than 4 lis
   \item{transp}{
 Percentage of transparency of the disks.
 }
-  \item{Solid}{
+  \item{filled}{
 No transparancy, disks are filled with solid colours.
 }
   \item{Profils}{
