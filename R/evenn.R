@@ -1,7 +1,5 @@
 #	TestAll
-#	annot=TRUE; matLists=""; pathRes=""; pathLists="./FichiersTests/Lists_5_UD/"; ud=TRUE; prop=TRUE; noms=""; overlaps=TRUE; f=0; display=TRUE; couleurs=""; VennBar=TRUE; CompName=""; transp=0.5; filled=TRUE; Profils=FALSE; OnlyVariable=FALSE; colBlack=FALSE; ColorTxt=""; Ptest=TRUE; tUD=NULL; tUDp=NULL; tnoUD=NULL; Gtype="png"; lw=1; title="Test All"; NutShell=TRUE; VennClust=TRUE; OnlyVenn=FALSE
-
-#	pathLists = "./ListesVennsMultiTests/P50.Nx_(EGF_p_vs_Tgfa_p)_f2"
+#	annot=TRUE; matLists=""; pathRes=""; pathLists="/Users/cagnard/Documents/2017_07_12_GaelleCordonnier/ListsVenn/C_(EZH2_vs_MYH11)"; ud=TRUE; prop=TRUE; noms=""; overlaps=TRUE; f=0; display=TRUE; couleurs=""; VennBar=TRUE; CompName=""; transp=0.5; filled=TRUE; Profils=FALSE; OnlyVariable=FALSE; colBlack=FALSE; ColorTxt=""; Ptest=TRUE; tUD=NULL; tUDp=NULL; tnoUD=NULL; Gtype="png"; lw=1; title="Test All"; NutShell=TRUE; VennClust=TRUE; OnlyVenn=FALSE
 
 evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, prop=FALSE, noms="", overlaps=FALSE, f=0, display=FALSE, couleurs="", VennBar=FALSE,
 		CompName="", transp=0.5, filled=TRUE, Profils=FALSE, OnlyVariable=FALSE, colBlack=FALSE, ColorTxt="", Ptest=FALSE, tUD=NULL, tUDp=NULL, tnoUD=NULL, Gtype="png", title="", lw=1, NutShell=TRUE, VennClust=FALSE, OnlyVenn=FALSE)
@@ -55,11 +53,11 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				}else{
 					tmpList = as.matrix(read.table(Liste[L], header=TRUE, sep="\t"))
 				}
-
+				
 				# test unicite des id
 				if(sum(duplicated(tmpList[,1]))!=0)	write(paste("Error: duplicated ", sum(duplicated(tmpList[,1])), " IDs in ", Liste[L], " :\n\t\t ", tmpList[duplicated(tmpList[,1]),1], sep=""), file="")
 				
-						matLists[[length(matLists)+1]] = tmpList
+				matLists[[length(matLists)+1]] = tmpList
 			}
 			names(matLists) = paste(substr(basename(Liste), 0, (nchar(basename(Liste))-4)), sep="")
 			if(sum(grepl("DataMoy", names(matLists)))==0)	Profils=FALSE
@@ -74,17 +72,17 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			}
 		}	
 	}
-		
+	
 	if(GoNoGo)
 	{
 		if(display&FilesOut){
 			write("        ,.-.,                                                                                   ", file="")
 			write("      .`     `.                                                                                 ", file="")
-			write("     /.-., ,.-.`            *       *                                 ****     ****    *******  ", file="")
-			write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *    *   *        ", file="")
+			write("     /.-., ,.-.`            *       *                                 ****     ****    ******   ", file="")
+			write("   .`    .`.    `.     ***   *     *   ***    ****   ****    *     * *    *   *    *  *         ", file="")
 			write("  / `.  /   `.  / `  *     *  *   *  *     * *    * *    *    *   *      *        *    ******   ", file="")
-			write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *         *          *  ", file="")
-			write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *       *    *         *  ", file="")
+			write(" |    ',_____,'    | ******   *   *  ******  *    * *    *     * *      *         *   *      *  ", file="")
+			write(" `.     `   /     /  *         * *   *       *    * *    *     * *    *       *    *  *      *  ", file="")
 			write("   ',    '_'    ,'    *****     *     *****  *    * *    *      *    ****** *  ****  * ******   ", file="")
 			write("     `'-'` `'-'`                                                                                ", file="")
 			#write("\n\t[Run man.evenn() for quick help]\n", file="")
@@ -337,21 +335,20 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 					write(paste(K, " / ", ncol(comps), sep=""), file="")
 					flush.console()
 				}
-				
-				png(filename = paste(path, "/HeatOverlaps.png", sep=""), width=1200, height=1000, units = "px", pointsize = 10, bg = "white")
-				heatmap(overlapp_table, margins = c(50,50), cellnote=overlapp_table, notecol="black")
+				HMoverlapp = log2((1-overlapp_table)*100)
+				HMoverlapp[is.infinite(HMoverlapp)]=0
+				png(filename = paste(path, "/HeatOverlaps.png", sep=""), width=1200, height=1000, units="px", pointsize=10, bg = "white")
+				heatmap(HMoverlapp, margins=c(25,25), cellnote=overlapp_table, notecol="black", col = heat.colors(n=256, alpha = 1))
 				dev.off()
-				
-				
 			}else{
 				comm = nrow(res[res[,3]==2,])
 				overlapp_table[comps[1],comps[2]] = comm / sum(res[,1])
 				overlapp_table[comps[2],comps[1]] = comm / sum(res[,2])
 			}
 			overlapp_tablep=cbind(rownames(overlapp_table), overlapp_table)
-			write.table(overlapp_tablep, row.names = TRUE, file = paste(path, "/overlaps_table.txt", sep=""), sep="\t", quote=FALSE)
+			write.table(overlapp_tablep, row.names=FALSE, file = paste(path, "/overlaps_table.txt", sep=""), sep="\t", quote=FALSE)
 			overlapp_table_np=cbind(rownames(overlapp_table_n), overlapp_table_n)
-			write.table(overlapp_table_np, row.names = TRUE, file = paste(path, "/overlaps_table_n.txt", sep=""), sep="\t", quote=FALSE)
+			write.table(overlapp_table_np, row.names=FALSE, file = paste(path, "/overlaps_table_n.txt", sep=""), sep="\t", quote=FALSE)
 			
 			if(f!=0)	# filtrage
 			{
@@ -481,6 +478,157 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			}
 			return(TempListe)
 		}
+		
+		
+		
+		###############################################################################################################################################################
+		###############################################################################################################################################################
+		###############################################################################################################################################################
+
+		graph_2_realProps<-function(path, ListN, tot_ugenes, noms, ud, couleurs, couleursIn, ColorTxt, filled, Ptest, tUD, tUDp, tnoUD, Gtype, title, lw, OnlyVenn, tlog=FALSE)
+		{			
+			if(is.null(tUD))	tUD = 2.5
+			if(is.null(tUDp))	tUDp = 2
+			if(is.null(tnoUD))	tnoUD = 2.5
+			mSpe = 1.2	# Facteur d expension pour les compatges de zones spe
+			ps=10
+			cex.main=1
+			if(Gtype=="png")	png(filename=paste(path, "/venn_diagram_Rprop", if(tlog){paste("_tlog2", sep="")}, ".png", sep=""), width=30, height=15, bg="white", units='cm', res=300, pointsize=ps)
+			if(Gtype=="svg")	svg(filename=paste(path, "/venn_diagram_Rprop", if(tlog){paste("_tlog2", sep="")}, ".svg", sep=""), width=15, height=10, bg="white", pointsize=ps)
+			
+			sizeGx=100
+			sizeGy=sizeGx/2			
+			ycercles = c(sizeGy/2, sizeGy/2)+2
+			sizeListeA = as.numeric(ListN$nA) + as.numeric(ListN$nAB)
+			sizeListeB = as.numeric(ListN$nB) + as.numeric(ListN$nAB)
+			sizeListeAB = as.numeric(ListN$nAB)
+			if(tlog)
+			{
+				sizeListeA = log2(sizeListeA)
+				sizeListeB = log2(sizeListeB)
+				sizeListeAB = log2(sizeListeAB)
+			}
+			
+			#	r Cercle max = sizeGy/3 calcul du cercle min en proportion du max
+			if(sizeListeA>=sizeListeB)
+			{
+				rcercles = c(sizeGy/3, (sizeGy/3)*(sizeListeB/sizeListeA))
+				SurfRecoup = pi*((sizeGy/3)*(sizeListeAB/sizeListeA))**2
+			}
+			if(sizeListeA<sizeListeB)
+			{
+				rcercles = c((sizeGy/3)*(sizeListeA/sizeListeB), sizeGy/3)
+				SurfRecoup = pi*((sizeGy/3)*(sizeListeAB/sizeListeB))**2
+			}
+			
+			Ra = max(rcercles); Rb = min(rcercles)
+			Recoups=NULL
+			for(D in seq(ceiling(((Ra-Rb)*100))/100, round(((Ra+Rb)*100))/100, by=0.01))
+			{
+				#	D=seq(ceiling(((Ra-Rb)*100))/100, round(((Ra+Rb)*100))/100, by=0.01)[1]
+				da = (Ra**2-Rb**2+D**2)/(2*D)
+				db = D-da
+				H = sqrt(Ra**2-da**2)
+				Recoups = c(Recoups, (Ra**2*acos(da/Ra)-da*H)+(Rb**2*acos(db/Rb)-db*H))
+				#write(paste("D=", D, "\tRecoup=", Recoups[length(Recoups)], sep=""), file="")
+			}
+			if(is.nan(Recoups[length(Recoups)]))	Recoups[length(Recoups)]=0
+			DistCercles = seq(ceiling(((Ra-Rb)*100))/100, round(((Ra+Rb)*100))/100, by=0.01)[abs(Recoups-SurfRecoup)==min(abs(Recoups-SurfRecoup))]
+			
+			xcercles = c((12*sizeGx)/30, ((12*sizeGx)/30+DistCercles))
+			
+			plot.new()
+			par(mar=c(0,0,0,0))
+			plot.window(xlim=c(0, sizeGx), ylim=c(0, sizeGy), asp=1)
+			
+			if(filled)
+			{
+				cercle(xcercles, ycercles, rcercles, out=NA, int=couleursIn, lty=1, lw=lw)
+				colTxt = "white"
+			}else{
+				cercle(xcercles, ycercles, rcercles, out=couleurs, lty=1, lw=lw)
+				colTxt = "black"
+			}
+			
+			if(ColorTxt!="")	colTxt = ColorTxt
+			
+			
+			debA = (xcercles[1]-rcercles[1])
+			debB = (xcercles[2]-rcercles[2])
+			finA = (xcercles[1]+rcercles[1])
+			finB = (xcercles[2]+rcercles[2])
+			
+			if(ud)
+			{
+				text(x=(10*sizeGx)/30, y=(19*sizeGy)/30, labels=ListN$nA,                       cex=tUD*mSpe, col=couleurs[1])
+				text(x=(10*sizeGx)/30, y=(19*sizeGy)/30, labels=paste("U ", ListN$nAu, sep=""), cex=tUDp*mSpe, col=couleurs[1], pos=1, offset=(tUDp*mSpe*0.7))
+				text(x=(10*sizeGx)/30, y=(19*sizeGy)/30, labels=paste("D ", ListN$nAd, sep=""), cex=tUDp*mSpe, col=couleurs[1], pos=1, offset=(tUDp*mSpe*0.7)*2)
+				text(x=(20*sizeGx)/30, y=(19*sizeGy)/30, labels=ListN$nB,                       cex=tUD*mSpe, col=couleurs[2])
+				text(x=(20*sizeGx)/30, y=(19*sizeGy)/30, labels=paste("U ",ListN$ nBu, sep=""), cex=tUDp*mSpe, col=couleurs[2], pos=1, offset=(tUDp*mSpe*0.7))
+				text(x=(20*sizeGx)/30, y=(19*sizeGy)/30, labels=paste("D ", ListN$nBd, sep=""), cex=tUDp*mSpe, col=couleurs[2], pos=1, offset=(tUDp*mSpe*0.7)*2)
+				
+				format_label(n=ListN$nAB, m=ListN$nABud, nom=paste(noms[1], noms[2], sep=","), x=sizeGx/2, y=(19*sizeGy)/30, dtitre=tUD, dprofils=tUDp, noms=noms, couleurs=couleurs, cex.main=cex.main, ps=ps)
+			}else{
+				if((debB-debA)<10)	#	Si pas la place, decal une ligne
+				{
+					text(x=debA-10/2, y=ycercles[1], labels=ListN$nA,  cex=tnoUD, col="black")
+				}else{
+					text(x=debA+(debB-debA)/2, y=ycercles[1], labels=ListN$nA,  cex=tnoUD, col="black")
+				}
+				
+				if((finB-finA)<10)	#	Pas la place
+				{
+					text(x=finA+10/2, y=ycercles[1], labels=ListN$nB,  cex=tnoUD, col="black")
+				}else{
+					text(x=finA+(finB-finA)/2, y=ycercles[1], labels=ListN$nB,  cex=tnoUD, col="black")
+				}
+				text(x=(sum(xcercles)+rcercles[1]-rcercles[2])/2,    	y=ycercles[2],   labels=ListN$nAB, cex=tnoUD, col="black")
+			}
+			
+			
+			if(!OnlyVenn)
+			{
+				#titres
+				tTitres = 2
+				text(x=sizeGx/7, y=(7*sizeGy)/10, labels=paste("Total: ", tot_ugenes, sep=""), cex=tTitres, col="black")	#	Total
+				
+				if(title!="")	text(x=sizeGx/2, y=sizeGy, labels=title, cex=tTitres*1.2, col="black")
+				
+				text(x=sizeGx/2, y=1.6*sizeGy/10, labels=paste(ListN$listeA, " (", sum(ListN$nA, ListN$nAB), ")", sep=""), cex=tTitres, col=couleurs[1])
+				text(x=sizeGx/2, y=sizeGy/10,     labels=paste(ListN$listeB, " (", sum(ListN$nB, ListN$nAB), ")", sep=""), cex=tTitres, col=couleurs[2])
+				
+				if(Ptest)
+				{
+					VennTest <- matrix(c(ListN$nA, ListN$nB, ListN$nAB, ListN$nAB), nrow = 2, dimnames = list(c(ListN$listeA, ListN$listeB), c("Spe", "Commun")))
+					
+					DataTest = VennTest[, apply(VennTest, 2, function(x) sum(x)!=0)]
+					
+					pvalProp = try(signif(as.numeric(fisher.test(DataTest, alternative = "two.sided")[1]), digits=4), silent = TRUE)
+					if(is.na(as.numeric(pvalProp)))
+					{
+						pvalProp = try(signif(as.numeric(chisq.test(DataTest)[3]), digits=4), silent = TRUE)
+						text(x=(5*sizeGx/6), y=(7*sizeGy)/10,  labels=paste("chi-squared test pval:\n", pvalProp, sep=""), cex=1, col="black")
+					}else{
+						text(x=(5*sizeGx/6), y=(7*sizeGy)/10,  labels=paste("Fisher's exact test pval:\n", pvalProp, sep=""), cex=1, col="black")
+					}
+				}
+			}
+			dev.off()
+			
+			if(!OnlyVenn&Ptest)	
+			{
+				png(filename=paste(path, "/MosaicPlot.png", sep=""), pointsize=30, bg="white", width=1000, height=1000)
+				mosaicplot(VennTest[, apply(VennTest, 2, function(x) sum(x)!=0)], color=couleurs, main=title)
+				dev.off()
+			}
+		}
+		
+		###############################################################################################################################################################
+		###############################################################################################################################################################
+		###############################################################################################################################################################
+		
+		
+		
 		
 		graph_2<-function(path, ListN, tot_ugenes, noms, ud, couleurs, couleursIn, ColorTxt, filled, Ptest, tUD, tUDp, tnoUD, Gtype, title, lw, OnlyVenn)
 		{
@@ -1822,7 +1970,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 		}
 		nomTot = colnames(res)[grep("total", colnames(res), ignore.case=TRUE)]
 		
-	#################################################################################################################################
+		#################################################################################################################################
 		if(NutShell)
 		{
 			if(display) write(paste("     => NutShell" , sep=""), file="")
@@ -1832,7 +1980,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			
 			Profilbin = apply(res[,1:(ncol(res)-1), drop=FALSE], 1, function(x) paste(x, sep="", collapse=""))
 			ProfilABC = apply(ABCresTable, 1, function(x) paste(x, sep="", collapse=""))
-		
+			
 			if(ud)
 			{
 				ABCprof = table(ProfilABC)
@@ -1853,7 +2001,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			write.table(MainProfils, file=paste(path, "/NutShellTable.txt", sep=""), sep="\t", quote=FALSE, row.names=FALSE)
 		}
 		
-	#################################################################################################################################
+		#################################################################################################################################
 		
 		colorclust<-function(DataClust, methclust, metcor, couleurs, noms, w=15, h=15, path)
 		{
@@ -1866,23 +2014,23 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			if(h<=15*g){h=(20+(ncol(DataClust)/10))*g; w=h*0.8}
 			
 			png(filename = paste(path, "/clust[", metcor, ".", methclust, "].png", sep=""), height=h, width=w, units="cm", bg="white", res=150)
-				hcd = as.dendrogram(hc)                             
-				colleaf<-function(n)
+			hcd = as.dendrogram(hc)                             
+			colleaf<-function(n)
+			{
+				if(is.leaf(n))
 				{
-					if(is.leaf(n))
-					{
-						a <- attributes(n)
-						attr(n, "edgePar") <- list(col=couleurs[noms==a$label])
-						attr(n, "nodePar") <- list(pch = NA, lab.col=couleurs[noms==a$label], lab.cex=1.5)
-					}
-					n
+					a <- attributes(n)
+					attr(n, "edgePar") <- list(col=couleurs[noms==a$label])
+					attr(n, "nodePar") <- list(pch = NA, lab.col=couleurs[noms==a$label], lab.cex=1.5)
 				}
-				#	dendrapply(hcd, function(n) utils::str(attributes(n)))
-				par(cex=0.9, mar=c(15*g, 5, 1, 1))
-				plot(dendrapply(hcd, function(n) colleaf(n)), cex=0.6)
+				n
+			}
+			#	dendrapply(hcd, function(n) utils::str(attributes(n)))
+			par(cex=0.9, mar=c(15*g, 5, 1, 1))
+			plot(dendrapply(hcd, function(n) colleaf(n)), cex=0.6)
 			dev.off()
 		}
-	
+		
 		if(VennClust&((ncol(res)-1)>2))	#	Si plus de deux listes
 		{
 			DataClust = res[,1:(ncol(res)-1), drop=FALSE]
@@ -1899,8 +2047,8 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 			colorclust(DataClust, methclust="average", metcor="spearman", couleurs, noms, w, h, path)
 		}
 		
-	#################################################################################################################################
-	
+		#################################################################################################################################
+		
 		if(FilesOut)	#graphs
 		{
 			if(display) write(paste("     => Graphic" , sep=""), file="")
@@ -1934,14 +2082,17 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				ListN[sapply(ListN, FUN=function(x) is.null(x))]=1			#	Remplace les compatges NULL par 1
 				
 				graph_2(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, filled=filled, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title, lw, OnlyVenn=OnlyVenn)
-					
+				
 				if(prop)
 				{
 					graph_prop_2(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nAB, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw, OnlyVenn=OnlyVenn)
+					graph_2_realProps(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, filled=filled, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title, lw, OnlyVenn=OnlyVenn, tlog=FALSE)
 					
 					if(max(nA, nB, nAB)/min(nA, nB, nAB)>10) # Si le ratio max/min>10 => log2
+					{
 						graph_prop_2(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nAB, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=TRUE, colBlack=colBlack, title=title, lw=lw, OnlyVenn=OnlyVenn)
-	
+						graph_2_realProps(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, filled=filled, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title, lw, OnlyVenn=OnlyVenn, tlog=TRUE)
+					}	
 				}
 			}
 			
@@ -1991,7 +2142,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				ListN[sapply(ListN, FUN=function(x) is.null(x))]=1			#	Remplace les compatges NULL par 1
 				
 				graph_3(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, filled=filled, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title, lw=lw, OnlyVenn=OnlyVenn)
-	
+				
 				if(prop)
 				{ 
 					graph_prop_3(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nAB, nAC, nBC, nABC, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw, OnlyVenn=OnlyVenn)
@@ -2075,7 +2226,7 @@ evenn <-function(annot=FALSE, matLists="", pathRes="", pathLists="", ud=FALSE, p
 				ListN[sapply(ListN, FUN=function(x) is.null(x))]=1			#	Remplace les compatges NULL par 1
 				
 				graph_4(path=path, ListN=ListN, tot_ugenes=tot_ugenes, noms=noms, ud=ud, couleurs=couleurs, couleursIn=couleursIn, ColorTxt=ColorTxt, filled=filled, Ptest=Ptest, tUD=tUD, tUDp=tUDp, tnoUD=tnoUD, Gtype=Gtype, title=title, lw=lw, OnlyVenn=OnlyVenn)
-					
+				
 				if(prop) 
 				{
 					graph_prop_4(path, res[,1:grep("total", colnames(res), ignore.case=TRUE)], nA, nB, nC, nD, nAB, nAC, nBD, nCD, nAD, nBC, nABC, nBCD, nACD, nABD, nABCD, tot_ugenes, noms, couleurs=couleurs, couleursIn=couleursIn, tlog=FALSE, colBlack=colBlack, title=title, lw=lw, OnlyVenn=OnlyVenn)
